@@ -96,25 +96,25 @@ onError :: ∀ x a y. (x -> Task y a) -> Task x a -> Task y a
 onError = onErrorImpl
 
 foreign import reportImpl ::
-  ∀ x a b c.
+  ∀ x a.
   (∀ d e. d -> Either d e) ->
   (∀ d e. d -> Either e d) ->
-  (∀ d. d -> b) ->
-  (Either x a -> c) ->
+  (∀ d. d -> Effect Unit) ->
+  (Either x a -> Effect Unit) ->
   Task x a ->
   Effect Unit
 
 report ::
-  ∀ x a b c.
-  (∀ d. d -> b) ->
-  (Either x a -> c) ->
+  ∀ x a b.
+  (∀ d. d -> Effect Unit) ->
+  (Either x a -> Effect Unit) ->
   Task x a ->
   Effect Unit
 report = reportImpl Left Right
 
-foreign import logError :: ∀ a. a -> Unit
+foreign import logError :: ∀ a. a -> Effect Unit
 
-capture :: ∀ x a b. (Either x a -> b) -> Task x a -> Effect Unit
+capture :: ∀ x a b. (Either x a -> Effect Unit) -> Task x a -> Effect Unit
 capture = report logError
 
 foreign import unsafeCaptureImpl :: ∀ a b. (a -> b) -> Task Void a -> Effect Unit
@@ -123,7 +123,7 @@ unsafeCapture :: ∀ a b. (a -> b) -> Task Void a -> Effect Unit
 unsafeCapture = unsafeCaptureImpl
 
 run :: ∀ x a. Task x a -> Effect Unit
-run = capture identity
+run = capture $ const mempty
 
 foreign import fromPromiseImpl :: ∀ a b. (a -> Promise b) -> a -> (Task String b)
 

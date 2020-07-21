@@ -1,8 +1,6 @@
 'use strict';
 
-let
-	model,
-	update;
+let update;
 
 const subs = {
 	// array of cancel functions
@@ -10,6 +8,10 @@ const subs = {
 	// array of {id, args, cancel}
 	current: []
 };
+
+exports.setUpdate = f => () => update = f;
+
+exports.sendMsg = msg => update(msg);
 
 exports.worker = init => flags => {
 	update = msg => {
@@ -20,12 +22,6 @@ exports.worker = init => flags => {
 	model = init.init(flags)();
 	handleSubscriptions(init.subscriptions(model));
 };
-
-const sendMsg = msg => {
-	queueMicrotask(() => update(msg));
-};
-
-exports.sendMsg = sendMsg;
 
 const handleSubscriptions = newSubs => {
 	// cancel all subs with empty ids

@@ -1,79 +1,56 @@
 module Main where
 
 import Prelude
-import Data.Array as Array
-import Data.Either (Either(..))
-import Data.Foldable (fold, intercalate)
-import Data.Traversable (traverse)
-import Debug as Debug
-import Effect (Effect)
-import Effect.Class (liftEffect)
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Writer.Trans (WriterT)
+import Control.Monad.Writer.Class (tell)
 import Effect.Console (log, logShow)
-import Fs as Fs
-import Path as Path
-import Platform (Program, attemptTask, performTask)
-import Platform as Platform
-import Task (Task)
-import Task as Task
+import Effect.Class (liftEffect)
+import Platform
+import Task
 
-main :: Program Flags Model Msg
+main :: Program Unit Model Msg
 main =
-  Platform.worker
+  worker2
     { init
     , update
-    , subscriptions: const []
     }
 
 type Model
+  = Int
+
+init :: Unit -> Shorten Msg Model
+init _ = do
+  tell $ attemptTask (const unit) $ wait 1000.0
+  pure 0
+
+waitAndLog :: Model -> Shorten Msg Unit
+waitAndLog model =
+  tell
+    $ attemptTask (const unit) do
+        wait 1000.0
+        liftEffect $ logShow model
+
+type Msg
   = Unit
 
-init :: Flags -> Effect Model
-init { args, __dirname } =
+update :: Model -> Msg -> Shorten Msg Model
+update model msg = do
   let
-    path = Path.join [ __dirname, "args" ]
-  in
-    do
-      ( let
-          mkdir :: Task String Unit
-          mkdir = Fs.mkdir path
+    newModel = model + 1
+  tell $ attemptTask (const unit) $ wait 1000.0
+  lift
+    $ log
+        if mod newModel 15 == 0 then
+          "FizzBuzz"
+        else
+          if mod newModel 5 == 0 then
+            "Buzz"
+          else
+            if mod newModel 3 == 0 then
+              "Fizz"
+            else
+              show newModel
+  pure $ model + 1
 
-          writeArgs :: Task String Unit
-          writeArgs = do
-            Fs.readdir path
-              >>= map (\file -> Fs.unlink $ Path.join [ path, file ])
-              >>> fold
-            args
-              # Array.mapWithIndex
-                  ( \i arg ->
-                      Fs.writeFile
-                        (Path.join [ path, show i <> ".txt" ])
-                        arg
-                  )
-              # fold
-        in
-          Fs.exists path
-            >>= case _, Array.null args of
-                true, true ->
-                  Fs.readdir path
-                    >>= traverse (\file -> Fs.readFile $ Path.join [ path, file ])
-                    <#> intercalate " "
-                    >>= (liftEffect <<< log)
-                true, false -> writeArgs
-                false, true -> mkdir
-                false, false -> do
-                  mkdir
-                  writeArgs
-      )
-        # Task.run
-
-type Flags
-  = { args :: Array String
-    , __dirname :: String
-    }
-
-data Msg
-  = NoOp
-
-update :: Msg -> Model -> Effect Model
-update msg model = case msg of
-  _ -> pure model
+foreign import wait :: ∀ x. Number -> Task x Unit

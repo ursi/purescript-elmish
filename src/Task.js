@@ -10,7 +10,7 @@ exports.applyImpl = tf => ta => (fulfill, reject, onError) => {
 			try {
 				ta(a => fulfill(f(a)), reject, onError)
 			} catch (error) {
-				onError(error);
+				onError(error)();
 			}
 		},
 
@@ -27,7 +27,7 @@ exports.bindImpl = t => f => (fulfill, reject, onError) => {
 			try {
 				f(a)(fulfill, reject, onError)
 			} catch (error) {
-				onError(error);
+				onError(error)();
 			}
 		},
 
@@ -49,7 +49,7 @@ exports.onErrorImpl = f => t => (fulfill, reject, onError) => {
 			try {
 				f(x)(fulfill, reject, onError);
 			} catch (error) {
-				onError(Error)
+				onError(error)();
 			}
 		},
 
@@ -59,13 +59,13 @@ exports.onErrorImpl = f => t => (fulfill, reject, onError) => {
 
 exports.reportImpl = Left => Right => onError => handler => t => () => {
 	try {
-		t(a => handler(Right(a)), x => handler(Left(x)), onError);
+		t(a => handler(Right(a))(), x => handler(Left(x))(), onError);
 	} catch (error) {
-		onError(error);
+		onError(error)();
 	}
 };
 
-exports.logError = x => {
+exports.logError = x => () => {
 	console.error(x);
 };
 
