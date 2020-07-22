@@ -17,32 +17,23 @@ import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, mkEffectFn1)
 import Task (Task)
 import Task as Task
-import Sub (Sub)
+import Sub (Sub, ActiveSub, SubBuilder)
+import Sub as Sub
 
-{-- foreign import data Program :: Type -> Type -> Type -> Type --}
 newtype Cmd msg
   = Cmd ((msg -> Effect Unit) -> Effect Unit)
 
 derive instance newtypeCmd :: Newtype (Cmd a) _
 
-derive newtype instance semigroupCmd :: Semigroup (Cmd a)
+instance semigroupCmd :: Semigroup (Cmd a) where
+  append (Cmd c1) (Cmd c2) =
+    Cmd \sendMsg -> do
+      c1 sendMsg
+      c2 sendMsg
 
-derive newtype instance monoidCmd :: Monoid (Cmd a)
+instance monoidCmd :: Monoid (Cmd a) where
+  mempty = Cmd $ const mempty
 
-foreign import worker ::
-  ∀ flags model msg.
-  { init :: flags -> Effect model
-  , update :: msg -> model -> WriterT (Cmd msg) Effect model
-  {-- , subscriptions :: model -> Array (Sub msg) --}
-  } ->
-  Program flags model msg
-
-{-- foreign import sendMsg :: ∀ msg. msg -> Effect Unit --}
-sendMsg :: ∀ msg. msg -> Effect Unit
-sendMsg msg = updateRef >>= Ref.read >>= (#) msg
-
-{-- performTask :: ∀ a msg. (a -> msg) -> Task Void a -> Cmd msg --}
-{-- performTask toMsg = Cmd <<< Task.unsafeCapture (sendMsg <<< toMsg) --}
 attemptTask :: ∀ x a msg. (Either x a -> msg) -> Task x a -> Cmd msg
 attemptTask toMsg task = Cmd \sendMsg -> Task.capture (sendMsg <<< toMsg) task
 
@@ -61,21 +52,36 @@ worker2 ::
   Program flags model msg
 worker2 init =
   mkEffectFn1 \flags -> do
+    initialModel /\ cmd <- runWriterT $ init.init flags
+    unwrap cmd $ update initialModel
+  where
+  update :: model -> msg -> Effect Unit
+  update model msg = do
+    newModel /\ cmd <- runWriterT $ init.update model msg
+    unwrap cmd $ update newModel
+
+worker ::
+  ∀ flags model msg.
+  { init :: flags -> Shorten msg model
+  , update :: model -> msg -> Shorten msg model
+  , subscriptions :: model -> Sub msg
+  } ->
+  Program flags model msg
+worker init =
+  mkEffectFn1 \flags -> do
+    activeSubsRef <- Ref.new []
+    go activeSubsRef $ init.init flags
+  where
+  go :: Ref (Array ActiveSub) -> Shorten msg model -> Effect Unit
+  go activeSubsRef w = do
+    newModel /\ cmd <- runWriterT w
     let
-      update :: model -> msg -> Effect Unit
-      update model msg = do
-        newModel /\ cmds <- runWriterT $ init.update model msg
-        setUpdate $ update newModel
-        unwrap cmds
-    initialModel /\ cmds <- runWriterT $ init.init flags
-    setUpdate $ Debug.debugger $ update initialModel
-    unwrap cmds
-
-{-- foreign import setUpdate :: ∀ msg model. (msg -> Effect Unit) -> Effect Unit --}
-setUpdate :: ∀ msg. (msg -> Effect Unit) -> Effect Unit
-setUpdate newUpdate = do
-  currentUpdate <- updateRef
-  Ref.write newUpdate currentUpdate
-
-updateRef :: ∀ msg. Effect (Ref (msg -> Effect Unit))
-updateRef = Ref.new \_ -> log "original"
+      sendMsg = go activeSubsRef <<< init.update newModel
+    activeSubs <- Ref.read activeSubsRef
+    newActiveSubs <-
+      Sub.something
+        activeSubs
+        (init.subscriptions newModel)
+        (mkEffectFn1 sendMsg)
+    Ref.write newActiveSubs activeSubsRef
+    unwrap cmd sendMsg

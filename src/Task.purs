@@ -2,6 +2,7 @@ module Task
   ( Callback
   , Promise
   , Task(..)
+  , TaskImpl
   , capture
   , fromPromise
   , logSuccess
@@ -22,33 +23,14 @@ import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Console (log, logShow)
 import Effect.Uncurried (EffectFn1, EffectFn2)
 
-newtype Arg a
-  = Arg
-  { arg :: a
-  , eq :: a -> a -> Boolean
-  }
-
-instance eqArg :: Eq (Arg a) where
-  eq (Arg a1) (Arg a2) = a1.eq a1.arg a2.arg
-
-{-- foreign import data Task :: Type -> Type -> Type --}
-eitherEq :: ∀ l r. Eq r => Either (Arg l) r -> Either (Arg l) r -> Boolean
-eitherEq = case _, _ of
-  Right r1, Right r2 -> r1 == r2
-  Left l1, Left l2 -> l1 == l2
-  _, _ -> false
-
-type E a
-  = ∀ l. Either (Arg l) a
-
-eEq :: ∀ a. Eq a => E a -> E a -> Boolean
-eEq = eitherEq
-
 type Callback a
   = EffectFn1 a Unit
 
+type TaskImpl x a
+  = EffectFn2 (Callback a) (Callback x) Unit
+
 newtype Task x a
-  = Task (EffectFn2 (Callback a) (Callback x) Unit)
+  = Task (TaskImpl x a)
 
 foreign import data Promise :: Type -> Type
 
@@ -97,16 +79,16 @@ onError = onErrorImpl
 
 foreign import reportImpl ::
   ∀ x a.
-  (∀ d e. d -> Either d e) ->
-  (∀ d e. d -> Either e d) ->
-  (∀ d. d -> Effect Unit) ->
+  (∀ b c. b -> Either b c) ->
+  (∀ b c. b -> Either c b) ->
+  (∀ b. b -> Effect Unit) ->
   (Either x a -> Effect Unit) ->
   Task x a ->
   Effect Unit
 
 report ::
-  ∀ x a b.
-  (∀ d. d -> Effect Unit) ->
+  ∀ x a.
+  (∀ b. b -> Effect Unit) ->
   (Either x a -> Effect Unit) ->
   Task x a ->
   Effect Unit
@@ -114,7 +96,7 @@ report = reportImpl Left Right
 
 foreign import logError :: ∀ a. a -> Effect Unit
 
-capture :: ∀ x a b. (Either x a -> Effect Unit) -> Task x a -> Effect Unit
+capture :: ∀ x a. (Either x a -> Effect Unit) -> Task x a -> Effect Unit
 capture = report logError
 
 foreign import unsafeCaptureImpl :: ∀ a b. (a -> b) -> Task Void a -> Effect Unit
