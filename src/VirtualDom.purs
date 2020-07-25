@@ -6,6 +6,7 @@ import Data.Array as Array
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Traversable (traverse)
 import Data.Tuple.Nested (type (/\), (/\))
+import Debug as Debug
 import Effect (Effect)
 import Effect.Console (log)
 import Effect.Uncurried
@@ -110,6 +111,7 @@ render vnodes = do
     document :: Document
     document = HTMLDocument.toDocument htmlDocument
   realNodes /\ sub <- runWriterT $ traverse (toRealNode document) vnodes
+  _ <- Sub.something [] sub $ mkEffectFn1 \_ -> pure unit
   mbodyNode <- map HTMLElement.toNode <$> HTMLDocument.body htmlDocument
   fromMaybe (pure unit)
     (appendChildren realNodes <$> mbodyNode)
@@ -118,26 +120,24 @@ toRealNode :: ∀ msg. Document -> VNode msg -> WriterT (Sub msg) Effect Node
 toRealNode doc = case _ of
   VNode { tag, attributes, children } -> do
     element <- lift $ createElement tag doc
+    childNodes <- traverse (toRealNode doc) children
+    tell =<< (lift $ setAttributes attributes element)
     let
       elementNode = Element.toNode element
-    childNodes <- traverse (toRealNode doc) children
-    _ <- lift $ setAttributes attributes element
     lift $ appendChildren childNodes elementNode
     pure elementNode
-  VText text ->
-    lift $ Text.toNode
-      <$> createTextNode text doc
+  VText text -> lift $ Text.toNode <$> createTextNode text doc
 
-setAttributes :: ∀ msg. Array (Attribute msg) -> Element -> Effect (Array (Sub msg))
-setAttributes a e = go a e []
+setAttributes :: ∀ msg. Array (Attribute msg) -> Element -> Effect (Sub msg)
+setAttributes a element = go a mempty
   where
-  go :: Array (Attribute msg) -> Element -> Array (Sub msg) -> Effect (Array (Sub msg))
-  go attributes element acc = case Array.uncons attributes of
+  go :: Array (Attribute msg) -> Sub msg -> Effect (Sub msg)
+  go attributes acc = case Array.uncons attributes of
     Just { head, tail } -> case head of
       Str prop value -> do
         setAttribute prop value element
-        setAttributes tail element
-      Listener toSub -> go tail element (Array.snoc acc $ toSub element)
+        go tail acc
+      Listener toSub -> go tail $ acc <> toSub element
     Nothing -> pure acc
 
 appendChildren :: Array Node -> Node -> Effect Unit
