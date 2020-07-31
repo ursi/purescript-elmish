@@ -2,7 +2,11 @@ module VirtualDom where
 
 import Prelude
 import Control.Monad.Writer.Trans (WriterT, lift, runWriterT, tell)
+import Data.Argonaut (Json, (.:))
+import Data.Argonaut as A
 import Data.Array as Array
+import Data.Either (Either(..))
+import Data.Either.Nested (type (\/))
 import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Traversable (traverse)
 import Data.Tuple.Nested (type (/\), (/\))
@@ -10,14 +14,18 @@ import Debug as Debug
 import Effect (Effect)
 import Effect.Console (log)
 import Effect.Uncurried
+import Foreign.Object (Object)
+import Foreign.Object as FO
 import Sub (Sub(..), SubImpl)
 import Sub as Sub
+import Unsafe.Coerce (unsafeCoerce)
 import Web.DOM.Document (Document, createElement, createTextNode)
-import Web.DOM.Element (Element, setAttribute)
+import Web.DOM.Element (Element, setAttribute, tagName)
 import Web.DOM.Element as Element
 import Web.DOM.Node (Node, appendChild)
 import Web.DOM.Text as Text
 import Web.Event.Event (EventType(..))
+import Web.Event.Event as Event
 import Web.Event.EventTarget (EventListener, addEventListener, eventListener, removeEventListener)
 import Web.Event.Internal.Types (Event)
 import Web.HTML as HTML
@@ -28,10 +36,10 @@ import Web.HTML.HTMLElement as HTMLElement
 main :: Effect Unit
 main =
   render
-    $ [ div [ logOnClick ]
+    $ [ div [ {-logOnClick-}]
           [ label [ className "test" ]
               [ text "what is your favourite language?"
-              , select []
+              , select [ logValueOnSelect ]
                   [ option [] [ text "Elm" ]
                   , option [] [ text "PureScript" ]
                   , option [] [ text "JavaScript" ]
@@ -97,6 +105,24 @@ logOnClick =
       mouseDown = EventType "mousedown"
 
       callback = \_ -> log "clicked"
+    Sub
+      $ Sub.new ""
+      $ mkEffectFn1 \_ -> do
+          eventL <- eventListener callback
+          addEventListener mouseDown eventL false eventTarget
+          pure $ removeEventListener mouseDown eventL false eventTarget
+
+logValueOnSelect :: Attribute Unit
+logValueOnSelect =
+  Listener \element -> do
+    let
+      eventTarget = Element.toEventTarget element
+
+      mouseDown = EventType "input"
+
+      callback = \event -> case unsafeCoerce event # FO.lookup "target" >>= FO.lookup "value" of
+        Just v -> log v
+        Nothing -> log "error"
     Sub
       $ Sub.new ""
       $ mkEffectFn1 \_ -> do
