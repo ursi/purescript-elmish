@@ -2,22 +2,30 @@ module Sub
   ( ActiveSub
   , Callback
   , Canceler
-  , Sub(Sub)
+  , Sub
   , SubBuilder
   , SubImpl
-  , addArg
   , new
   , something
   ) where
 
 import Prelude
-import Data.Argonaut.Core (Json)
+import JSEq (jseq)
 import Data.Array as Array
 import Data.Maybe (Maybe(..))
 import Data.Traversable (traverse)
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import Partial.Unsafe (unsafePartial)
+import Unsafe.Coerce (unsafeCoerce)
+
+data JSValue
+
+instance eqJSValue :: Eq JSValue where
+  eq = jseq
+
+toJSValue :: ∀ a. a -> JSValue
+toJSValue = unsafeCoerce
 
 type Callback a
   = EffectFn1 a Unit
@@ -33,23 +41,46 @@ mapSubImpl f s =
   mkEffectFn1 \callback ->
     runEffectFn1 s $ mkEffectFn1 \a -> runEffectFn1 callback $ f a
 
+type SubProperties
+  = ( id :: String
+    , args :: Array JSValue
+    , maps :: Array JSValue
+    )
+
 data SubBuilder a
-  = SubBuilder
-    { id :: String
-    , args :: Array Json
-    , sub :: a
-    }
+  = SubBuilder { sub :: a | SubProperties }
+
+instance functorSubBuilder :: Functor SubBuilder where
+  map f (SubBuilder a@{ maps, sub }) =
+    SubBuilder
+      $ a
+          { maps = Array.snoc maps $ toJSValue f
+          , sub = f sub
+          }
+
+instance applySubBuilder :: Apply SubBuilder where
+  apply (SubBuilder f@{ args, sub }) (SubBuilder a) =
+    SubBuilder
+      $ f
+          { args = Array.snoc args $ toJSValue a.sub
+          , sub = sub a.sub
+          }
+
+instance applicativeSubBuilder :: Applicative SubBuilder where
+  pure a =
+    SubBuilder
+      { id: ""
+      , args: []
+      , maps: []
+      , sub: a
+      }
 
 data Sub a
   = Sub (SubBuilder (SubImpl a))
   | Batch (Array (Sub a))
 
 data ActiveSub
-  = ActiveSub
-    { id :: String
-    , args :: Array Json
-    , canceler :: Effect Unit
-    }
+  = ActiveSub { canceler :: Effect Unit | SubProperties }
 
 {-- instance eqSub :: Eq (Sub a) where --}
 {--   eq (Sub (SubBuilder s1)) (Sub (SubBuilder s2)) = s1.id == s2.id && s1.args == s2.args --}
@@ -67,20 +98,17 @@ instance monoidSub :: Monoid (Sub a) where
 
 instance functorSub :: Functor Sub where
   map f sub_ = case sub_ of
-    Sub (SubBuilder s@{ sub }) -> Sub $ SubBuilder $ s { sub = mapSubImpl f sub }
+    Sub (SubBuilder s@{ maps, sub }) ->
+      Sub $ SubBuilder
+        $ s
+            { maps = Array.snoc maps (unsafeCoerce f)
+            , sub = mapSubImpl f sub
+            }
     Batch subs -> Batch $ map f <$> subs
 
-addArg :: ∀ a b. a -> (a -> Json) -> SubBuilder (a -> b) -> SubBuilder b
-addArg arg toJson (SubBuilder subBuilder@{ args, sub }) =
-  SubBuilder
-    $ subBuilder
-        { args = Array.snoc args $ toJson arg
-        , sub = sub arg
-        }
-
 -- | The `String` is the ID of your subscription. It is used to test equality between new and current subscriptions, and, therefore, must be globally unique.
-new :: ∀ a. String -> a -> SubBuilder a
-new id a = SubBuilder { id, args: [], sub: a }
+new :: ∀ a. String -> SubBuilder (SubImpl a) -> Sub a
+new id (SubBuilder sb) = Sub $ SubBuilder $ sb { id = id }
 
 flatten :: ∀ a. Sub a -> Array (SubBuilder (SubImpl a))
 flatten = case _ of
@@ -125,7 +153,7 @@ something activeSubs newSub callback =
       pure $ acc.keep <> newAcitveSubs
 
 sameAsActive :: ∀ a. ActiveSub -> SubBuilder (SubImpl a) -> Boolean
-sameAsActive (ActiveSub a) (SubBuilder s) = a.id == s.id && a.args == s.args
+sameAsActive (ActiveSub a) (SubBuilder s) = a.id == s.id && a.args == s.args && a.maps == s.maps
 
 unsafeDeleteAt :: Partial => ∀ a. Int -> Array a -> Array a
 unsafeDeleteAt index array = case Array.deleteAt index array of
@@ -135,6 +163,16 @@ getCanceler :: ActiveSub -> Effect Unit
 getCanceler (ActiveSub { canceler }) = canceler
 
 launch :: ∀ a. Callback a -> SubBuilder (SubImpl a) -> Effect ActiveSub
-launch callback (SubBuilder { id, args, sub }) = do
+launch callback (SubBuilder { id, args, maps, sub }) = do
   canceler <- runEffectFn1 sub callback
-  pure $ ActiveSub { id, args, canceler }
+  pure $ ActiveSub { id, args, maps, canceler }
+
+foreign import everyImpl :: Number -> SubImpl Number
+
+every :: ∀ a. Number -> (Number -> a) -> Sub a
+every ms toA = toA <$> (new "every" $ pure everyImpl <*> pure ms)
+
+foreign import every_Impl :: ∀ a. Number -> a -> SubImpl a
+
+every_ :: ∀ a. Number -> a -> Sub a
+every_ ms a = new "every_" $ pure $ every_Impl ms a

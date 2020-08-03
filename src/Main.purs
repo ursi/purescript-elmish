@@ -1,58 +1,53 @@
 module Main where
 
 import Prelude
+import Attribute as A
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Writer.Trans (WriterT)
 import Control.Monad.Writer.Class (tell)
+import Effect (Effect)
 import Data.Argonaut.Core (Json)
 import Data.Argonaut.Core as A
 import Data.Foldable (fold)
 import Effect.Console (log, logShow)
 import Effect.Class (liftEffect)
-import Platform
+import Html (Html)
+import Html as H
+import Platform (Cmd, Program)
+import Platform as Platform
 import Task
 import Sub (Sub(..), SubBuilder, SubImpl)
 import Sub as Sub
+import VirtualDom
 
 main :: Program Unit Model Msg
 main =
-  worker
+  Platform.app
     { init
     , update
-    , subscriptions:
-        \_ ->
-          fold
-            [ every 1000.0 ReceiveTime
-            , every 5000.0 ReceiveTime
-            ]
+    , subscriptions: const mempty
+    , view
     }
 
 type Model
   = Int
 
-init :: Unit -> Shorten Msg Model
-init _ = do
-  pure 0
+init :: Unit -> WriterT (Cmd Msg) Effect Model
+init _ = pure 0
 
 data Msg
-  = ReceiveTime Number
+  = Increment
+  | Decrement
 
-update :: Model -> Msg -> Shorten Msg Model
-update model msg = case msg of
-  ReceiveTime t -> do
-    liftEffect $ logShow t
-    pure $ model + 1
+update :: Model -> Msg -> WriterT (Cmd Msg) Effect Model
+update model msg =
+  pure case msg of
+    Increment -> model + 1
+    Decrement -> model - 1
 
-foreign import waitImpl :: ∀ x. Number -> TaskImpl x Unit
-
-wait :: ∀ x. Number -> Task x Unit
-wait ms = Task $ waitImpl ms
-
-foreign import everyImpl :: Number -> SubImpl Number
-
-every :: ∀ msg. Number -> (Number -> msg) -> Sub msg
-every ms toMsg =
-  Sub.new "every" everyImpl
-    # Sub.addArg ms A.fromNumber
-    # Sub
-    <#> toMsg
+view :: Model -> Array (Html Msg)
+view model =
+  [ H.button [ A.onClick Increment ] [ H.text "+" ]
+  , H.div [] [ H.text $ show model ]
+  , H.button [ A.onClick Decrement ] [ H.text "-" ]
+  ]

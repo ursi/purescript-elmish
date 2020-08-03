@@ -9,3 +9,5 @@
 /.psa*
 /.spago
 /index.js
+/minify.js
+/elm

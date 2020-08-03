@@ -13,6 +13,7 @@
   , "functions"
   , "identity"
   , "integers"
+  , "lists"
   , "newtype"
   , "partial"
   , "psci-support"
