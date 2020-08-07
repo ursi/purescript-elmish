@@ -1,12 +1,25 @@
 module Html where
 
-import VirtualDom (Attribute, VNode(VText), createVNode)
+import Prelude
+import Data.Batchable (Batchable(..))
+import Data.Maybe (Maybe(..))
+import VirtualDom (Attribute, SingleVNode(..), VNode)
 
 type Html msg
   = VNode msg
 
+createVNode :: ∀ msg. String -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+createVNode tag attributes children =
+  Single
+    $ VNode
+        { tag
+        , attributes
+        , children
+        , node: Nothing
+        }
+
 text :: ∀ msg. String -> VNode msg
-text = VText
+text = Single <<< VText <<< { text: _, node: Nothing }
 
 div :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 div = createVNode "div"

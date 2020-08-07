@@ -11,6 +11,7 @@
   , "foldable-traversable"
   , "foreign-object"
   , "functions"
+  , "generics-rep"
   , "identity"
   , "integers"
   , "lists"

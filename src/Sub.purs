@@ -87,11 +87,11 @@ data ActiveSub
 {--   eq (Batch subs1) (Batch subs2) = subs1 == subs2 --}
 {--   eq _ _ = false --}
 instance semigroupSub :: Semigroup (Sub a) where
-  append s1 s2 = case s1, s2 of
-    Sub _, Sub _ -> Batch [ s1, s2 ]
-    Sub _, Batch subs -> Batch $ Array.snoc subs s1
-    Batch subs, Sub _ -> Batch $ Array.snoc subs s2
+  append = case _, _ of
     Batch subs1, Batch subs2 -> Batch $ subs1 <> subs2
+    Batch subs, sub -> Batch $ Array.snoc subs sub
+    sub, Batch subs -> Batch $ Array.snoc subs sub
+    sub1, sub2 -> Batch [ sub1, sub2 ]
 
 instance monoidSub :: Monoid (Sub a) where
   mempty = Batch []

@@ -1,13 +1,17 @@
 module Attribute where
 
 import Prelude
+import Data.Array as Array
+import Data.Batchable (Batchable(..))
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Uncurried
 import Foreign.Object as FO
+import Sub (Callback, Sub, SubBuilder, SubImpl)
 import Sub as Sub
 import Unsafe.Coerce (unsafeCoerce)
-import VirtualDom (Attribute(..))
+import VirtualDom (Attribute, SingleAttribute(..))
+import Web.DOM.Element (Element, setAttribute, tagName)
 import Web.DOM.Element as Element
 import Web.Event.Event (EventType(..))
 import Web.Event.Event as Event
@@ -15,7 +19,7 @@ import Web.Event.EventTarget (EventListener, addEventListener, eventListener, re
 import Web.Event.Internal.Types (Event)
 
 class_ :: ∀ msg. String -> Attribute msg
-class_ = Str "class"
+class_ = Single <<< Str "class"
 
 onClick :: ∀ msg. msg -> Attribute msg
 onClick = on_ "click"
@@ -37,41 +41,43 @@ on = on' identity
 
 on_ :: ∀ msg. String -> msg -> Attribute msg
 on_ eventName msg =
-  Listener \position element ->
-    let
-      eventTarget = Element.toEventTarget element
+  Single
+    $ Listener \position element ->
+        let
+          eventTarget = Element.toEventTarget element
 
-      event = EventType eventName
-    in
-      Sub.new
-        (eventName <> ":" <> position)
-        $ ( pure
-              $ \target msg' ->
-                  mkEffectFn1 \send -> do
-                    eventL <- eventListener \_ -> runEffectFn1 send msg'
-                    addEventListener event eventL false target
-                    pure $ removeEventListener event eventL false target
-          )
-        <*> pure eventTarget
-        <*> pure msg
+          event = EventType eventName
+        in
+          Sub.new
+            (eventName <> ":" <> position)
+            $ ( pure
+                  $ \target msg' ->
+                      mkEffectFn1 \send -> do
+                        eventL <- eventListener \_ -> runEffectFn1 send msg'
+                        addEventListener event eventL false target
+                        pure $ removeEventListener event eventL false target
+              )
+            <*> pure eventTarget
+            <*> pure msg
 
 on' :: ∀ a msg. (Event -> a) -> String -> (a -> msg) -> Attribute msg
 on' eventToA eventName aToMsg =
-  Listener \position element ->
-    let
-      eventTarget = Element.toEventTarget element
+  Single
+    $ Listener \position element ->
+        let
+          eventTarget = Element.toEventTarget element
 
-      event = EventType eventName
-    in
-      Sub.new
-        (eventName <> ":" <> position)
-        ( ( pure
-              $ \target ->
-                  mkEffectFn1 \send -> do
-                    eventL <- eventListener $ runEffectFn1 send <<< eventToA
-                    addEventListener event eventL false target
-                    pure $ removeEventListener event eventL false target
-          )
-            <*> pure eventTarget
-        )
-        <#> aToMsg
+          event = EventType eventName
+        in
+          Sub.new
+            (eventName <> ":" <> position)
+            ( ( pure
+                  $ \target ->
+                      mkEffectFn1 \send -> do
+                        eventL <- eventListener $ runEffectFn1 send <<< eventToA
+                        addEventListener event eventL false target
+                        pure $ removeEventListener event eventL false target
+              )
+                <*> pure eventTarget
+            )
+            <#> aToMsg
