@@ -23,7 +23,7 @@ import Effect.Ref as Ref
 import Effect.Uncurried
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign.Object (Object)
-import Sub (Callback, Sub, SubBuilder, SubImpl)
+import Sub (Callback, Sub, SubBuilder)
 import Sub as Sub
 import Unsafe.Coerce (unsafeCoerce)
 import Web.DOM.Document (Document, createElement, createTextNode)
@@ -60,7 +60,7 @@ type VNode msg
 
 data SingleAttribute msg
   = Str String String
-  | Listener (String -> Element -> Sub msg)
+  | Listener (Element -> Sub msg)
 
 instance eqSingleAttribute :: Eq (SingleAttribute a) where
   eq (Str p1 v1) (Str p2 v2) = p1 == v1 && p2 == v2

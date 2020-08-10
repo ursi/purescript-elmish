@@ -14,7 +14,7 @@ createVNode tag attributes children =
     $ VNode
         { tag
         , attributes
-        , children
+        , children: Batch children
         , node: Nothing
         }
 

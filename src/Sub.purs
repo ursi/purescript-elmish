@@ -2,9 +2,10 @@ module Sub
   ( ActiveSub
   , Callback
   , Canceler
-  , Sub
+  , Presub
+  , SingleSub
+  , Sub(..)
   , SubBuilder
-  , SubImpl
   , new
   , something
   ) where
@@ -12,8 +13,12 @@ module Sub
 import Prelude
 import JSEq (jseq)
 import Data.Array as Array
+import Data.Batchable (Batchable(..))
+import Data.Batchable as Batchable
 import Data.Maybe (Maybe(..))
+import Data.Newtype (class Newtype, unwrap, wrap)
 import Data.Traversable (traverse)
+import Data.Tuple.Nested (type (/\), (/\))
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import Partial.Unsafe (unsafePartial)
@@ -28,22 +33,25 @@ toJSValue :: ∀ a. a -> JSValue
 toJSValue = unsafeCoerce
 
 type Callback a
-  = EffectFn1 a Unit
+  = a -> Effect Unit
 
 type Canceler
   = Effect Unit
 
-type SubImpl a
-  = (EffectFn1 (Callback a) Canceler)
+type ForeignSub a
+  = (EffectFn1 (EffectFn1 a Unit) Canceler)
 
-mapSubImpl :: ∀ a b. (a -> b) -> SubImpl a -> SubImpl b
-mapSubImpl f s =
-  mkEffectFn1 \callback ->
-    runEffectFn1 s $ mkEffectFn1 \a -> runEffectFn1 callback $ f a
+type Presub a
+  = Callback a -> Effect Canceler
+
+mapPresub :: ∀ a b. (a -> b) -> Presub a -> Presub b
+mapPresub f p callback = p $ callback <<< f
+
+fromForeign :: ∀ a. ForeignSub a -> Presub a
+fromForeign f callback = runEffectFn1 f (mkEffectFn1 callback)
 
 type SubProperties
-  = ( id :: String
-    , args :: Array JSValue
+  = ( args :: Array JSValue
     , maps :: Array JSValue
     )
 
@@ -69,110 +77,90 @@ instance applySubBuilder :: Apply SubBuilder where
 instance applicativeSubBuilder :: Applicative SubBuilder where
   pure a =
     SubBuilder
-      { id: ""
-      , args: []
+      { args: []
       , maps: []
       , sub: a
       }
 
-data Sub a
-  = Sub (SubBuilder (SubImpl a))
-  | Batch (Array (Sub a))
+data SingleSub a
+  = SingleSub JSValue (SubBuilder (Presub a))
 
-data ActiveSub
-  = ActiveSub { canceler :: Effect Unit | SubProperties }
+instance functorSingleSub :: Functor SingleSub where
+  map f (SingleSub impl sb) = SingleSub impl (mapPresub f <$> sb)
 
-{-- instance eqSub :: Eq (Sub a) where --}
-{--   eq (Sub (SubBuilder s1)) (Sub (SubBuilder s2)) = s1.id == s2.id && s1.args == s2.args --}
-{--   eq (Batch subs1) (Batch subs2) = subs1 == subs2 --}
-{--   eq _ _ = false --}
-instance semigroupSub :: Semigroup (Sub a) where
-  append = case _, _ of
-    Batch subs1, Batch subs2 -> Batch $ subs1 <> subs2
-    Batch subs, sub -> Batch $ Array.snoc subs sub
-    sub, Batch subs -> Batch $ Array.snoc subs sub
-    sub1, sub2 -> Batch [ sub1, sub2 ]
-
-instance monoidSub :: Monoid (Sub a) where
-  mempty = Batch []
+newtype Sub a
+  = Sub (Batchable (SingleSub a))
 
 instance functorSub :: Functor Sub where
-  map f sub_ = case sub_ of
-    Sub (SubBuilder s@{ maps, sub }) ->
-      Sub $ SubBuilder
-        $ s
-            { maps = Array.snoc maps (unsafeCoerce f)
-            , sub = mapSubImpl f sub
-            }
-    Batch subs -> Batch $ map f <$> subs
+  map f (Sub s) = Sub $ map f <$> s
 
--- | The `String` is the ID of your subscription. It is used to test equality between new and current subscriptions, and, therefore, must be globally unique.
-new :: ∀ a. String -> SubBuilder (SubImpl a) -> Sub a
-new id (SubBuilder sb) = Sub $ SubBuilder $ sb { id = id }
+derive newtype instance semigroupSub :: Semigroup (Sub a)
 
-flatten :: ∀ a. Sub a -> Array (SubBuilder (SubImpl a))
-flatten = case _ of
-  Sub ss -> [ ss ]
-  Batch subs -> join $ flatten <$> subs
+derive newtype instance monoidSub :: Monoid (Sub a)
+
+new :: ∀ impl a. impl -> SubBuilder (Presub a) -> Sub a
+new impl sb = Sub $ Single $ SingleSub (toJSValue impl) sb
+
+data ActiveSub
+  = ActiveSub JSValue { canceler :: Effect Unit | SubProperties }
 
 something :: ∀ a. Array ActiveSub -> Sub a -> Callback a -> Effect (Array ActiveSub)
-something activeSubs newSub callback =
+something activeSubs (Sub newSub) callback =
   go
     activeSubs
-    (flatten newSub)
+    (Batchable.flatten newSub)
     { keep: [], cancel: mempty }
   where
   go ::
     Array ActiveSub ->
-    Array (SubBuilder (SubImpl a)) ->
+    Array (SingleSub a) ->
     { keep :: Array ActiveSub
     , cancel :: Effect Unit
     } ->
     Effect (Array ActiveSub)
   go current newSubs acc = case Array.uncons current of
-    Just { head, tail } -> case head of
-      ActiveSub { id: "", canceler } ->
+    Just { head, tail } -> case Array.findIndex (sameAsActive head) newSubs of
+      Just i ->
+        go
+          tail
+          (unsafePartial unsafeDeleteAt i newSubs)
+          acc { keep = Array.snoc acc.keep head }
+      Nothing ->
         go
           tail
           newSubs
-          $ acc { cancel = acc.cancel *> canceler }
-      ActiveSub { canceler } -> case Array.findIndex (sameAsActive head) newSubs of
-        Just i ->
-          go
-            tail
-            (unsafePartial unsafeDeleteAt i newSubs)
-            acc { keep = Array.snoc acc.keep head }
-        Nothing ->
-          go
-            tail
-            newSubs
-            $ acc { cancel = acc.cancel *> canceler }
+          $ acc { cancel = acc.cancel *> getCanceler head }
     Nothing -> do
       acc.cancel
       newAcitveSubs <- traverse (launch callback) newSubs
       pure $ acc.keep <> newAcitveSubs
 
-sameAsActive :: ∀ a. ActiveSub -> SubBuilder (SubImpl a) -> Boolean
-sameAsActive (ActiveSub a) (SubBuilder s) = a.id == s.id && a.args == s.args && a.maps == s.maps
+sameAsActive :: ∀ a. ActiveSub -> SingleSub a -> Boolean
+sameAsActive (ActiveSub impl1 a) (SingleSub impl2 (SubBuilder s)) = impl1 == impl2 && a.args == s.args && a.maps == s.maps
 
 unsafeDeleteAt :: Partial => ∀ a. Int -> Array a -> Array a
 unsafeDeleteAt index array = case Array.deleteAt index array of
   Just a -> a
 
-getCanceler :: ActiveSub -> Effect Unit
-getCanceler (ActiveSub { canceler }) = canceler
+getCanceler :: ActiveSub -> Canceler
+getCanceler (ActiveSub _ { canceler }) = canceler
 
-launch :: ∀ a. Callback a -> SubBuilder (SubImpl a) -> Effect ActiveSub
-launch callback (SubBuilder { id, args, maps, sub }) = do
-  canceler <- runEffectFn1 sub callback
-  pure $ ActiveSub { id, args, maps, canceler }
+launch :: ∀ a. Callback a -> SingleSub a -> Effect ActiveSub
+launch callback (SingleSub impl (SubBuilder { args, maps, sub })) = do
+  canceler <- sub callback
+  pure $ ActiveSub impl { args, maps, canceler }
 
-foreign import everyImpl :: Number -> SubImpl Number
+foreign import everyImpl :: Number -> ForeignSub Number
 
-every :: ∀ a. Number -> (Number -> a) -> Sub a
-every ms toA = toA <$> (new "every" $ pure everyImpl <*> pure ms)
+{-- every :: ∀ a. Number -> (Number -> a) -> Sub a --}
+{-- every ms toA = --}
+{--   toA --}
+{--     <$> ( new everyImpl --}
+{--           $ pure everyImpl --}
+{--           <*> pure ms --}
+{--           <#> fromForeign --}
+{--       ) --}
+foreign import every_Impl :: ∀ a. Number -> a -> ForeignSub a
 
-foreign import every_Impl :: ∀ a. Number -> a -> SubImpl a
-
-every_ :: ∀ a. Number -> a -> Sub a
-every_ ms a = new "every_" $ pure $ every_Impl ms a
+{-- every_ :: ∀ a. Number -> a -> Sub a --}
+{-- every_ ms a = new every_Impl $ pure every_Impl <*> pure ms <*> pure a <#> fromForeign --}
