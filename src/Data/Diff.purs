@@ -9,6 +9,7 @@ import Prelude
 import Data.Array as Array
 import Data.Maybe (Maybe(..))
 import Data.Witherable (class Witherable, withered)
+import Debug as Debug
 
 data Diff a b
   = Left a
@@ -32,6 +33,9 @@ diff2 ::
   f (g b) ->
   m (f (g c))
 diff2 f fga fgb =
+  {-- let --}
+  {--   _ = Debug.debugger unit --}
+  {-- in --}
   diff
     ( \x ->
         Just

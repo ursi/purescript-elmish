@@ -13,7 +13,7 @@ import Data.FunctorWithIndex (class FunctorWithIndex, mapWithIndex)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
 import Data.List (List(..), (:))
-import Data.Maybe (Maybe(..))
+import Data.Maybe (Maybe(..), fromMaybe)
 import Data.Traversable (class Traversable, traverseDefault, sequence)
 import Data.TraversableWithIndex (class TraversableWithIndex, traverseWithIndexDefault)
 import Data.Tuple (Tuple(..), uncurry)
@@ -114,14 +114,23 @@ instance witherableBatchable :: Witherable Batchable where
 instance diffableBatchable :: Diffable Batchable where
   diff f b1 b2 = case b1, b2 of
     Single s1, Single s2 -> withered $ Single $ f $ Diff.Both s1 s2
-    Single _, Batch bs -> Batch <$> diff2 f [] bs
-    Batch _, Single s -> withered $ Single $ f $ Diff.Right s
+    Single s, Batch [] -> withered $ Single $ f $ Diff.Left s
+    Batch [], Single s -> withered $ Single $ f $ Diff.Right s
+    Single _, Batch bs -> Batch <$> diff2 f [ b1 ] bs
+    Batch bs, Single _ -> diff2 f bs [ b2 ] <#> fromMaybe mempty <<< flip Array.index 0
     Batch bs1, Batch bs2 -> Batch <$> diff2 f bs1 bs2
 
 flatten :: ∀ a. Batchable a -> Array a
 flatten = case _ of
   Single a -> [ a ]
-  Batch b -> join $ flatten <$> b
+  Batch bs -> go [] bs
+  where
+  go :: Array a -> Array (Batchable a) -> Array a
+  go acc bs = case Array.uncons bs of
+    Just { head, tail } -> case head of
+      Single a -> go (Array.snoc acc a) tail
+      Batch bs' -> go (go acc bs') tail
+    Nothing -> acc
 
 joinBatchable :: ∀ a. Batchable (Batchable a) -> Batchable a
 joinBatchable = case _ of

@@ -6,8 +6,7 @@ import Control.Monad.Trans.Class (lift)
 import Control.Monad.Writer.Trans (WriterT)
 import Control.Monad.Writer.Class (tell)
 import Effect (Effect)
-import Data.Argonaut.Core (Json)
-import Data.Argonaut.Core as A
+import Data.Array ((..))
 import Data.Foldable (fold)
 import Effect.Console (log, logShow)
 import Effect.Class (liftEffect)
@@ -48,6 +47,6 @@ update model msg =
 view :: Model -> Array (Html Msg)
 view model =
   [ H.button [ A.onClick Increment ] [ H.text "+" ]
-  , H.div [] [ H.text $ show model ]
+  , fold $ 0 .. model <#> \i -> H.div [] [ H.text $ show i ]
   , H.button [ A.onClick Decrement ] [ H.text "-" ]
   ]

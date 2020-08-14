@@ -102,14 +102,44 @@ app ::
   Program flags model msg
 app init =
   mkEffectFn1 \flags -> do
+    initialModel /\ cmd <- runWriterT $ init.init flags
+    modelRef <- Ref.new initialModel
+    --go activeSubsRef vdomRef $ init.init flags
+    newVDom /\ domSubs <- VDom.render mempty $ Batch $ init.view initialModel
+    vdomRef <- Ref.new newVDom
     activeSubsRef <- Ref.new []
-    vdomRef <- Ref.new mempty
-    go activeSubsRef vdomRef $ init.init flags
+    newActiveSubs <-
+      Sub.something
+        []
+        (domSubs <> init.subscriptions initialModel)
+        (sendMsg' modelRef vdomRef activeSubsRef)
+    _ <- pure $ Debug.log newActiveSubs
+    Ref.write newActiveSubs activeSubsRef
+    unwrap cmd $ sendMsg' modelRef vdomRef activeSubsRef
   where
+  sendMsg' :: Ref model -> Ref (VNode msg) -> Ref (Array ActiveSub) -> msg -> Effect Unit
+  sendMsg' modelRef vdomRef activeSubsRef msg = do
+    currentModel <- Ref.read modelRef
+    newModel /\ cmd <- runWriterT $ init.update currentModel msg
+    Ref.write newModel modelRef
+    vdom <- Ref.read vdomRef
+    newVDom /\ domSubs <- VDom.render vdom $ Batch $ init.view newModel
+    Ref.write newVDom vdomRef
+    activeSubs <- Ref.read activeSubsRef
+    newActiveSubs <-
+      Sub.something
+        activeSubs
+        (domSubs <> init.subscriptions newModel)
+        (sendMsg' modelRef vdomRef activeSubsRef)
+    _ <- pure $ Debug.log newActiveSubs
+    Ref.write newActiveSubs activeSubsRef
+    unwrap cmd $ sendMsg' modelRef vdomRef activeSubsRef
+
   go :: Ref (Array ActiveSub) -> Ref (VNode msg) -> Shorten msg model -> Effect Unit
   go activeSubsRef vdomRef w = do
     newModel /\ cmd <- runWriterT w
     let
+      sendMsg :: msg -> Effect Unit
       sendMsg = go activeSubsRef vdomRef <<< init.update newModel
     vdom <- Ref.read vdomRef
     newVDom /\ domSubs <- VDom.render vdom $ Batch $ init.view newModel

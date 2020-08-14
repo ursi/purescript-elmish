@@ -11,7 +11,7 @@ type Html msg
 createVNode :: ∀ msg. String -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 createVNode tag attributes children =
   Single
-    $ VNode
+    $ VElement
         { tag
         , attributes: Batch attributes
         , children: Batch children

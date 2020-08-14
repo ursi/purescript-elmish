@@ -20,6 +20,7 @@ import Data.Tuple.Nested (type (/\), (/\))
 import Debug as Debug
 import Effect (Effect)
 import Effect.Console (log)
+import Effect.Exception (throw)
 import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Effect.Uncurried
@@ -29,9 +30,9 @@ import Sub (Callback, Sub, SubBuilder)
 import Sub as Sub
 import Unsafe.Coerce (unsafeCoerce)
 import Web.DOM.Document (Document, createElement, createTextNode)
-import Web.DOM.Element (Element, setAttribute, tagName)
+import Web.DOM.Element (Element, removeAttribute, setAttribute, tagName)
 import Web.DOM.Element as Element
-import Web.DOM.Node (Node, appendChild, firstChild, parentNode, removeChild)
+import Web.DOM.Node (Node, appendChild, firstChild, parentNode, removeChild, replaceChild)
 import Web.DOM.Text as Text
 import Web.HTML as HTML
 import Web.HTML.Window as Window
@@ -46,7 +47,7 @@ todoTag :: ∀ a. String -> a
 todoTag = unsafeCoerce
 
 data SingleVNode msg
-  = VNode
+  = VElement
     { tag :: String
     , attributes :: Attribute msg
     , children :: VNode msg
@@ -80,7 +81,7 @@ render oldVNode newVNode = do
     document = HTMLDocument.toDocument htmlDocument
   mbodyNode <- map HTMLElement.toNode <$> HTMLDocument.body htmlDocument
   maybe
-    (pure $ mempty /\ mempty)
+    (throw "body not found")
     (\body -> runWriterT $ vDomDiff document body oldVNode newVNode)
     mbodyNode
 
@@ -94,35 +95,94 @@ vDomDiff doc parent vn1 vn2 =
         Diff.Right sn -> do
           singleNode <- addNode doc parent sn
           pure $ Just singleNode
-        Diff.Both sn1 sn2 -> do
-          lift $ removeNode sn1
-          node <- addNode doc parent sn2
-          pure $ Just node
+        Diff.Both sn1 sn2 ->
+          let
+            replace :: WriterT (Sub msg) Effect (Maybe (SingleVNode msg))
+            replace = do
+              -- look into using replaceNode
+              lift $ removeNode sn1
+              node <- addNode doc parent sn2
+              pure $ Just node
+          in
+            case sn1, sn2 of
+              VElement r1, VElement r2 ->
+                if r1.tag == r2.tag then
+                  fromMaybe replace do
+                    node <- r1.node
+                    element <- Element.fromNode node
+                    pure do
+                      attributes <-
+                        diff
+                          ( case _ of
+                              Diff.Left sa -> case sa of
+                                Str prop _ -> do
+                                  lift $ removeAttribute prop element
+                                  pure Nothing
+                                _ -> pure Nothing
+                              Diff.Right sa -> case sa of
+                                Str prop value -> do
+                                  lift $ setAttribute prop value element
+                                  pure $ Just sa
+                                Listener toSub -> do
+                                  tell $ toSub element
+                                  pure $ Just sa
+                              Diff.Both sa1 sa2 -> case sa1, sa2 of
+                                Str prop1 value1, Str prop2 value2 ->
+                                  if prop1 == prop2 then
+                                    if value1 == value2 then
+                                      pure $ Just sa1
+                                    else do
+                                      lift $ setAttribute prop1 value2 element
+                                      pure $ Just sa2
+                                  else do
+                                    lift $ removeAttribute prop1 element
+                                    lift $ setAttribute prop2 value2 element
+                                    pure $ Just sa2
+                                Listener _, Str prop value -> do
+                                  lift $ setAttribute prop value element
+                                  pure $ Just sa2
+                                _, Listener toSub -> do
+                                  tell $ toSub element
+                                  pure $ Just sa2
+                          )
+                          r1.attributes
+                          r2.attributes
+                      children <-
+                        {-- diff --}
+                        {--   ( case _ of --}
+                        {--       Diff.Left sn -> do --}
+                        {--         _ <- lift $ removeChild node parent --}
+                        {--         pure Nothing --}
+                        {--       Diff.Right sn -> do --}
+                        {--         singleNode <- addNode doc parent sn --}
+                        {--         pure $ Just singleNode --}
+                        {--       Diff.Both sn1' sn2' -> case sn1', sn2' of --}
+                        {--         VNode r1', VNode r2' -> todo --}
+                        {--         VText r1', VText r2' -> todo --}
+                        {--         _, _ -> todo --}
+                        {--   ) --}
+                        vDomDiff doc node r1.children r2.children
+                      pure $ Just
+                        $ VElement
+                            r1
+                              { attributes = attributes
+                              , children = children
+                              }
+                else
+                  replace
+              VText r1, VText r2 ->
+                if r1.text == r2.text then
+                  pure $ Just sn1
+                else
+                  replace
+              _, _ -> replace
     )
     vn1
-    vn2 -- Batchable (WriterT (Sub msg) Effect (SingleVNode msg))
+    vn2
 
--- WriterT (Sub msg) Effect (Batchable (SingleVNode msg))
--- WriterT (Sub msg) Effect (VNode msg)
-{-diff' :: ∀ msg. Document -> Node -> VNode msg -> VNode msg -> WriterT (Sub msg) Effect (VNode msg)
-diff' doc parent = go mempty
-  where
-  go :: VNode msg -> VNode msg -> VNode msg -> WriterT (Sub msg) Effect (VNode msg)
-  go acc oldNode newNode = case oldNode, newNode of
-    Batch oldNodes, Batch newNodes -> case Array.uncons oldNodes, Array.uncons newNodes of
-      Just o, Just n -> todoTag "check if old is the same as the new"
-      Just _, Nothing -> do
-        --lift $ traverse_ removeNode $ getNodes oldNodes
-        pure acc
-      Nothing, Just _ -> do
-        n <- traverse (addNode doc parent) newNodes
-        pure $ acc <> fold n
-      Nothing, Nothing -> pure acc
-    Single _, Single _ -> todo
-    _, _ -> todo-}
 addNode :: ∀ msg. Document -> Node -> SingleVNode msg -> WriterT (Sub msg) Effect (SingleVNode msg)
 addNode doc parent = case _ of
-  VNode { tag, attributes, children } -> do
+  VElement { tag, attributes, children } -> do
     element <- lift $ createElement tag doc
     let
       elementNode = Element.toNode element
@@ -130,7 +190,7 @@ addNode doc parent = case _ of
     tell =<< (lift $ setAttributes attributes element)
     _ <- lift $ appendChild elementNode parent
     pure
-      $ VNode
+      $ VElement
           { tag
           , attributes
           , children: childNodes
@@ -141,51 +201,10 @@ addNode doc parent = case _ of
     _ <- lift $ appendChild textNode parent
     pure (VText { text, node: Just textNode })
 
-{-
-addNode :: ∀ msg. Document -> Node -> VNode msg -> WriterT (Sub msg) Effect (VNode msg)
-addNode doc parent = traverse go
-  where
-  go :: SingleVNode msg -> WriterT (Sub msg) Effect (SingleVNode msg)
-  go = case _ of
-    VNode { tag, attributes, children } -> do
-      element <- lift $ createElement tag doc
-      let
-        elementNode = Element.toNode element
-      childNodes <- traverse go children
-      tell =<< (lift $ setAttributes attributes element)
-      _ <- lift $ appendChild elementNode parent
-      pure
-        $ VNode
-            { tag
-            , attributes
-            , children: childNodes
-            , node: Just elementNode
-            }
-    VText { text } -> do
-      lift
-        $ Text.toNode
-        <$> createTextNode text doc
-        <#> (\node -> VText { text, node: Just node })
-
-
-getNodes :: ∀ msg. Array (VNode msg) -> Array Node
-getNodes = Array.catMaybes <<< go
-  where
-  go :: Array (VNode msg) -> Array (Maybe Node)
-  go =
-    ( _
-        >>= case _ of
-            Single vnode -> case vnode of
-              VNode r -> [ r.node ]
-              VText r -> [ r.node ]
-            Batch vnodes -> go vnodes
-    )
-
--}
 removeNode :: ∀ msg. SingleVNode msg -> Effect Unit
 removeNode =
   case _ of
-    VNode r -> r.node
+    VElement r -> r.node
     VText r -> r.node
     >>> ifJust
         ( \node ->
@@ -196,55 +215,6 @@ removeNode =
 ifJust :: ∀ a b. (a -> Effect b) -> Maybe a -> Effect Unit
 ifJust f = maybe (pure unit) (f >>> (_ *> pure unit))
 
-{-
-removeAllChildren :: Node -> Effect Unit
-removeAllChildren node =
-  firstChild node
-    >>= case _ of
-        Just child -> do
-          _ <- removeChild child node
-          removeAllChildren node
-        Nothing -> pure unit
-
-renderMaybeT :: ∀ msg. Callback msg -> Array (VNode msg) -> Array (VNode msg) -> Effect Unit
-renderMaybeT callback oldVNodes newVNodes = do
-  result <-
-    runMaybeT do
-      htmlDocument <- lift $ HTML.window >>= Window.document
-      let
-        document :: Document
-        document = HTMLDocument.toDocument htmlDocument
-      realNodes /\ sub <- lift $ runWriterT $ traverseWithIndex (\i -> toRealNode (pure i) document) newVNodes
-      _ <- lift $ Sub.something [] sub callback
-      body <- MaybeT $ map HTMLElement.toNode <$> HTMLDocument.body htmlDocument
-      lift $ appendChildren realNodes body
-  pure $ fromMaybe unit result
-
-toRealNode :: ∀ msg. Node -> Position -> Document -> VNode msg -> WriterT (Sub msg) Effect (VNode msg)
-toRealNode parent position doc = case _ of
-  Single vnode -> case vnode of
-    VNode { tag, attributes, children } -> do
-      element <- lift $ createElement tag doc
-      let
-        elementNode = Element.toNode element
-      childNodes <- traverseWithIndex (\i -> toRealNode elementNode (i : position) doc) children
-      tell =<< (lift $ setAttributes position attributes element)
-      -- lift $ appendChildren childNodes elementNode 
-      pure
-        $ Single
-        $ VNode
-            { tag
-            , attributes
-            , children: childNodes
-            , node: Just elementNode
-            }
-    VText { text } -> do
-      lift
-        $ Text.toNode
-        <$> createTextNode text doc
-        <#> (\node -> Single $ VText { text, node: Just node })
-  Batch vnodes -> todo
--}
 setAttributes :: ∀ msg. Attribute msg -> Element -> Effect (Sub msg)
 setAttributes attribute element = foldM go mempty attribute
   where
@@ -254,19 +224,3 @@ setAttributes attribute element = foldM go mempty attribute
       setAttribute prop value element
       pure acc
     Listener toSub -> pure $ acc <> toSub element
-
-appendChildren :: Array Node -> Node -> Effect Unit
-appendChildren children node = case Array.uncons children of
-  Just { head, tail } -> do
-    _ <- appendChild head node
-    appendChildren tail node
-  Nothing -> pure unit
-
-subIdRef :: Ref Int
-subIdRef = unsafePerformEffect $ Ref.new 0
-
-newSubId :: Effect String
-newSubId = do
-  currentId <- Ref.read subIdRef
-  Ref.write (currentId + 1) subIdRef
-  pure $ "dom sub " <> show currentId
