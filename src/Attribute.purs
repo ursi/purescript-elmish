@@ -8,7 +8,7 @@ import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Uncurried
 import Foreign.Object as FO
-import Sub (Callback, Sub(..), SubBuilder, Presub)
+import Sub (Callback, Sub(..), SubBuilder, Presub, (<@@>))
 import Sub as Sub
 import Unsafe.Coerce (unsafeCoerce)
 import VirtualDom (Attribute, SingleAttribute(..))
@@ -43,11 +43,10 @@ on_ :: ∀ msg. String -> msg -> Attribute msg
 on_ eventName msg =
   Single
     $ Listener \element ->
-        Sub.new on_RefEq
-          $ lift3 on_RefEq
-              (pure msg)
-              (pure element)
-              (pure eventName)
+        Sub.new $ Sub.newBuilder on_RefEq
+          <@@> msg
+          <@@> element
+          <@@> eventName
 
 makeListener :: ∀ msg. (Callback msg -> Callback Event) -> Element -> String -> Presub msg
 makeListener toEventCallback element eventName send = do
@@ -67,11 +66,10 @@ on' toA eventName toMsg =
   Single
     $ Listener \element ->
         toMsg
-          <$> ( Sub.new on'RefEq
-                $ lift3 on'RefEq
-                    (pure toA)
-                    (pure element)
-                    (pure eventName)
+          <$> ( Sub.new $ Sub.newBuilder on'RefEq
+                <@@> toA
+                <@@> element
+                <@@> eventName
             )
 
 on'RefEq :: ∀ a. (Event -> a) -> Element -> String -> Presub a

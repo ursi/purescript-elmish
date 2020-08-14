@@ -6,6 +6,7 @@ import Control.Monad.Writer.Trans (WriterT, runWriterT)
 import Control.Monad.State (State, evalState)
 import Control.Monad.State.Trans (StateT(..), evalStateT, get)
 import Control.Monad.Trans.Class (lift)
+import Data.Batchable (Batchable(..))
 import Data.Either (Either)
 import Data.Newtype (class Newtype, unwrap)
 import Data.Tuple.Nested (type (/\), (/\))
@@ -22,6 +23,7 @@ import Sub as Sub
 import Html (Html)
 import Html as H
 import Attribute as A
+import VirtualDom (VNode)
 import VirtualDom as VDom
 
 newtype Cmd msg
@@ -86,7 +88,7 @@ worker init =
       Sub.something
         activeSubs
         (init.subscriptions newModel)
-        (mkEffectFn1 sendMsg)
+        sendMsg
     Ref.write newActiveSubs activeSubsRef
     unwrap cmd sendMsg
 
@@ -101,20 +103,23 @@ app ::
 app init =
   mkEffectFn1 \flags -> do
     activeSubsRef <- Ref.new []
-    go activeSubsRef $ init.init flags
+    vdomRef <- Ref.new mempty
+    go activeSubsRef vdomRef $ init.init flags
   where
-  go :: Ref (Array ActiveSub) -> Shorten msg model -> Effect Unit
-  go activeSubsRef w = do
+  go :: Ref (Array ActiveSub) -> Ref (VNode msg) -> Shorten msg model -> Effect Unit
+  go activeSubsRef vdomRef w = do
     newModel /\ cmd <- runWriterT w
     let
-      sendMsg = go activeSubsRef <<< init.update newModel
-    domSubs <- VDom.render [] $ init.view newModel
+      sendMsg = go activeSubsRef vdomRef <<< init.update newModel
+    vdom <- Ref.read vdomRef
+    newVDom /\ domSubs <- VDom.render vdom $ Batch $ init.view newModel
     activeSubs <- Ref.read activeSubsRef
     newActiveSubs <-
       Sub.something
         activeSubs
         (domSubs <> init.subscriptions newModel)
-        (mkEffectFn1 sendMsg)
+        sendMsg
     _ <- pure $ Debug.log newActiveSubs
     Ref.write newActiveSubs activeSubsRef
+    Ref.write newVDom vdomRef
     unwrap cmd sendMsg

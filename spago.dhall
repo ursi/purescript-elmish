@@ -8,6 +8,7 @@
   , "debug"
   , "effect"
   , "either"
+  , "filterable"
   , "foldable-traversable"
   , "foreign-object"
   , "functions"

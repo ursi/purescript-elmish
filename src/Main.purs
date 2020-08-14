@@ -16,7 +16,7 @@ import Html as H
 import Platform (Cmd, Program)
 import Platform as Platform
 import Task
-import Sub (Sub(..), SubBuilder, SubImpl)
+import Sub (Sub(..), SubBuilder)
 import Sub as Sub
 import VirtualDom
 

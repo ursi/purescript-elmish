@@ -7,12 +7,14 @@ import Data.Argonaut (Json, (.:))
 import Data.Argonaut as A
 import Data.Array as Array
 import Data.Batchable (Batchable(..))
+import Data.Diff (diff)
+import Data.Diff as Diff
 import Data.Either (Either(..))
 import Data.Either.Nested (type (\/))
 import Data.List (List, (:))
 import Data.Maybe (Maybe(..), fromMaybe, maybe)
-import Data.Foldable (intercalate)
-import Data.Traversable (traverse, traverse_)
+import Data.Foldable (fold, foldM, intercalate)
+import Data.Traversable (sequence, traverse, traverse_)
 import Data.TraversableWithIndex (traverseWithIndex)
 import Data.Tuple.Nested (type (/\), (/\))
 import Debug as Debug
@@ -46,8 +48,8 @@ todoTag = unsafeCoerce
 data SingleVNode msg
   = VNode
     { tag :: String
-    , attributes :: Array (Attribute msg)
-    , children :: (VNode msg)
+    , attributes :: Attribute msg
+    , children :: VNode msg
     , node :: Maybe Node
     }
   | VText
@@ -70,74 +72,102 @@ instance eqSingleAttribute :: Eq (SingleAttribute a) where
 type Attribute msg
   = Batchable (SingleAttribute msg)
 
-type Position
-  = List (List Int)
-
-render :: ∀ msg. Array (VNode msg) -> Array (VNode msg) -> Effect (Sub msg)
-render oldVNodes newVNodes = do
+render :: ∀ msg. VNode msg -> VNode msg -> Effect (VNode msg /\ Sub msg)
+render oldVNode newVNode = do
   htmlDocument <- HTML.window >>= Window.document
   let
     document :: Document
     document = HTMLDocument.toDocument htmlDocument
-  realNodes /\ sub <-
-    runWriterT
-      $ traverseWithIndex
-          ( todoTag
-              """
-              test
-              """
-          )
-          newVNodes
-  {-- _ <- Sub.something [] sub callback --}
-  {-- mbodyNode <- map HTMLElement.toNode <$> HTMLDocument.body htmlDocument --}
-  pure sub
+  mbodyNode <- map HTMLElement.toNode <$> HTMLDocument.body htmlDocument
+  maybe
+    (pure $ mempty /\ mempty)
+    (\body -> runWriterT $ vDomDiff document body oldVNode newVNode)
+    mbodyNode
 
-{-
-diff :: ∀ msg. Document -> Node -> Position -> VNode msg -> VNode msg -> WriterT (Sub msg) Effect (VNode msg)
-diff doc parent position = go 0 []
+vDomDiff :: ∀ msg. Document -> Node -> VNode msg -> VNode msg -> WriterT (Sub msg) Effect (VNode msg)
+vDomDiff doc parent vn1 vn2 =
+  diff
+    ( case _ of
+        Diff.Left sn -> do
+          lift $ removeNode sn
+          pure Nothing
+        Diff.Right sn -> do
+          singleNode <- addNode doc parent sn
+          pure $ Just singleNode
+        Diff.Both sn1 sn2 -> do
+          lift $ removeNode sn1
+          node <- addNode doc parent sn2
+          pure $ Just node
+    )
+    vn1
+    vn2 -- Batchable (WriterT (Sub msg) Effect (SingleVNode msg))
+
+-- WriterT (Sub msg) Effect (Batchable (SingleVNode msg))
+-- WriterT (Sub msg) Effect (VNode msg)
+{-diff' :: ∀ msg. Document -> Node -> VNode msg -> VNode msg -> WriterT (Sub msg) Effect (VNode msg)
+diff' doc parent = go mempty
   where
-  go :: Int -> VNode msg -> VNode msg -> VNode msg -> WriterT (Sub msg) Effect (VNode msg)
-  go index acc oldNode newNode = case oldNode, newNode of
+  go :: VNode msg -> VNode msg -> VNode msg -> WriterT (Sub msg) Effect (VNode msg)
+  go acc oldNode newNode = case oldNode, newNode of
     Batch oldNodes, Batch newNodes -> case Array.uncons oldNodes, Array.uncons newNodes of
       Just o, Just n -> todoTag "check if old is the same as the new"
       Just _, Nothing -> do
-        lift $ traverse_ removeNode $ getNodes oldNodes
+        --lift $ traverse_ removeNode $ getNodes oldNodes
         pure acc
-      Nothing, Just { head, tail } -> do
-        vnode <- addNode doc parent (pure index : position) head
-        go
-          (index + 1)
-          (Array.snoc acc vnode)
-          oldNodes
-          tail
+      Nothing, Just _ -> do
+        n <- traverse (addNode doc parent) newNodes
+        pure $ acc <> fold n
       Nothing, Nothing -> pure acc
     Single _, Single _ -> todo
-    _, _ -> todo
-
-addNode :: ∀ msg. Document -> Node -> Position -> SingleVNode msg -> WriterT (Sub msg) Effect (VNode msg)
-addNode doc parent position = todo --case _ of
-
+    _, _ -> todo-}
+addNode :: ∀ msg. Document -> Node -> SingleVNode msg -> WriterT (Sub msg) Effect (SingleVNode msg)
+addNode doc parent = case _ of
   VNode { tag, attributes, children } -> do
     element <- lift $ createElement tag doc
     let
       elementNode = Element.toNode element
-    childNodes <- traverseWithIndex (\i -> addNode doc elementNode (i : position)) children
-    tell =<< (lift $ setAttributes position attributes element)
+    childNodes <- traverse (addNode doc elementNode) children
+    tell =<< (lift $ setAttributes attributes element)
     _ <- lift $ appendChild elementNode parent
     pure
-      $ Single
       $ VNode
           { tag
           , attributes
-          , children:  childNodes
+          , children: childNodes
           , node: Just elementNode
           }
   VText { text } -> do
-    lift
-      $ Text.toNode
-      <$> createTextNode text doc
-      <#> (\node -> Single $ VText { text, node: Just node })
--}
+    textNode <- lift $ Text.toNode <$> createTextNode text doc
+    _ <- lift $ appendChild textNode parent
+    pure (VText { text, node: Just textNode })
+
+{-
+addNode :: ∀ msg. Document -> Node -> VNode msg -> WriterT (Sub msg) Effect (VNode msg)
+addNode doc parent = traverse go
+  where
+  go :: SingleVNode msg -> WriterT (Sub msg) Effect (SingleVNode msg)
+  go = case _ of
+    VNode { tag, attributes, children } -> do
+      element <- lift $ createElement tag doc
+      let
+        elementNode = Element.toNode element
+      childNodes <- traverse go children
+      tell =<< (lift $ setAttributes attributes element)
+      _ <- lift $ appendChild elementNode parent
+      pure
+        $ VNode
+            { tag
+            , attributes
+            , children: childNodes
+            , node: Just elementNode
+            }
+    VText { text } -> do
+      lift
+        $ Text.toNode
+        <$> createTextNode text doc
+        <#> (\node -> VText { text, node: Just node })
+
+
 getNodes :: ∀ msg. Array (VNode msg) -> Array Node
 getNodes = Array.catMaybes <<< go
   where
@@ -151,14 +181,22 @@ getNodes = Array.catMaybes <<< go
             Batch vnodes -> go vnodes
     )
 
-removeNode :: Node -> Effect Unit
-removeNode node = do
-  parentNode node
-    >>= ifJust (removeChild node)
+-}
+removeNode :: ∀ msg. SingleVNode msg -> Effect Unit
+removeNode =
+  case _ of
+    VNode r -> r.node
+    VText r -> r.node
+    >>> ifJust
+        ( \node ->
+            parentNode node
+              >>= ifJust (removeChild node)
+        )
 
 ifJust :: ∀ a b. (a -> Effect b) -> Maybe a -> Effect Unit
 ifJust f = maybe (pure unit) (f >>> (_ *> pure unit))
 
+{-
 removeAllChildren :: Node -> Effect Unit
 removeAllChildren node =
   firstChild node
@@ -168,7 +206,6 @@ removeAllChildren node =
           removeAllChildren node
         Nothing -> pure unit
 
-{-
 renderMaybeT :: ∀ msg. Callback msg -> Array (VNode msg) -> Array (VNode msg) -> Effect Unit
 renderMaybeT callback oldVNodes newVNodes = do
   result <-
@@ -208,29 +245,15 @@ toRealNode parent position doc = case _ of
         <#> (\node -> Single $ VText { text, node: Just node })
   Batch vnodes -> todo
 -}
-setAttributes :: ∀ msg. Position -> Array (Attribute msg) -> Element -> Effect (Sub msg)
-setAttributes position a element = todo --go 0 a mempty
-
-{-- where --}
-{-- go :: Int -> Array (Attribute msg) -> Sub msg -> Effect (Sub msg) --}
-{-- go attributePosition attributes acc = case Array.uncons attributes of --}
-{--   Just { head, tail } -> case head of --}
-{--     Single sa -> case sa of --}
-{--       Str prop value -> do --}
-{--         setAttribute prop value element --}
-{--         go (attributePosition + 1) tail acc --}
-{--       Listener toSub -> do --}
-{--         go (attributePosition + 1) --}
-{--           tail --}
-{--           $ acc --}
-{--           <> ( toSub --}
-{--                 (subIdPrefix (attributePosition : position)) --}
-{--                 element --}
-{--             ) --}
-{--     Batch _ -> todo --}
-{--   Nothing -> pure acc --}
-subIdPrefix :: Position -> String
-subIdPrefix = intercalate "-" <<< map show
+setAttributes :: ∀ msg. Attribute msg -> Element -> Effect (Sub msg)
+setAttributes attribute element = foldM go mempty attribute
+  where
+  go :: Sub msg -> SingleAttribute msg -> Effect (Sub msg)
+  go acc = case _ of
+    Str prop value -> do
+      setAttribute prop value element
+      pure acc
+    Listener toSub -> pure $ acc <> toSub element
 
 appendChildren :: Array Node -> Node -> Effect Unit
 appendChildren children node = case Array.uncons children of
