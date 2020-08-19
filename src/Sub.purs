@@ -12,17 +12,20 @@ module Sub
   , newBuilder
   , newForeign
   , something
+  , every
+  , every_
   ) where
 
 import Prelude
 import JSEq (jseq)
 import Data.Array as Array
-import Data.Batchable (Batchable(..))
+import Data.Batchable (Batched(..))
 import Data.Batchable as Batchable
 import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype, unwrap, wrap)
 import Data.Traversable (traverse)
 import Data.Tuple.Nested (type (/\), (/\))
+import Debug as Debug
 import Effect (Effect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import Partial.Unsafe (unsafePartial)
@@ -88,7 +91,7 @@ type SingleSub a
   = SubBuilder (Presub a)
 
 newtype Sub a
-  = Sub (Batchable (SingleSub a))
+  = Sub (Batched (SingleSub a))
 
 instance functorSub :: Functor Sub where
   map f (Sub s) =
@@ -120,7 +123,7 @@ something :: ∀ a. Array ActiveSub -> Sub a -> Callback a -> Effect (Array Acti
 something activeSubs (Sub newSub) callback =
   go
     activeSubs
-    (Batchable.flatten newSub)
+    (Array.fromFoldable $ Batchable.flatten newSub)
     { keep: [], cancel: mempty }
   where
   go ::
@@ -138,14 +141,19 @@ something activeSubs (Sub newSub) callback =
           (unsafePartial unsafeDeleteAt i newSubs)
           acc { keep = Array.snoc acc.keep head }
       Nothing ->
-        go
-          tail
-          newSubs
-          $ acc { cancel = acc.cancel *> getCanceler head }
+        let
+          _ = Debug.taggedLog "canceled" head
+        in
+          go
+            tail
+            newSubs
+            $ acc { cancel = acc.cancel *> getCanceler head }
     Nothing -> do
       acc.cancel
       newAcitveSubs <- traverse (launch callback) newSubs
-      pure $ acc.keep <> newAcitveSubs
+      let
+        _ = Debug.taggedLog "kept" acc.keep
+      pure $ (acc.keep <> newAcitveSubs)
 
 sameAsActive :: ∀ a. ActiveSub -> SingleSub a -> Boolean
 sameAsActive (ActiveSub a) (SubBuilder s) = a.impl == s.impl && a.args == s.args && a.maps == s.maps

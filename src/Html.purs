@@ -1,7 +1,7 @@
 module Html where
 
 import Prelude
-import Data.Batchable (Batchable(..))
+import Data.Batchable (Batched(..), batch, flatten)
 import Data.Maybe (Maybe(..))
 import VirtualDom (Attribute, SingleVNode(..), VNode)
 
@@ -13,8 +13,8 @@ createVNode tag attributes children =
   Single
     $ VElement
         { tag
-        , attributes: Batch attributes
-        , children: Batch children
+        , attributes: flatten $ batch attributes
+        , children: flatten $ batch children
         , node: Nothing
         }
 
@@ -35,3 +35,6 @@ option = createVNode "option"
 
 button :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 button = createVNode "button"
+
+input :: ∀ msg. Array (Attribute msg) -> VNode msg
+input = flip (createVNode "input") []

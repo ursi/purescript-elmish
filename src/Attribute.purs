@@ -3,7 +3,7 @@ module Attribute where
 import Prelude
 import Control.Apply (lift3)
 import Data.Array as Array
-import Data.Batchable (Batchable(..))
+import Data.Batchable (Batched(..))
 import Data.Maybe (Maybe(..))
 import Effect (Effect)
 import Effect.Uncurried
@@ -18,6 +18,9 @@ import Web.Event.Event (EventType(..))
 import Web.Event.Event as Event
 import Web.Event.EventTarget (EventTarget, EventListener, addEventListener, eventListener, removeEventListener)
 import Web.Event.Internal.Types (Event)
+
+value :: ∀ msg. String -> Attribute msg
+value = Single <<< Str "value"
 
 class_ :: ∀ msg. String -> Attribute msg
 class_ = Single <<< Str "class"

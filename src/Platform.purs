@@ -6,7 +6,7 @@ import Control.Monad.Writer.Trans (WriterT, runWriterT)
 import Control.Monad.State (State, evalState)
 import Control.Monad.State.Trans (StateT(..), evalStateT, get)
 import Control.Monad.Trans.Class (lift)
-import Data.Batchable (Batchable(..))
+import Data.Batchable (Batched(..), batch, flatten)
 import Data.Either (Either)
 import Data.Newtype (class Newtype, unwrap)
 import Data.Tuple.Nested (type (/\), (/\))
@@ -23,7 +23,7 @@ import Sub as Sub
 import Html (Html)
 import Html as H
 import Attribute as A
-import VirtualDom (VNode)
+import VirtualDom (VDOM)
 import VirtualDom as VDom
 
 newtype Cmd msg
@@ -105,7 +105,7 @@ app init =
     initialModel /\ cmd <- runWriterT $ init.init flags
     modelRef <- Ref.new initialModel
     --go activeSubsRef vdomRef $ init.init flags
-    newVDom /\ domSubs <- VDom.render mempty $ Batch $ init.view initialModel
+    newVDom /\ domSubs <- VDom.render mempty $ flatten $ batch $ init.view initialModel
     vdomRef <- Ref.new newVDom
     activeSubsRef <- Ref.new []
     newActiveSubs <-
@@ -113,17 +113,16 @@ app init =
         []
         (domSubs <> init.subscriptions initialModel)
         (sendMsg' modelRef vdomRef activeSubsRef)
-    _ <- pure $ Debug.log newActiveSubs
     Ref.write newActiveSubs activeSubsRef
     unwrap cmd $ sendMsg' modelRef vdomRef activeSubsRef
   where
-  sendMsg' :: Ref model -> Ref (VNode msg) -> Ref (Array ActiveSub) -> msg -> Effect Unit
+  sendMsg' :: Ref model -> Ref (VDOM msg) -> Ref (Array ActiveSub) -> msg -> Effect Unit
   sendMsg' modelRef vdomRef activeSubsRef msg = do
     currentModel <- Ref.read modelRef
     newModel /\ cmd <- runWriterT $ init.update currentModel msg
     Ref.write newModel modelRef
     vdom <- Ref.read vdomRef
-    newVDom /\ domSubs <- VDom.render vdom $ Batch $ init.view newModel
+    newVDom /\ domSubs <- VDom.render vdom $ flatten $ batch $ init.view newModel
     Ref.write newVDom vdomRef
     activeSubs <- Ref.read activeSubsRef
     newActiveSubs <-
@@ -131,18 +130,17 @@ app init =
         activeSubs
         (domSubs <> init.subscriptions newModel)
         (sendMsg' modelRef vdomRef activeSubsRef)
-    _ <- pure $ Debug.log newActiveSubs
     Ref.write newActiveSubs activeSubsRef
     unwrap cmd $ sendMsg' modelRef vdomRef activeSubsRef
 
-  go :: Ref (Array ActiveSub) -> Ref (VNode msg) -> Shorten msg model -> Effect Unit
+  go :: Ref (Array ActiveSub) -> Ref (VDOM msg) -> Shorten msg model -> Effect Unit
   go activeSubsRef vdomRef w = do
     newModel /\ cmd <- runWriterT w
     let
       sendMsg :: msg -> Effect Unit
       sendMsg = go activeSubsRef vdomRef <<< init.update newModel
     vdom <- Ref.read vdomRef
-    newVDom /\ domSubs <- VDom.render vdom $ Batch $ init.view newModel
+    newVDom /\ domSubs <- VDom.render vdom $ flatten $ batch $ init.view newModel
     activeSubs <- Ref.read activeSubsRef
     newActiveSubs <-
       Sub.something
