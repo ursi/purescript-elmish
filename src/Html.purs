@@ -1,12 +1,31 @@
 module Html where
 
-import Prelude
+import MasonPrelude
 import Data.Batchable (Batched(..), batch, flatten)
-import Data.Maybe (Maybe(..))
+import Data.Batchable as Batchable
+import Data.List ((:))
 import VirtualDom (Attribute, SingleVNode(..), VNode)
 
 type Html msg
   = VNode msg
+
+keyed :: ∀ msg. String -> Array (Attribute msg) -> Array (String /\ VNode msg) -> VNode msg
+keyed tag attributes children =
+  Single
+    $ KeyedElement
+        { tag
+        , attributes: flatten $ Batch attributes
+        , children:
+            foldr
+              ( \(key /\ child) acc ->
+                  fromMaybe acc do
+                    first <- Batchable.first child
+                    pure $ (key /\ first) : acc
+              )
+              Nil
+              children
+        , node: Nothing
+        }
 
 createVNode :: ∀ msg. String -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 createVNode tag attributes children =
@@ -19,7 +38,7 @@ createVNode tag attributes children =
         }
 
 text :: ∀ msg. String -> VNode msg
-text = Single <<< VText <<< { text: _, node: Nothing }
+text = Single <. VText <. { text: _, node: Nothing }
 
 div :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 div = createVNode "div"

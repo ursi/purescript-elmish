@@ -1,11 +1,9 @@
 module Attribute where
 
-import Prelude
+import MasonPrelude
 import Control.Apply (lift3)
 import Data.Array as Array
 import Data.Batchable (Batched(..))
-import Data.Maybe (Maybe(..))
-import Effect (Effect)
 import Effect.Uncurried
 import Foreign.Object as FO
 import Sub (Callback, Sub(..), SubBuilder, Presub, (<@@>))
@@ -20,10 +18,10 @@ import Web.Event.EventTarget (EventTarget, EventListener, addEventListener, even
 import Web.Event.Internal.Types (Event)
 
 value :: ∀ msg. String -> Attribute msg
-value = Single <<< Str "value"
+value = Single <. Str "value"
 
 class_ :: ∀ msg. String -> Attribute msg
-class_ = Single <<< Str "class"
+class_ = Single <. Str "class"
 
 onClick :: ∀ msg. msg -> Attribute msg
 onClick = on_ "click"
@@ -76,4 +74,4 @@ on' toA eventName toMsg =
             )
 
 on'RefEq :: ∀ a. (Event -> a) -> Element -> String -> Presub a
-on'RefEq = makeListener <<< (>>>)
+on'RefEq = makeListener <. (.>)

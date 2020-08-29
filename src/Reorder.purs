@@ -1,12 +1,8 @@
 module Reorder where
 
-import Prelude
+import MasonPrelude
 import Data.Array ((!!))
 import Data.Array as Array
-import Data.Maybe (Maybe(..))
-import Data.List (List)
-import Data.Tuple.Nested (type (/\))
-import Debug (todo)
 
 reorder :: ∀ a m. Monad m => (a -> Int) -> (Int -> Int -> Array a -> m (Array a)) -> Array a -> m Unit
 reorder indexer mover = go 1

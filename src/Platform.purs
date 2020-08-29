@@ -1,17 +1,14 @@
 module Platform where
 
-import Prelude
+import MasonPrelude
 import Data.Identity
 import Control.Monad.Writer.Trans (WriterT, runWriterT)
 import Control.Monad.State (State, evalState)
 import Control.Monad.State.Trans (StateT(..), evalStateT, get)
 import Control.Monad.Trans.Class (lift)
 import Data.Batchable (Batched(..), batch, flatten)
-import Data.Either (Either)
 import Data.Newtype (class Newtype, unwrap)
-import Data.Tuple.Nested (type (/\), (/\))
 import Debug as Debug
-import Effect (Effect)
 import Effect.Console (log)
 import Effect.Ref (Ref)
 import Effect.Ref as Ref
@@ -41,7 +38,7 @@ instance monoidCmd :: Monoid (Cmd a) where
   mempty = Cmd $ const mempty
 
 attemptTask :: ∀ x a msg. (Either x a -> msg) -> Task x a -> Cmd msg
-attemptTask toMsg task = Cmd \sendMsg -> Task.capture (sendMsg <<< toMsg) task
+attemptTask toMsg task = Cmd \sendMsg -> Task.capture (sendMsg <. toMsg) task
 
 type Program flags model msg
   = EffectFn1 flags Unit
@@ -82,7 +79,7 @@ worker init =
   go activeSubsRef w = do
     newModel /\ cmd <- runWriterT w
     let
-      sendMsg = go activeSubsRef <<< init.update newModel
+      sendMsg = go activeSubsRef <. init.update newModel
     activeSubs <- Ref.read activeSubsRef
     newActiveSubs <-
       Sub.something
@@ -97,7 +94,11 @@ app ::
   { init :: flags -> Shorten msg model
   , update :: model -> msg -> Shorten msg model
   , subscriptions :: model -> Sub msg
-  , view :: model -> Array (Html msg)
+  , view ::
+      model ->
+      { head :: Array (Html msg)
+      , body :: Array (Html msg)
+      }
   } ->
   Program flags model msg
 app init =
@@ -105,49 +106,30 @@ app init =
     initialModel /\ cmd <- runWriterT $ init.init flags
     modelRef <- Ref.new initialModel
     --go activeSubsRef vdomRef $ init.init flags
-    newVDom /\ domSubs <- VDom.render mempty $ flatten $ batch $ init.view initialModel
+    newVDom /\ domSubs <- VDom.render mempty $ flatten $ batch $ (init.view initialModel).body
     vdomRef <- Ref.new newVDom
     activeSubsRef <- Ref.new []
     newActiveSubs <-
       Sub.something
         []
         (domSubs <> init.subscriptions initialModel)
-        (sendMsg' modelRef vdomRef activeSubsRef)
+        (sendMsg modelRef vdomRef activeSubsRef)
     Ref.write newActiveSubs activeSubsRef
-    unwrap cmd $ sendMsg' modelRef vdomRef activeSubsRef
+    unwrap cmd $ sendMsg modelRef vdomRef activeSubsRef
   where
-  sendMsg' :: Ref model -> Ref (VDOM msg) -> Ref (Array ActiveSub) -> msg -> Effect Unit
-  sendMsg' modelRef vdomRef activeSubsRef msg = do
+  sendMsg :: Ref model -> Ref (VDOM msg) -> Ref (Array ActiveSub) -> msg -> Effect Unit
+  sendMsg modelRef vdomRef activeSubsRef msg = do
     currentModel <- Ref.read modelRef
     newModel /\ cmd <- runWriterT $ init.update currentModel msg
     Ref.write newModel modelRef
     vdom <- Ref.read vdomRef
-    newVDom /\ domSubs <- VDom.render vdom $ flatten $ batch $ init.view newModel
+    newVDom /\ domSubs <- VDom.render vdom $ flatten $ batch $ (init.view newModel).body
     Ref.write newVDom vdomRef
     activeSubs <- Ref.read activeSubsRef
     newActiveSubs <-
       Sub.something
         activeSubs
         (domSubs <> init.subscriptions newModel)
-        (sendMsg' modelRef vdomRef activeSubsRef)
+        (sendMsg modelRef vdomRef activeSubsRef)
     Ref.write newActiveSubs activeSubsRef
-    unwrap cmd $ sendMsg' modelRef vdomRef activeSubsRef
-
-  go :: Ref (Array ActiveSub) -> Ref (VDOM msg) -> Shorten msg model -> Effect Unit
-  go activeSubsRef vdomRef w = do
-    newModel /\ cmd <- runWriterT w
-    let
-      sendMsg :: msg -> Effect Unit
-      sendMsg = go activeSubsRef vdomRef <<< init.update newModel
-    vdom <- Ref.read vdomRef
-    newVDom /\ domSubs <- VDom.render vdom $ flatten $ batch $ init.view newModel
-    activeSubs <- Ref.read activeSubsRef
-    newActiveSubs <-
-      Sub.something
-        activeSubs
-        (domSubs <> init.subscriptions newModel)
-        sendMsg
-    _ <- pure $ Debug.log newActiveSubs
-    Ref.write newActiveSubs activeSubsRef
-    Ref.write newVDom vdomRef
-    unwrap cmd sendMsg
+    unwrap cmd $ sendMsg modelRef vdomRef activeSubsRef

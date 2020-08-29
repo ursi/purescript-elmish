@@ -1,28 +1,21 @@
 module VirtualDom where
 
-import Prelude
+import MasonPrelude
+import Control.Monad.Reader.Trans (ReaderT, ask, local, runReaderT)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
-import Control.Monad.Writer.Trans (WriterT, lift, runWriterT, tell)
-import Data.Argonaut (Json, (.:))
-import Data.Argonaut as A
+import Control.Monad.Trans.Class (lift)
+import Control.Monad.Writer.Trans (WriterT, runWriterT, tell)
 import Data.Array as Array
 import Data.Batchable (class Batchable, Batched(..), batch)
 import Data.Diff (Diff, diff)
 import Data.Diff as Diff
-import Data.Either (Either(..))
-import Data.Either.Nested (type (\/))
-import Data.List (List, (:))
+import Data.Foldable (foldM)
+import Data.List ((:))
 import Data.Map (Map)
 import Data.Map as Map
-import Data.Maybe (Maybe(..), fromMaybe, maybe)
 import Data.Newtype (class Newtype, unwrap, wrap)
 import Data.Newtype as Newtype
-import Data.Foldable (fold, foldM, intercalate)
-import Data.Traversable (sequence, traverse, traverse_)
-import Data.TraversableWithIndex (traverseWithIndex)
-import Data.Tuple.Nested (type (/\), (/\))
 import Debug as Debug
-import Effect (Effect)
 import Effect.Console (log)
 import Effect.Exception (throw)
 import Effect.Ref (Ref)
@@ -36,19 +29,12 @@ import Unsafe.Coerce (unsafeCoerce)
 import Web.DOM.Document (Document, createElement, createTextNode)
 import Web.DOM.Element (Element, removeAttribute, setAttribute, tagName)
 import Web.DOM.Element as Element
-import Web.DOM.Node (Node, appendChild, firstChild, parentNode, removeChild, replaceChild)
+import Web.DOM.Node (Node, appendChild, firstChild, insertBefore, parentNode, removeChild, replaceChild)
 import Web.DOM.Text as Text
 import Web.HTML as HTML
 import Web.HTML.Window as Window
 import Web.HTML.HTMLDocument as HTMLDocument
 import Web.HTML.HTMLElement as HTMLElement
-
--- TODO: switch all Array (VNode msg) signatures to VNode msg signatures
-todo :: ∀ a. a
-todo = unsafeCoerce unit
-
-todoTag :: ∀ a. String -> a
-todoTag = unsafeCoerce
 
 data SingleVNode msg
   = VElement
@@ -68,6 +54,12 @@ data SingleVNode msg
     , node :: Maybe Node
     }
 
+type MyMonad a b
+  = ReaderT PatchContext (WriterT (Sub a) Effect) b
+
+type MyMonadCommon a
+  = MyMonad a (SingleVNode a)
+
 type VNode msg
   = Batched (SingleVNode msg)
 
@@ -86,6 +78,37 @@ instance eqSingleAttribute :: Eq (SingleAttribute a) where
 type Attribute msg
   = Batched (SingleAttribute msg)
 
+type PatchContext
+  = { doc :: Document, parent :: Node }
+
+changeParent :: Node -> PatchContext -> PatchContext
+changeParent node = _ { parent = node }
+
+-- maybe just separate this into separate functions
+data Patch msg
+  = Remove Node
+  | InsertLast (SingleVNode msg)
+  | InsertBefore (SingleVNode msg) Node
+  | Switch Node Node
+
+applyPatch :: ∀ msg. Patch msg -> MyMonad msg (Maybe (SingleVNode msg))
+applyPatch patch = case patch of
+  Remove node -> do
+    { parent } <- ask
+    liftEffect do
+      _ <- removeChild node parent
+      pure Nothing
+  InsertLast vnode -> Just <$> addNode vnode
+  InsertBefore vnode node' ->
+    vnode
+      # placeNode (\{ node, parent } -> insertBefore node node' parent)
+      <#> Just
+  Switch node1 node2 -> do
+    { parent } <- ask
+    liftEffect do
+      _ <- insertBefore node1 node2 parent
+      pure Nothing
+
 render :: ∀ msg. VDOM msg -> VDOM msg -> Effect (VDOM msg /\ Sub msg)
 render oldVNode newVNode = do
   htmlDocument <- HTML.window >>= Window.document
@@ -95,78 +118,174 @@ render oldVNode newVNode = do
   mbodyNode <- map HTMLElement.toNode <$> HTMLDocument.body htmlDocument
   maybe
     (throw "body not found")
-    (\body -> runWriterT $ vDomDiff document body oldVNode newVNode)
+    ( \body ->
+        runWriterT
+          $ runReaderT
+              (vDomDiff oldVNode newVNode)
+              { doc: document
+              , parent: body
+              }
+    )
     mbodyNode
 
-vDomDiff :: ∀ msg. Document -> Node -> VDOM msg -> VDOM msg -> WriterT (Sub msg) Effect (VDOM msg)
-vDomDiff doc parent vd1 vd2 = diff go vd1 vd2
-  where
-  go :: Diff (SingleVNode msg) (SingleVNode msg) -> WriterT (Sub msg) Effect (Maybe (SingleVNode msg))
-  go =
+vDomDiff :: ∀ msg. VDOM msg -> VDOM msg -> MyMonad msg (VDOM msg)
+vDomDiff =
+  diff
     ( case _ of
-        Diff.Left sn -> do
-          lift $ removeNode sn
+        Diff.Left svn -> do
+          removeVNode svn
           pure Nothing
-        Diff.Right sn -> do
-          singleNode <- addNode doc parent sn
+        Diff.Right svn -> do
+          singleNode <- addNode svn
           pure $ Just singleNode
-        Diff.Both sn1 sn2 ->
-          let
-            replace :: WriterT (Sub msg) Effect (Maybe (SingleVNode msg))
-            replace = case getNode sn1 of
-              Just sn1Node -> do
-                node <- replaceNode doc parent sn1Node sn2
-                pure $ Just node
-              Nothing -> pure Nothing
-          in
-            case sn1, sn2 of
-              VElement r1, VElement r2 ->
-                if r1.tag == r2.tag then
-                  fromMaybe replace do
-                    node <- r1.node
-                    element <- Element.fromNode node
-                    pure do
-                      attributes <- diffAttributes element r1.attributes r2.attributes
-                      children <-
-                        vDomDiff doc node r1.children r2.children
-                      pure $ Just
-                        $ VElement
-                            r1
-                              { attributes = attributes
-                              , children = children
-                              }
-                else
-                  replace
-              KeyedElement r1, KeyedElement r2 ->
-                if r1.tag == r2.tag then
-                  fromMaybe replace do
-                    node <- r1.node
-                    element <- Element.fromNode node
-                    pure do
-                      attributes <- diffAttributes element r1.attributes r2.attributes
-                      children <- do
-                        let
-                          map1 = Map.fromFoldable r1.children
-
-                          map2 = Map.fromFoldable r2.children
-                        map2WithEffects <- diff go map1 map2
-                        --vDomDiff doc node r1.children r2.children
-                        todo
-                      pure $ Just
-                        $ VElement
-                            r1
-                              { attributes = attributes
-                              , children = children
-                              }
-                else
-                  replace
-              VText r1, VText r2 ->
-                if r1.text == r2.text then
-                  pure $ Just sn1
-                else
-                  replace
-              _, _ -> replace
+        Diff.Both svn1 svn2 -> Just <$> diffSingle svn1 svn2
     )
+
+keyedDiff ::
+  ∀ msg.
+  List (String /\ SingleVNode msg) ->
+  List (String /\ SingleVNode msg) ->
+  MyMonad msg (List (String /\ SingleVNode msg))
+keyedDiff = case _, _ of
+  head1 : tail1, head2 : tail2 ->
+    let
+      key1 /\ vnode1 = head1
+
+      key2 /\ vnode2 = head2
+    in
+      if key1 == key2 then
+        keyedDiffReplace vnode1 head2 tail1 tail2
+      else case tail1, tail2 of
+        head1' : tail1', head2' : tail2' ->
+          if key1 == fst head2' then
+            if key2 == fst head1' then do
+              newKey1VNode <- diffSingle vnode2 (snd head1')
+              newKey2VNode <- diffSingle vnode1 (snd head2')
+              _ <-
+                fromMaybe noNodeError do
+                  node1 <- getNode newKey1VNode
+                  node2 <- getNode newKey2VNode
+                  Just $ applyPatch $ Switch node1 node2
+              rest <- keyedDiff tail1' tail2'
+              pure $ (key2 /\ newKey1VNode) : (key1 /\ newKey2VNode) : rest
+            else
+              keyedDiffInsertBefore head1 (snd head2') head2 tail1 tail2'
+          else
+            if key2 == fst head1' then
+              keyedDiffRemove vnode1 (snd head1') head2 tail1' tail2
+            else
+              keyedDiffReplace vnode1 head2 tail1 tail2
+        head : tail, Nil ->
+          if key2 == fst head then
+            keyedDiffRemove vnode1 (snd head) head2 tail tail2
+          else
+            keyedDiffReplace vnode1 head2 tail1 tail2
+        Nil, head : tail ->
+          if key1 == fst head then
+            keyedDiffInsertBefore head1 (snd head) head2 tail1 tail
+          else
+            keyedDiffReplace vnode1 head2 tail1 tail2
+        Nil, Nil -> keyedDiffReplace vnode1 head2 tail1 tail2
+  remove, Nil -> do
+    traverse_ (snd .> removeVNode) remove
+    pure mempty
+  Nil, insert -> traverse addKeyedNode insert
+
+keyedDiffRemove ::
+  ∀ msg.
+  SingleVNode msg ->
+  SingleVNode msg ->
+  String /\ SingleVNode msg ->
+  List (String /\ SingleVNode msg) ->
+  List (String /\ SingleVNode msg) ->
+  MyMonad msg (List (String /\ SingleVNode msg))
+keyedDiffRemove removeMe oldVNode (key /\ newVNode) tail1 tail2 = do
+  newVNodeNoded <- diffSingle oldVNode newVNode
+  removeVNode removeMe
+  rest <- keyedDiff tail1 tail2
+  pure $ (key /\ newVNodeNoded) : rest
+
+keyedDiffReplace ::
+  ∀ msg.
+  SingleVNode msg ->
+  String /\ SingleVNode msg ->
+  List (String /\ SingleVNode msg) ->
+  List (String /\ SingleVNode msg) ->
+  MyMonad msg (List (String /\ SingleVNode msg))
+keyedDiffReplace vnode1 (key /\ vnode2) tail1 tail2 = do
+  newVNode <- diffSingle vnode1 vnode2
+  rest <- keyedDiff tail1 tail2
+  pure $ (key /\ newVNode) : rest
+
+keyedDiffInsertBefore ::
+  ∀ msg.
+  String /\ SingleVNode msg ->
+  SingleVNode msg ->
+  String /\ SingleVNode msg ->
+  List (String /\ SingleVNode msg) ->
+  List (String /\ SingleVNode msg) ->
+  MyMonad msg (List (String /\ SingleVNode msg))
+keyedDiffInsertBefore (key1 /\ vnode1) newVNode1' (key2 /\ vnode2) tail1 tail2 = do
+  newVNode1 <- diffSingle vnode1 newVNode1'
+  newVNode2 <- case getNode newVNode1 of
+    Just node1 -> fromMaybe vnode2 <$> applyPatch (InsertBefore vnode2 node1)
+    Nothing -> noNodeError
+  rest <- keyedDiff tail1 tail2
+  pure $ (key2 /\ newVNode2) : (key1 /\ newVNode1) : rest
+
+noNodeError :: ∀ a m. MonadEffect m => m a
+noNodeError = liftEffect $ throw "there is no node"
+
+diffSingle :: ∀ msg. SingleVNode msg -> SingleVNode msg -> MyMonadCommon msg
+diffSingle svn1 svn2 =
+  let
+    replace :: MyMonadCommon msg
+    replace = case getNode svn1 of
+      Just svn1Node -> do
+        svn <- replaceNode svn1Node svn2
+        pure svn
+      Nothing -> pure svn2
+  in
+    case svn1, svn2 of
+      VElement r1, VElement r2 ->
+        if r1.tag == r2.tag then
+          fromMaybe replace do
+            node <- r1.node
+            element <- Element.fromNode node
+            Just do
+              attributes <- lift $ diffAttributes element r1.attributes r2.attributes
+              children <-
+                local (changeParent node) $ vDomDiff r1.children r2.children
+              pure
+                $ VElement
+                    r1
+                      { attributes = attributes
+                      , children = children
+                      }
+        else
+          replace
+      KeyedElement r1, KeyedElement r2 ->
+        if r1.tag == r2.tag then
+          fromMaybe replace do
+            node <- r1.node
+            element <- Element.fromNode node
+            Just do
+              attributes <- lift $ diffAttributes element r1.attributes r2.attributes
+              children <- local (changeParent node) $ keyedDiff r1.children r2.children
+              pure
+                $ KeyedElement
+                    r1
+                      { attributes = attributes
+                      , children = children
+                      }
+        else
+          replace
+      VText r1, VText r2 ->
+        if r1.text == r2.text then
+          pure svn1
+        else
+          replace
+      _, _ -> replace
 
 diffAttributes :: ∀ msg. Element -> List (SingleAttribute msg) -> List (SingleAttribute msg) -> WriterT (Sub msg) Effect (List (SingleAttribute msg))
 diffAttributes element =
@@ -210,45 +329,64 @@ getNode = case _ of
   KeyedElement r -> r.node
   VText r -> r.node
 
-addNode :: ∀ msg. Document -> Node -> SingleVNode msg -> WriterT (Sub msg) Effect (SingleVNode msg)
-addNode doc parent = placeNode doc (\node -> appendChild node parent *> pure unit)
+addNode :: ∀ msg. SingleVNode msg -> MyMonadCommon msg
+addNode svn = svn # placeNode (\{ node, parent } -> appendChild node parent)
 
-replaceNode :: ∀ msg. Document -> Node -> Node -> SingleVNode msg -> WriterT (Sub msg) Effect (SingleVNode msg)
-replaceNode doc parent oldNode = placeNode doc (\node -> replaceChild node oldNode parent *> pure unit)
+addKeyedNode :: ∀ msg. String /\ SingleVNode msg -> MyMonad msg (String /\ SingleVNode msg)
+addKeyedNode (key /\ vnode) = do
+  addedVNode <- addNode vnode
+  pure $ key /\ addedVNode
 
-placeNode :: ∀ msg. Document -> (Node -> Effect Unit) -> SingleVNode msg -> WriterT (Sub msg) Effect (SingleVNode msg)
-placeNode doc placer = case _ of
-  VElement { tag, attributes, children } -> do
-    element <- lift $ createElement tag doc
-    let
-      elementNode = Element.toNode element
-    childNodes <- traverse (addNode doc elementNode) children
-    tell =<< (lift $ setAttributes attributes element)
-    lift $ placer elementNode
-    pure
-      $ VElement
-          { tag
-          , attributes
-          , children: childNodes
-          , node: Just elementNode
-          }
-  KeyedElement _ -> todo
-  VText { text } -> do
-    textNode <- lift $ Text.toNode <$> createTextNode text doc
-    lift $ placer textNode
-    pure (VText { text, node: Just textNode })
+replaceNode :: ∀ msg. Node -> SingleVNode msg -> MyMonad msg (SingleVNode msg)
+replaceNode oldNode = placeNode (\{ node, parent } -> replaceChild node oldNode parent)
 
-removeNode :: ∀ msg. SingleVNode msg -> Effect Unit
-removeNode =
-  getNode
-    >>> ifJust
-        ( \node ->
-            parentNode node
-              >>= ifJust (removeChild node)
-        )
+placeNode :: ∀ a msg. ({ node :: Node, parent :: Node } -> Effect a) -> SingleVNode msg -> MyMonadCommon msg
+placeNode placer svn = do
+  { doc, parent } <- ask
+  case svn of
+    VElement { tag, attributes, children } -> do
+      element <- liftEffect $ createElement tag doc
+      let
+        node = Element.toNode element
+      childNodes <- traverse (local (changeParent node) <. addNode) children
+      tell =<< (liftEffect $ setAttributes attributes element)
+      _ <- liftEffect $ placer { node, parent }
+      pure
+        $ VElement
+            { tag
+            , attributes
+            , children: childNodes
+            , node: Just node
+            }
+    KeyedElement { tag, attributes, children } -> do
+      element <- liftEffect $ createElement tag doc
+      let
+        node = Element.toNode element
+      childNodes <- traverse (local (changeParent node) <. addKeyedNode) children
+      tell =<< (liftEffect $ setAttributes attributes element)
+      _ <- liftEffect $ placer { node, parent }
+      pure
+        $ KeyedElement
+            { tag
+            , attributes
+            , children: childNodes
+            , node: Just node
+            }
+    VText { text } -> do
+      node <- liftEffect $ Text.toNode <$> createTextNode text doc
+      _ <- liftEffect $ placer { node, parent }
+      pure (VText { text, node: Just node })
+
+removeVNode :: ∀ msg. SingleVNode msg -> MyMonad msg Unit
+removeVNode svn = do
+  _ <-
+    fromMaybe noNodeError do
+      node <- getNode svn
+      Just $ applyPatch $ Remove node
+  pure unit
 
 ifJust :: ∀ a b. (a -> Effect b) -> Maybe a -> Effect Unit
-ifJust f = maybe (pure unit) (f >>> (_ *> pure unit))
+ifJust f = maybe (pure unit) (f .> (_ *> pure unit))
 
 setAttributes :: ∀ msg. List (SingleAttribute msg) -> Element -> Effect (Sub msg)
 setAttributes attribute element = foldM go mempty attribute

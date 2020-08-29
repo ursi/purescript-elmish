@@ -1,6 +1,6 @@
 module Fs where
 
-import Prelude
+import MasonPrelude
 import Task (Task, Promise)
 import Task as Task
 

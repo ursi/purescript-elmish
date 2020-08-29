@@ -14,11 +14,9 @@ module Task
   , unsafeCapture
   ) where
 
-import Prelude
+import MasonPrelude
 import Control.Apply (lift2)
 import Data.Bifunctor (class Bifunctor)
-import Data.Either (Either(..))
-import Effect (Effect)
 import Effect.Class (class MonadEffect, liftEffect)
 import Effect.Console (log, logShow)
 import Effect.Uncurried (EffectFn1, EffectFn2)

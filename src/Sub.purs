@@ -16,17 +16,13 @@ module Sub
   , every_
   ) where
 
-import Prelude
+import MasonPrelude
 import JSEq (jseq)
 import Data.Array as Array
 import Data.Batchable (Batched(..))
 import Data.Batchable as Batchable
-import Data.Maybe (Maybe(..))
 import Data.Newtype (class Newtype, unwrap, wrap)
-import Data.Traversable (traverse)
-import Data.Tuple.Nested (type (/\), (/\))
 import Debug as Debug
-import Effect (Effect)
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import Partial.Unsafe (unsafePartial)
 import Unsafe.Coerce (unsafeCoerce)
@@ -52,7 +48,7 @@ type Presub a
   = Callback a -> Effect Canceler
 
 mapPresub :: ∀ a b. (a -> b) -> Presub a -> Presub b
-mapPresub f p callback = p $ callback <<< f
+mapPresub f p callback = p $ callback <. f
 
 fromForeign :: ∀ a. SubBuilder (ForeignSub a) -> SingleSub a
 fromForeign (SubBuilder s@{ sub }) =
@@ -111,10 +107,10 @@ derive newtype instance semigroupSub :: Semigroup (Sub a)
 derive newtype instance monoidSub :: Monoid (Sub a)
 
 new :: ∀ a. SubBuilder (Presub a) -> Sub a
-new = Sub <<< Single
+new = Sub <. Single
 
 newForeign :: ∀ a. SubBuilder (ForeignSub a) -> Sub a
-newForeign = Sub <<< Single <<< fromForeign
+newForeign = Sub <. Single <. fromForeign
 
 data ActiveSub
   = ActiveSub { canceler :: Effect Unit | SubProperties }
