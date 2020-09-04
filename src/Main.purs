@@ -3,7 +3,6 @@ module Main (main) where
 import MasonPrelude
 import Attribute as A
 import Control.Monad.Trans.Class (lift)
-import Control.Monad.Writer.Trans (WriterT)
 import Control.Monad.Writer.Class (tell)
 import Data.Array ((..))
 import Data.Array as Array
@@ -17,7 +16,7 @@ import Effect.Console (log, logShow)
 import Effect.Now (now)
 import Html (Html)
 import Html as H
-import Platform (Cmd, Program)
+import Platform (Cmd, Program, Update)
 import Platform as Platform
 import Task
 import Sub (Sub(..), SubBuilder)
@@ -46,7 +45,7 @@ type Model
     , newPerson :: String
     }
 
-init :: Unit -> WriterT (Cmd Msg) Effect Model
+init :: Unit -> Update Model Msg
 init _ = do
   currentTime <- lift $ now <#> Instant.unInstant >>> unwrap
   pure
@@ -69,7 +68,7 @@ data Msg
   | AddPerson
   | UpdateNewPerson String
 
-update :: Model -> Msg -> WriterT (Cmd Msg) Effect Model
+update :: Model -> Msg -> Update Model Msg
 update model msg = do
   let
     newModel = case msg of
@@ -99,12 +98,25 @@ view ::
   , body :: Array (Html Msg)
   }
 view model =
-  { head: []
+  { head:
+      [ H.title model.newPerson
+      , H.keyed "style" []
+          [ "style"
+              /\ H.element "style" []
+                  [ H.text
+                      """
+  body {
+    background: red;
+  }
+"""
+                  ]
+          ]
+      ]
   , body:
       [ H.div []
           [ H.button [ A.onClick AddPerson ] [ H.text "Add Person" ]
           , H.input
-              [ A.value model.newPerson
+              [ A.value $ model.newPerson
               , A.onInput UpdateNewPerson
               ]
           ]
@@ -112,7 +124,7 @@ view model =
           <#> \person ->
               person
                 /\ H.div []
-                    [ H.text person
+                    [ H.text $ person <> " "
                     , H.button [ A.onClick $ Delete person ] [ H.text "x" ]
                     ]
       , H.div [] [ H.text $ show model.time ]

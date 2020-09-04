@@ -4,6 +4,7 @@ import MasonPrelude
 import Control.Apply (lift3)
 import Data.Array as Array
 import Data.Batchable (Batched(..))
+import Data.JSValue (JSValue, toJSValue)
 import Effect.Uncurried
 import Foreign.Object as FO
 import Sub (Callback, Sub(..), SubBuilder, Presub, (<@@>))
@@ -17,11 +18,17 @@ import Web.Event.Event as Event
 import Web.Event.EventTarget (EventTarget, EventListener, addEventListener, eventListener, removeEventListener)
 import Web.Event.Internal.Types (Event)
 
+attribute :: ∀ msg. String -> String -> Attribute msg
+attribute = Single <.. Attr
+
+property :: ∀ msg. String -> JSValue -> Attribute msg
+property = Single <.. Prop
+
 value :: ∀ msg. String -> Attribute msg
-value = Single <. Str "value"
+value = Single <. Prop "value" <. toJSValue
 
 class_ :: ∀ msg. String -> Attribute msg
-class_ = Single <. Str "class"
+class_ = Single <. Attr "class"
 
 onClick :: ∀ msg. msg -> Attribute msg
 onClick = on_ "click"

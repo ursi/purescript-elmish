@@ -27,8 +27,8 @@ keyed tag attributes children =
         , node: Nothing
         }
 
-createVNode :: ∀ msg. String -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-createVNode tag attributes children =
+element :: ∀ msg. String -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+element tag attributes children =
   Single
     $ VElement
         { tag
@@ -41,19 +41,22 @@ text :: ∀ msg. String -> VNode msg
 text = Single <. VText <. { text: _, node: Nothing }
 
 div :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-div = createVNode "div"
+div = element "div"
 
 label :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-label = createVNode "label"
+label = element "label"
 
 select :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-select = createVNode "select"
+select = element "select"
 
 option :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-option = createVNode "option"
+option = element "option"
 
 button :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-button = createVNode "button"
+button = element "button"
 
 input :: ∀ msg. Array (Attribute msg) -> VNode msg
-input = flip (createVNode "input") []
+input = element "input" ~$ []
+
+title :: ∀ msg. String -> VNode msg
+title t = element "title" [] [ text t ]

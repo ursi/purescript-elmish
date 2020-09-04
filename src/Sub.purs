@@ -17,23 +17,15 @@ module Sub
   ) where
 
 import MasonPrelude
-import JSEq (jseq)
 import Data.Array as Array
 import Data.Batchable (Batched(..))
 import Data.Batchable as Batchable
+import Data.JSValue (JSValue, toJSValue)
 import Data.Newtype (class Newtype, unwrap, wrap)
 import Debug as Debug
 import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import Partial.Unsafe (unsafePartial)
 import Unsafe.Coerce (unsafeCoerce)
-
-data JSValue
-
-instance eqJSValue :: Eq JSValue where
-  eq = jseq
-
-toJSValue :: ∀ a. a -> JSValue
-toJSValue = unsafeCoerce
 
 type Callback a
   = a -> Effect Unit

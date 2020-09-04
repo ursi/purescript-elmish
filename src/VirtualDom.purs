@@ -10,6 +10,7 @@ import Data.Batchable (class Batchable, Batched(..), batch)
 import Data.Diff (Diff, diff)
 import Data.Diff as Diff
 import Data.Foldable (foldM)
+import Data.JSValue (JSValue)
 import Data.List ((:))
 import Data.Map (Map)
 import Data.Map as Map
@@ -32,9 +33,9 @@ import Web.DOM.Element as Element
 import Web.DOM.Node (Node, appendChild, firstChild, insertBefore, parentNode, removeChild, replaceChild)
 import Web.DOM.Text as Text
 import Web.HTML as HTML
-import Web.HTML.Window as Window
 import Web.HTML.HTMLDocument as HTMLDocument
 import Web.HTML.HTMLElement as HTMLElement
+import Web.HTML.Window as Window
 
 data SingleVNode msg
   = VElement
@@ -67,11 +68,13 @@ type VDOM msg
   = List (SingleVNode msg)
 
 data SingleAttribute msg
-  = Str String String
+  = Attr String String
+  | Prop String JSValue
   | Listener (Element -> Sub msg)
 
 instance eqSingleAttribute :: Eq (SingleAttribute a) where
-  eq (Str p1 v1) (Str p2 v2) = p1 == v1 && p2 == v2
+  eq (Attr p1 v1) (Attr p2 v2) = p1 == p2 && v1 == v2
+  eq (Prop p1 v1) (Prop p2 v2) = p1 == p2 && v1 == v2
   eq (Listener _) (Listener _) = true
   eq _ _ = false
 
@@ -109,24 +112,12 @@ applyPatch patch = case patch of
       _ <- insertBefore node1 node2 parent
       pure Nothing
 
-render :: ∀ msg. VDOM msg -> VDOM msg -> Effect (VDOM msg /\ Sub msg)
-render oldVNode newVNode = do
-  htmlDocument <- HTML.window >>= Window.document
-  let
-    document :: Document
-    document = HTMLDocument.toDocument htmlDocument
-  mbodyNode <- map HTMLElement.toNode <$> HTMLDocument.body htmlDocument
-  maybe
-    (throw "body not found")
-    ( \body ->
-        runWriterT
-          $ runReaderT
-              (vDomDiff oldVNode newVNode)
-              { doc: document
-              , parent: body
-              }
-    )
-    mbodyNode
+render :: ∀ msg. Document -> Node -> VDOM msg -> VDOM msg -> Effect (VDOM msg /\ Sub msg)
+render doc parent oldVNode newVNode = do
+  runWriterT
+    $ runReaderT
+        (vDomDiff oldVNode newVNode)
+        { doc, parent }
 
 vDomDiff :: ∀ msg. VDOM msg -> VDOM msg -> MyMonad msg (VDOM msg)
 vDomDiff =
@@ -292,19 +283,23 @@ diffAttributes element =
   diff
     ( case _ of
         Diff.Left sa -> case sa of
-          Str prop _ -> do
+          Attr prop _ -> do
             lift $ removeAttribute prop element
             pure Nothing
+          Prop prop value -> pure Nothing
           _ -> pure Nothing
         Diff.Right sa -> case sa of
-          Str prop value -> do
+          Attr prop value -> do
             lift $ setAttribute prop value element
+            pure $ Just sa
+          Prop prop value -> do
+            lift $ setProperty prop value element
             pure $ Just sa
           Listener toSub -> do
             tell $ toSub element
             pure $ Just sa
         Diff.Both sa1 sa2 -> case sa1, sa2 of
-          Str prop1 value1, Str prop2 value2 ->
+          Attr prop1 value1, Attr prop2 value2 ->
             if prop1 == prop2 then
               if value1 == value2 then
                 pure $ Just sa1
@@ -315,7 +310,28 @@ diffAttributes element =
               lift $ removeAttribute prop1 element
               lift $ setAttribute prop2 value2 element
               pure $ Just sa2
-          Listener _, Str prop value -> do
+          Prop prop1 value1, Prop prop2 value2 ->
+            if prop1 == prop2 then
+              if value1 == value2 then
+                pure $ Just sa1
+              else do
+                lift $ setProperty prop1 value2 element
+                pure $ Just sa2
+            else do
+              lift $ setProperty prop2 value2 element
+              pure $ Just sa2
+          Attr prop1 _, Prop prop2 value2 -> do
+            lift $ removeAttribute prop1 element
+            lift $ setProperty prop2 value2 element
+            pure $ Just sa2
+          Attr prop _, Listener toSub -> do
+            lift $ removeAttribute prop element
+            tell $ toSub element
+            pure $ Just sa2
+          Listener _, Prop prop value -> do
+            lift $ setProperty prop value element
+            pure $ Just sa2
+          _, Attr prop value -> do
             lift $ setAttribute prop value element
             pure $ Just sa2
           _, Listener toSub -> do
@@ -388,12 +404,17 @@ removeVNode svn = do
 ifJust :: ∀ a b. (a -> Effect b) -> Maybe a -> Effect Unit
 ifJust f = maybe (pure unit) (f .> (_ *> pure unit))
 
+foreign import setProperty :: String -> JSValue -> Element -> Effect Unit
+
 setAttributes :: ∀ msg. List (SingleAttribute msg) -> Element -> Effect (Sub msg)
 setAttributes attribute element = foldM go mempty attribute
   where
   go :: Sub msg -> SingleAttribute msg -> Effect (Sub msg)
   go acc = case _ of
-    Str prop value -> do
+    Attr prop value -> do
       setAttribute prop value element
+      pure acc
+    Prop prop value -> do
+      setProperty prop value element
       pure acc
     Listener toSub -> pure $ acc <> toSub element
