@@ -5,7 +5,6 @@ import Data.Array ((!!))
 import Data.Array as Array
 import Data.Diff (class Diffable, Diff, diff2)
 import Data.Diff as Diff
-import Data.Foldable (foldlDefault, foldrDefault)
 import Data.FoldableWithIndex (foldlWithIndexDefault, foldrWithIndexDefault)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
@@ -14,33 +13,21 @@ import Data.Traversable (traverseDefault)
 import Data.TraversableWithIndex (traverseWithIndexDefault)
 import Data.Tuple (Tuple(..), uncurry)
 
-class Batchable b where
-  single :: ∀ a. a -> b a
-  batch :: ∀ a. Array (b a) -> b a
-  flatten :: ∀ a. b a -> List a
-
-class NestedBatchable b n | b -> n where
-  nSingle :: ∀ a. n a -> b a
-  nBatch :: ∀ a. Array (b a) -> b a
-  nFlatten :: ∀ a. b a -> List (n a)
-
 data Batched a
   = Single a
   | Batch (Array (Batched a))
 
-instance batchableBatched :: Batchable Batched where
-  single = Single
-  batch = Batch
-  flatten = flattenBatched
+flatten :: ∀ a. Batched a -> List a
+flatten = flattenMap identity
 
-flattenBatched :: ∀ a. Batched a -> List a
-flattenBatched = case _ of
-  Single a -> pure a
+flattenMap :: ∀ a b. (a -> b) -> Batched a -> List b
+flattenMap f = case _ of
+  Single a -> pure $ f a
   Batch bs -> foldr go Nil bs
   where
-  go :: Batched a -> List a -> List a
+  go :: Batched a -> List b -> List b
   go b acc = case b of
-    Single a -> a : acc
+    Single a -> f a : acc
     Batch bs -> foldr go acc bs
 
 derive instance genericBatched :: Generic (Batched a) _
@@ -78,9 +65,9 @@ instance bindBatched :: Bind Batched where
 instance monadBatched :: Monad Batched
 
 instance foldableBatched :: Foldable Batched where
-  foldr f = foldrDefault f
-  foldl f = foldlDefault f
-  foldMap f = foldMap f <. flatten
+  foldr = foldr <~~. flatten
+  foldl = foldl <~~. flatten
+  foldMap = foldMap <~. flatten
 
 instance traversable :: Traversable Batched where
   traverse = traverseDefault

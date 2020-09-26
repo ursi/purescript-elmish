@@ -5,8 +5,10 @@ import Control.Monad.Reader.Trans (ReaderT, ask, local, runReaderT)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Writer.Trans (WriterT, runWriterT, tell)
+import Css (Style)
+import Css as C
 import Data.Array as Array
-import Data.Batchable (class Batchable, Batched(..), batch)
+import Data.Batchable (Batched(..))
 import Data.Diff (Diff, diff)
 import Data.Diff as Diff
 import Data.Foldable (foldM)
@@ -17,46 +19,48 @@ import Data.Map as Map
 import Data.Newtype (class Newtype, unwrap, wrap)
 import Data.Newtype as Newtype
 import Debug as Debug
-import Effect.Console (log)
+import Effect.Console (log, logShow)
 import Effect.Exception (throw)
 import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Effect.Uncurried
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign.Object (Object)
+import HTML.All
+  ( class IsNode
+  , Document
+  , Element
+  , EventTarget
+  , Node
+  , Text
+  )
+import HTML.All as H
 import Sub (Callback, Sub, SubBuilder)
 import Sub as Sub
 import Unsafe.Coerce (unsafeCoerce)
-import Web.DOM.Document (Document, createElement, createTextNode)
-import Web.DOM.Element (Element, removeAttribute, setAttribute, tagName)
-import Web.DOM.Element as Element
-import Web.DOM.Node (Node, appendChild, firstChild, insertBefore, parentNode, removeChild, replaceChild)
-import Web.DOM.Text as Text
-import Web.HTML as HTML
-import Web.HTML.HTMLDocument as HTMLDocument
-import Web.HTML.HTMLElement as HTMLElement
-import Web.HTML.Window as Window
 
 data SingleVNode msg
   = VElement
     { tag :: String
+    , styles :: List Style
     , attributes :: List (SingleAttribute msg)
     , children :: VDOM msg
-    , node :: Maybe Node
+    , node :: Maybe Element
     }
   | KeyedElement
     { tag :: String
+    , styles :: List Style
     , attributes :: List (SingleAttribute msg)
     , children :: List (String /\ SingleVNode msg)
-    , node :: Maybe Node
+    , node :: Maybe Element
     }
   | VText
     { text :: String
-    , node :: Maybe Node
+    , node :: Maybe Text
     }
 
 type MyMonad a b
-  = ReaderT PatchContext (WriterT (Sub a) Effect) b
+  = ReaderT PatchContext (WriterT (Sub a /\ Map String String) Effect) b
 
 type MyMonadCommon a
   = MyMonad a (SingleVNode a)
@@ -70,7 +74,7 @@ type VDOM msg
 data SingleAttribute msg
   = Attr String String
   | Prop String JSValue
-  | Listener (Element -> Sub msg)
+  | Listener (EventTarget -> Sub msg)
 
 instance eqSingleAttribute :: Eq (SingleAttribute a) where
   eq (Attr p1 v1) (Attr p2 v2) = p1 == p2 && v1 == v2
@@ -82,10 +86,10 @@ type Attribute msg
   = Batched (SingleAttribute msg)
 
 type PatchContext
-  = { doc :: Document, parent :: Node }
+  = { doc :: Document, parent :: Element }
 
-changeParent :: Node -> PatchContext -> PatchContext
-changeParent node = _ { parent = node }
+changeParent :: Element -> PatchContext -> PatchContext
+changeParent elem = _ { parent = elem }
 
 -- maybe just separate this into separate functions
 data Patch msg
@@ -99,25 +103,56 @@ applyPatch patch = case patch of
   Remove node -> do
     { parent } <- ask
     liftEffect do
-      _ <- removeChild node parent
+      _ <- H.removeChild node parent
       pure Nothing
   InsertLast vnode -> Just <$> addNode vnode
   InsertBefore vnode node' ->
     vnode
-      # placeNode (\{ node, parent } -> insertBefore node node' parent)
+      # placeNode (\{ node, parent } -> H.insertBefore node node' parent)
       <#> Just
   Switch node1 node2 -> do
     { parent } <- ask
     liftEffect do
-      _ <- insertBefore node1 node2 parent
+      _ <- H.insertBefore node1 node2 parent
       pure Nothing
 
-render :: ∀ msg. Document -> Node -> VDOM msg -> VDOM msg -> Effect (VDOM msg /\ Sub msg)
-render doc parent oldVNode newVNode = do
-  runWriterT
-    $ runReaderT
-        (vDomDiff oldVNode newVNode)
-        { doc, parent }
+render ::
+  ∀ msg.
+  Document ->
+  { head :: Element
+  , body :: Element
+  } ->
+  { head :: VDOM msg
+  , body :: VDOM msg
+  } ->
+  { head :: VDOM msg
+  , body :: VDOM msg
+  } ->
+  Effect
+    ( { head :: VDOM msg
+      , body :: VDOM msg
+      }
+        /\ Sub msg
+    )
+render doc parents oldVNodes newVNodes = do
+  headVdom <-
+    fst
+      <$> runWriterT
+          ( runReaderT
+              (vDomDiff oldVNodes.head newVNodes.head)
+              { doc, parent: parents.head }
+          )
+  bodyVdom /\ subs /\ styleMap <-
+    runWriterT
+      $ runReaderT
+          (vDomDiff oldVNodes.body newVNodes.body)
+          { doc, parent: parents.body }
+  liftEffect $ logShow $ styleMap
+  pure
+    $ { head: headVdom
+      , body: bodyVdom
+      }
+    /\ subs
 
 vDomDiff :: ∀ msg. VDOM msg -> VDOM msg -> MyMonad msg (VDOM msg)
 vDomDiff =
@@ -241,12 +276,11 @@ diffSingle svn1 svn2 =
       VElement r1, VElement r2 ->
         if r1.tag == r2.tag then
           fromMaybe replace do
-            node <- r1.node
-            element <- Element.fromNode node
+            element <- r1.node
             Just do
               attributes <- lift $ diffAttributes element r1.attributes r2.attributes
               children <-
-                local (changeParent node) $ vDomDiff r1.children r2.children
+                local (changeParent element) $ vDomDiff r1.children r2.children
               pure
                 $ VElement
                     r1
@@ -258,11 +292,10 @@ diffSingle svn1 svn2 =
       KeyedElement r1, KeyedElement r2 ->
         if r1.tag == r2.tag then
           fromMaybe replace do
-            node <- r1.node
-            element <- Element.fromNode node
+            element <- r1.node
             Just do
               attributes <- lift $ diffAttributes element r1.attributes r2.attributes
-              children <- local (changeParent node) $ keyedDiff r1.children r2.children
+              children <- local (changeParent element) $ keyedDiff r1.children r2.children
               pure
                 $ KeyedElement
                     r1
@@ -278,25 +311,25 @@ diffSingle svn1 svn2 =
           replace
       _, _ -> replace
 
-diffAttributes :: ∀ msg. Element -> List (SingleAttribute msg) -> List (SingleAttribute msg) -> WriterT (Sub msg) Effect (List (SingleAttribute msg))
+diffAttributes :: ∀ msg. Element -> List (SingleAttribute msg) -> List (SingleAttribute msg) -> WriterT (Sub msg /\ Map String String) Effect (List (SingleAttribute msg))
 diffAttributes element =
   diff
     ( case _ of
         Diff.Left sa -> case sa of
           Attr prop _ -> do
-            lift $ removeAttribute prop element
+            lift $ H.removeAttribute prop element
             pure Nothing
           Prop prop value -> pure Nothing
           _ -> pure Nothing
         Diff.Right sa -> case sa of
           Attr prop value -> do
-            lift $ setAttribute prop value element
+            lift $ H.setAttribute prop value element
             pure $ Just sa
           Prop prop value -> do
             lift $ setProperty prop value element
             pure $ Just sa
           Listener toSub -> do
-            tell $ toSub element
+            tell $ toSub (H.toEventTarget element) /\ mempty
             pure $ Just sa
         Diff.Both sa1 sa2 -> case sa1, sa2 of
           Attr prop1 value1, Attr prop2 value2 ->
@@ -304,11 +337,11 @@ diffAttributes element =
               if value1 == value2 then
                 pure $ Just sa1
               else do
-                lift $ setAttribute prop1 value2 element
+                lift $ H.setAttribute prop1 value2 element
                 pure $ Just sa2
             else do
-              lift $ removeAttribute prop1 element
-              lift $ setAttribute prop2 value2 element
+              lift $ H.removeAttribute prop1 element
+              lift $ H.setAttribute prop2 value2 element
               pure $ Just sa2
           Prop prop1 value1, Prop prop2 value2 ->
             if prop1 == prop2 then
@@ -321,32 +354,32 @@ diffAttributes element =
               lift $ setProperty prop2 value2 element
               pure $ Just sa2
           Attr prop1 _, Prop prop2 value2 -> do
-            lift $ removeAttribute prop1 element
+            lift $ H.removeAttribute prop1 element
             lift $ setProperty prop2 value2 element
             pure $ Just sa2
           Attr prop _, Listener toSub -> do
-            lift $ removeAttribute prop element
-            tell $ toSub element
+            lift $ H.removeAttribute prop element
+            tell $ toSub (H.toEventTarget element) /\ mempty
             pure $ Just sa2
           Listener _, Prop prop value -> do
             lift $ setProperty prop value element
             pure $ Just sa2
           _, Attr prop value -> do
-            lift $ setAttribute prop value element
+            lift $ H.setAttribute prop value element
             pure $ Just sa2
           _, Listener toSub -> do
-            tell $ toSub element
+            tell $ toSub (H.toEventTarget element) /\ mempty
             pure $ Just sa2
     )
 
 getNode :: ∀ msg. SingleVNode msg -> Maybe Node
 getNode = case _ of
-  VElement r -> r.node
-  KeyedElement r -> r.node
-  VText r -> r.node
+  VElement r -> H.toNode <$> r.node
+  KeyedElement r -> H.toNode <$> r.node
+  VText r -> H.toNode <$> r.node
 
 addNode :: ∀ msg. SingleVNode msg -> MyMonadCommon msg
-addNode svn = svn # placeNode (\{ node, parent } -> appendChild node parent)
+addNode svn = svn # placeNode (\{ node, parent } -> H.appendChild node parent)
 
 addKeyedNode :: ∀ msg. String /\ SingleVNode msg -> MyMonad msg (String /\ SingleVNode msg)
 addKeyedNode (key /\ vnode) = do
@@ -354,44 +387,66 @@ addKeyedNode (key /\ vnode) = do
   pure $ key /\ addedVNode
 
 replaceNode :: ∀ msg. Node -> SingleVNode msg -> MyMonad msg (SingleVNode msg)
-replaceNode oldNode = placeNode (\{ node, parent } -> replaceChild node oldNode parent)
+replaceNode oldNode = placeNode (\{ node, parent } -> H.replaceChild node oldNode parent)
 
-placeNode :: ∀ a msg. ({ node :: Node, parent :: Node } -> Effect a) -> SingleVNode msg -> MyMonadCommon msg
+placeNode ::
+  ∀ a msg.
+  ( { node :: Node
+    , parent :: Element
+    } ->
+    Effect a
+  ) ->
+  SingleVNode msg -> MyMonadCommon msg
 placeNode placer svn = do
   { doc, parent } <- ask
   case svn of
-    VElement { tag, attributes, children } -> do
-      element <- liftEffect $ createElement tag doc
-      let
-        node = Element.toNode element
-      childNodes <- traverse (local (changeParent node) <. addNode) children
-      tell =<< (liftEffect $ setAttributes attributes element)
-      _ <- liftEffect $ placer { node, parent }
-      pure
-        $ VElement
-            { tag
-            , attributes
-            , children: childNodes
-            , node: Just node
+    VElement r -> do
+      newChildren /\ node <- placeNodeHelper placer r addNode
+      pure $ VElement
+        $ r
+            { children = newChildren
+            , node = Just node
             }
-    KeyedElement { tag, attributes, children } -> do
-      element <- liftEffect $ createElement tag doc
-      let
-        node = Element.toNode element
-      childNodes <- traverse (local (changeParent node) <. addKeyedNode) children
-      tell =<< (liftEffect $ setAttributes attributes element)
-      _ <- liftEffect $ placer { node, parent }
-      pure
-        $ KeyedElement
-            { tag
-            , attributes
-            , children: childNodes
-            , node: Just node
+    KeyedElement r -> do
+      newChildren /\ node <- placeNodeHelper placer r addKeyedNode
+      pure $ KeyedElement
+        $ r
+            { children = newChildren
+            , node = Just node
             }
     VText { text } -> do
-      node <- liftEffect $ Text.toNode <$> createTextNode text doc
-      _ <- liftEffect $ placer { node, parent }
+      node <- liftEffect $ H.createTextNode text doc
+      _ <- liftEffect $ placer { node: H.toNode node, parent }
       pure (VText { text, node: Just node })
+
+placeNodeHelper ::
+  ∀ a msg r children.
+  ( { node :: Node
+    , parent :: Element
+    } ->
+    Effect a
+  ) ->
+  { tag :: String
+  , styles :: List Style
+  , attributes :: List (SingleAttribute msg)
+  , children :: List children
+  | r
+  } ->
+  (children -> MyMonad msg children) ->
+  MyMonad msg (List children /\ Element)
+placeNodeHelper placer { tag, styles, attributes, children } traverser = do
+  { doc, parent } <- ask
+  element <- liftEffect $ H.createElement tag {} doc
+  subs <- liftEffect $ setAttributes attributes element
+  let
+    p = C.process styles
+  tell $ subs
+    /\ case p of
+        Just r -> Map.singleton r.class r.css
+        Nothing -> mempty
+  _ <- liftEffect $ placer { node: H.toNode element, parent }
+  newChildren <- traverse (local (changeParent element) <. traverser) children
+  pure $ newChildren /\ element
 
 removeVNode :: ∀ msg. SingleVNode msg -> MyMonad msg Unit
 removeVNode svn = do
@@ -412,9 +467,9 @@ setAttributes attribute element = foldM go mempty attribute
   go :: Sub msg -> SingleAttribute msg -> Effect (Sub msg)
   go acc = case _ of
     Attr prop value -> do
-      setAttribute prop value element
+      H.setAttribute prop value element
       pure acc
     Prop prop value -> do
       setProperty prop value element
       pure acc
-    Listener toSub -> pure $ acc <> toSub element
+    Listener toSub -> pure $ acc <> toSub (H.toEventTarget element)

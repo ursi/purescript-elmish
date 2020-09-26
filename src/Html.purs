@@ -1,7 +1,8 @@
 module Html where
 
 import MasonPrelude
-import Data.Batchable (Batched(..), batch, flatten)
+import Css (Style, Styles)
+import Data.Batchable (Batched(..), flatten)
 import Data.Batchable as Batchable
 import Data.List ((:))
 import VirtualDom (Attribute, SingleVNode(..), VNode)
@@ -14,6 +15,7 @@ keyed tag attributes children =
   Single
     $ KeyedElement
         { tag
+        , styles: mempty
         , attributes: flatten $ Batch attributes
         , children:
             foldr
@@ -32,8 +34,20 @@ element tag attributes children =
   Single
     $ VElement
         { tag
-        , attributes: flatten $ batch attributes
-        , children: flatten $ batch children
+        , styles: mempty
+        , attributes: flatten $ Batch attributes
+        , children: flatten $ Batch children
+        , node: Nothing
+        }
+
+elementS :: ∀ msg. String -> Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+elementS tag styles attributes children =
+  Single
+    $ VElement
+        { tag
+        , styles: flatten $ Batch styles
+        , attributes: flatten $ Batch attributes
+        , children: flatten $ Batch children
         , node: Nothing
         }
 
@@ -42,6 +56,9 @@ text = Single <. VText <. { text: _, node: Nothing }
 
 div :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 div = element "div"
+
+divS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+divS = elementS "div"
 
 label :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 label = element "label"

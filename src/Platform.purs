@@ -1,12 +1,13 @@
 module Platform where
 
 import MasonPrelude
+import Attribute as A
 import Data.Identity
 import Control.Monad.Writer.Trans (WriterT, runWriterT)
 import Control.Monad.State (State, evalState)
 import Control.Monad.State.Trans (StateT(..), evalStateT, get)
 import Control.Monad.Trans.Class (lift)
-import Data.Batchable (Batched(..), batch, flatten)
+import Data.Batchable (Batched(..), flatten)
 import Data.Newtype (class Newtype, unwrap)
 import Debug as Debug
 import Effect.Console (log)
@@ -14,21 +15,17 @@ import Effect.Exception (throw)
 import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, mkEffectFn1)
-import Task (Task)
-import Task as Task
-import Sub (Sub, ActiveSub, SubBuilder)
-import Sub as Sub
+import HTML.All (Document, Element)
+import HTML.All as H
 import Html (Html)
 import Html as H
-import Attribute as A
+import Sub (Sub, ActiveSub, SubBuilder)
+import Sub as Sub
+import Task (Task)
+import Task as Task
+import Throttle (throttle)
 import VirtualDom (VDOM)
 import VirtualDom as VDom
-import Web.DOM.Document (Document)
-import Web.DOM.Node (Node)
-import Web.HTML as HTML
-import Web.HTML.HTMLDocument as HTMLDocument
-import Web.HTML.HTMLElement as HTMLElement
-import Web.HTML.Window as Window
 
 newtype Cmd msg
   = Cmd ((msg -> Effect Unit) -> Effect Unit)
@@ -112,74 +109,75 @@ app init =
   mkEffectFn1 \flags -> do
     initialModel /\ cmd <- runWriterT $ init.init flags
     modelRef <- Ref.new initialModel
-    htmlDocument <- HTML.window >>= Window.document
-    head <-
-      HTMLDocument.head htmlDocument
-        >>= maybe
-            (throw "error: no head element")
-            (pure <. HTMLElement.toNode)
-    body <-
-      HTMLDocument.body htmlDocument
-        >>= maybe
-            (throw "error: no body element")
-            (pure <. HTMLElement.toNode)
+    doc <- H.window >>= H.document
+    head <- H.toElement <$> H.unsafeHead doc
+    body <- H.toElement <$> H.unsafeBody doc
     let
-      doc :: Document
-      doc = HTMLDocument.toDocument htmlDocument
-    newHeadVDom <- fst <$> VDom.render doc head mempty (flatten $ batch $ (init.view initialModel).head)
-    newBodyVDom /\ domSubs <- VDom.render doc body mempty $ flatten $ batch $ (init.view initialModel).body
-    vdomsRef <-
-      Ref.new
-        { head: newHeadVDom
-        , body: newBodyVDom
-        }
+      initialView = init.view initialModel
+    newVDoms /\ domSubs <-
+      VDom.render doc { head, body } mempty
+        $ { head: flatten $ Batch $ initialView.head
+          , body: flatten $ Batch $ initialView.body
+          }
+    vdomsRef <- Ref.new newVDoms
+    domSubsRef <- Ref.new domSubs
+    render <-
+      throttle raf \oldVDOMs -> do
+        vdoms <- Ref.read vdomsRef
+        newVDOMs /\ subs <- VDom.render doc { head, body } vdoms oldVDOMs
+        Ref.write newVDOMs vdomsRef
+        Ref.write subs domSubsRef
     activeSubsRef <- Ref.new []
     let
       refs =
         { model: modelRef
         , vdoms: vdomsRef
-        , subs: activeSubsRef
+        , domSubs: domSubsRef
+        , activeSubs: activeSubsRef
         }
     newActiveSubs <-
       Sub.something
         []
         (domSubs <> init.subscriptions initialModel)
-        (sendMsg doc { head, body } refs)
+        (sendMsg render refs)
     Ref.write newActiveSubs activeSubsRef
-    unwrap cmd $ sendMsg doc { head, body } refs
+    unwrap cmd $ sendMsg render refs
   where
   sendMsg ::
-    Document ->
-    { head :: Node
-    , body :: Node
-    } ->
+    ( { head :: VDOM msg
+      , body :: VDOM msg
+      } ->
+      Effect Unit
+    ) ->
     { model :: Ref model
     , vdoms ::
         Ref
           { head :: VDOM msg
           , body :: VDOM msg
           }
-    , subs :: Ref (Array ActiveSub)
+    , domSubs :: Ref (Sub msg)
+    , activeSubs :: Ref (Array ActiveSub)
     } ->
     msg ->
     Effect Unit
-  sendMsg doc parents refs msg = do
+  sendMsg render refs msg = do
     currentModel <- Ref.read refs.model
     newModel /\ cmd <- runWriterT $ init.update currentModel msg
     Ref.write newModel refs.model
-    vdoms <- Ref.read refs.vdoms
-    newHeadVDom <- fst <$> VDom.render doc parents.head vdoms.head (flatten $ batch $ (init.view newModel).head)
-    newBodyVDom /\ domSubs <- VDom.render doc parents.body vdoms.body $ flatten $ batch $ (init.view newModel).body
-    Ref.write
-      { head: newHeadVDom
-      , body: newBodyVDom
+    let
+      { head, body } = init.view newModel
+    render
+      { head: flatten $ Batch $ head
+      , body: flatten $ Batch $ body
       }
-      refs.vdoms
-    activeSubs <- Ref.read refs.subs
+    domSubs <- Ref.read refs.domSubs
+    activeSubs <- Ref.read refs.activeSubs
     newActiveSubs <-
       Sub.something
         activeSubs
         (domSubs <> init.subscriptions newModel)
-        (sendMsg doc parents refs)
-    Ref.write newActiveSubs refs.subs
-    unwrap cmd $ sendMsg doc parents refs
+        (sendMsg render refs)
+    Ref.write newActiveSubs refs.activeSubs
+    unwrap cmd $ sendMsg render refs
+
+foreign import raf :: ∀ a. Effect a -> Effect Unit
