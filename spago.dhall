@@ -5,6 +5,7 @@
   , "generics-rep"
   , "js-timers"
   , "mason-prelude"
+  , "parallel"
   , "psci-support"
   , "web-dom"
   , "web-events"
