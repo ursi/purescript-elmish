@@ -181,3 +181,19 @@ app init =
     unwrap cmd $ sendMsg render refs
 
 foreign import raf :: ∀ a. Effect a -> Effect Unit
+
+html ::
+  { head :: Array (Html Unit)
+  , body :: Array (Html Unit)
+  } ->
+  Effect Unit
+html vdom = do
+  doc <- H.window >>= H.document
+  head <- H.toElement <$> H.unsafeHead doc
+  body <- H.toElement <$> H.unsafeBody doc
+  _ <-
+    VDom.render doc { head, body } mempty
+      $ { head: flatten $ Batch $ vdom.head
+        , body: flatten $ Batch $ vdom.body
+        }
+  pure unit
