@@ -5,8 +5,8 @@ import Control.Monad.Reader.Trans (ReaderT, ask, local, runReaderT)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Writer.Trans (WriterT, runWriterT, tell)
-import Css (Style)
-import Css as C
+import VirtualDom.Css (Style)
+import VirtualDom.Css as C
 import Data.Array as Array
 import Data.Batchable (Batched(..))
 import Data.Diff (Diff, diff)
