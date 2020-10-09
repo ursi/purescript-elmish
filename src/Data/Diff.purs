@@ -2,7 +2,6 @@ module Data.Diff
   ( class Diffable
   , Diff(..)
   , diff
-  , diff2
   ) where
 
 import MasonPrelude
@@ -18,35 +17,8 @@ data Diff a b
   | Right b
   | Both a b
 
--- purty sucks
 class Diffable f where
   diff :: ∀ a b c m. Monad m => (Diff a b -> m (Maybe c)) -> f a -> f b -> m (f c)
-
-diff2 ::
-  ∀ a b c f g m.
-  Diffable f =>
-  Diffable g =>
-  Monoid (g a) =>
-  Monoid (g b) =>
-  Monad m =>
-  (Diff a b -> m (Maybe c)) ->
-  f (g a) ->
-  f (g b) ->
-  m (f (g c))
-diff2 f fga fgb =
-  {-- let --}
-  {--   _ = Debug.debugger unit --}
-  {-- in --}
-  diff
-    ( \x ->
-        Just
-          <$> case x of
-              Left ga -> diff f ga mempty
-              Right gb -> diff f mempty gb
-              Both ga gb -> diff f ga gb
-    )
-    fga
-    fgb
 
 instance diffableList :: Diffable List where
   diff = diffList
