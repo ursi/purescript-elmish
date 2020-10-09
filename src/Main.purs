@@ -13,12 +13,12 @@ import Data.Newtype (unwrap)
 import Data.String (Pattern(..))
 import Data.String as String
 import Debug as Debug
-import Effect.Console (log, logShow)
+import Effect.Class.Console (log, logShow)
 import Effect.Now (now)
 import Html (Html)
 import Html as H
 import HTML.All as HA
-import Platform (Cmd, Program, Update)
+import Platform (Cmd, Program, Update, attemptTask)
 import Platform as Platform
 import Task
 import Sub (Sub(..), SubBuilder)
@@ -76,24 +76,21 @@ data Msg
 
 update :: Model -> Msg -> Update Model Msg
 update model msg = do
-  let
-    newModel = case msg of
-      MouseMoved pos -> model { mousePosition = pos }
-      UpdateNewPerson str -> model { newPerson = str }
-      AddPerson ->
-        if model.newPerson == "" then
-          model
-        else
-          model { people = Array.insert model.newPerson model.people }
-      Delete person -> model { people = Array.delete person model.people }
-      UpdateTime time -> model { time = time }
-      ToggleShowingInput -> model { showingInput = not model.showingInput }
-      InputChanged str -> model { input = str }
-      Increment -> model { counter = model.counter + 1 }
-      Decrement -> model { counter = model.counter - 1 }
-      NoOp -> model
-  lift $ logShow newModel
-  pure newModel
+  case msg of
+    MouseMoved pos -> pure $ model { mousePosition = pos }
+    UpdateNewPerson str -> pure $ model { newPerson = str }
+    AddPerson ->
+      if model.newPerson == "" then
+        pure model
+      else do
+        pure $ model { people = Array.insert model.newPerson model.people }
+    Delete person -> pure $ model { people = Array.delete person model.people }
+    UpdateTime time -> pure $ model { time = time }
+    ToggleShowingInput -> pure $ model { showingInput = not model.showingInput }
+    InputChanged str -> pure $ model { input = str }
+    Increment -> pure $ model { counter = model.counter + 1 }
+    Decrement -> pure $ model { counter = model.counter - 1 }
+    NoOp -> pure $ model
 
 -- SUBSCRIPTIONS
 subscriptions :: Model -> Sub Msg
