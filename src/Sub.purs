@@ -45,7 +45,7 @@ mapPresub f p callback = p $ callback <. f
 fromForeign :: ∀ a. SubBuilder (ForeignSub a) -> SingleSub a
 fromForeign (SubBuilder s@{ sub }) =
   SubBuilder
-    $ s { sub = \callback -> runEffectFn1 sub (mkEffectFn1 callback) }
+    $ s { sub = runEffectFn1 sub <. mkEffectFn1 }
 
 type SubProperties
   = ( impl :: JSValue
