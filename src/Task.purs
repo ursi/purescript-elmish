@@ -1,10 +1,11 @@
 module Task
-  ( Task(..)
+  ( Promise
+  , Task(..)
   , Canceler
   , bindError
   , capture
-
   , fail
+  , fromPromise
   , makeTask
   , run
   , main
@@ -17,6 +18,7 @@ import Control.Parallel (class Parallel, parSequence)
 import Data.Bifunctor (class Bifunctor)
 import Data.Newtype (class Newtype, unwrap)
 import Effect.Class.Console (log, logShow)
+import Effect.Exception as Exceptions
 import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Effect.Timer (setTimeout, clearTimeout)
@@ -133,6 +135,18 @@ run = capture $ const $ pure unit
 
 makeTask :: ∀ a x. (Callback a -> Callback x -> Effect Canceler) -> Task x a
 makeTask f = Task \aC xC ref -> f aC xC >>= Ref.write ~$ ref
+
+foreign import data Promise :: Type -> Type
+
+foreign import fromPromiseImpl ::
+  ∀ a x.
+  (∀ b y. (Callback b -> Callback y -> Effect Canceler) -> Task y b) ->
+  Effect Unit ->
+  (Unit -> Promise a) ->
+  Task x a
+
+fromPromise :: ∀ a. (Unit -> Promise a) -> Task Exceptions.Error a
+fromPromise = fromPromiseImpl makeTask $ pure unit
 
 -- TEST
 wait :: ∀ x. Int -> Task x Unit
