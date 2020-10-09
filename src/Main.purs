@@ -122,23 +122,31 @@ view model =
       ]
   , body:
       [ H.divS
-          [ C.declaration "background" "green"
+          [ C.background "green"
+          , C.border "1px solid black"
           , C.mapSelector
-              (C.append " < div")
-              [ C.declaration "font-weight" "bold"
-              , C.declaration "font-family" "serif"
+              (C.append " > div")
+              [ C.fontWeight "bold"
+              , C.fontFamily "serif"
               ]
           ]
-          [ A.attribute "style" "border: 1px solid black"
-          --, A.onMouseMove MouseMoved
-          ]
-          [ H.divS [ C.declaration "font-size" "20px" ]
-              [ A.attribute "style" $ "position: absolute; top: "
-                  <> show (snd model.mousePosition)
-                  <> "px; left: calc("
-                  <> show (fst model.mousePosition)
-                  <> "px + 1px); width: 20px; height: 20px; background: black"
+          [] --A.onMouseMove MouseMoved ]
+          [ H.divS
+              [ C.fontSize "20px"
+              , C.position "absolute"
+              , C.top $ show (snd model.mousePosition) <> "px"
+              , C.left $ "calc(" <> show (fst model.mousePosition) <> "px + 2px)"
+              , C.width "20px"
+              , C.height "20px"
+              , C.background "black"
               ]
+              []
+              -- [ A.attribute "style" $ "position: absolute; top: "
+              --     <> show (snd model.mousePosition)
+              --     <> "px; left: calc("
+              --     <> show (fst model.mousePosition)
+              --     <> "px + 1px); width: 20px; height: 20px; background: black"
+              -- ]
               []
           , H.div []
               [ H.text $ "("
