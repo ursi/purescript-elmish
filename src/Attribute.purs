@@ -16,7 +16,7 @@ import HTML.All (Event, EventTarget, HTMLInputElement)
 import HTML.All as H
 import Sub (Callback, Sub(..), SubBuilder, Presub, (<@@>))
 import Sub as Sub
-import Throttle (saveThrottle)
+import Throttle (throttle)
 import Unsafe.Coerce (unsafeCoerce)
 import VirtualDom (Attribute, SingleAttribute(..))
 
@@ -139,4 +139,4 @@ throttledOn'RefEq :: ∀ a. Number -> (Event -> Effect a) -> EventTarget -> Stri
 throttledOn'RefEq = makeThrottledListener <~. (flip <. (<.) bind)
 
 throttleMs :: ∀ a. Number -> Callback a -> Effect (Callback a)
-throttleMs ms = saveThrottle (\c -> setTimeout (Int.round ms) c *> pure unit)
+throttleMs ms = throttle (\c -> setTimeout (Int.round ms) c *> pure unit)
