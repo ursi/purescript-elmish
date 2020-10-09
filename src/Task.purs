@@ -1,56 +1,45 @@
 module Task
-  ( Callback
-  , Promise
-  , Task(..)
-  , TaskImpl
+  ( Task(..)
+  , Canceler
+  , bindError
   , capture
-  , fromPromise
-  , logSuccess
-  , logShowSuccess
-  , onError
-  , parallel
-  , report
+
+  , fail
+  , makeTask
   , run
-  , unsafeCapture
+  , main
   ) where
 
 import MasonPrelude
+import Callback (Callback)
 import Control.Apply (lift2)
+import Control.Parallel (class Parallel, parSequence)
 import Data.Bifunctor (class Bifunctor)
-import Effect.Class (class MonadEffect, liftEffect)
-import Effect.Console (log, logShow)
-import Effect.Uncurried (EffectFn1, EffectFn2)
+import Data.Newtype (class Newtype, unwrap)
+import Effect.Class.Console (log, logShow)
+import Effect.Ref (Ref)
+import Effect.Ref as Ref
+import Effect.Timer (setTimeout, clearTimeout)
 
-type Callback a
-  = EffectFn1 a Unit
-
-type TaskImpl x a
-  = EffectFn2 (Callback a) (Callback x) Unit
+type Canceler
+  = Effect Unit
 
 newtype Task x a
-  = Task (TaskImpl x a)
+  = Task (Callback a -> Callback x -> Ref Canceler -> Effect Unit)
 
-foreign import data Promise :: Type -> Type
-
-foreign import mapImpl :: ∀ x a b. (a -> b) -> Task x a -> Task x b
+derive instance newtypeTask :: Newtype (Task x a) _
 
 instance functorTask :: Functor (Task x) where
-  map = mapImpl
-
-foreign import applyImpl :: ∀ x a b. Task x (a -> b) -> Task x a -> Task x b
+  map f (Task t) = Task $ t <. (.>) f
 
 instance applyTask :: Apply (Task x) where
-  apply = applyImpl
-
-foreign import pureImpl :: ∀ x a. a -> Task x a
+  apply (Task tf) (Task ta) = Task $ \bC xC ref -> tf (\f -> ta (bC <. f) xC ref) xC ref
 
 instance applicativeTask :: Applicative (Task x) where
-  pure = pureImpl
-
-foreign import bindImpl :: ∀ x a b. Task x a -> (a -> Task x b) -> Task x b
+  pure a = Task \aC _ _ -> aC a
 
 instance bindTask :: Bind (Task x) where
-  bind = bindImpl
+  bind (Task ta) f = Task \bC xC ref -> ta (\a -> unwrap (f a) bC xC ref) xC ref
 
 instance monadTask :: Monad (Task x)
 
@@ -60,66 +49,117 @@ instance semigroupTask :: Semigroup a => Semigroup (Task x a) where
 instance monoidTask :: Monoid a => Monoid (Task x a) where
   mempty = pure mempty
 
-foreign import mapError :: ∀ x a y. (x -> y) -> Task x a -> (Task y a)
-
 instance bifunctorTask :: Bifunctor Task where
   bimap lmap rmap task = task <#> rmap # mapError lmap
 
-foreign import fromEffect :: ∀ x a. Effect a -> Task x a
-
 instance monadEffectTask :: MonadEffect (Task x) where
-  liftEffect = fromEffect
+  liftEffect aEff = Task $ \aC _ _ -> aEff >>= aC
 
-foreign import onErrorImpl :: ∀ x a y. (x -> Task y a) -> Task x a -> Task y a
+newtype ParTask x a
+  = ParTask (Callback a -> Callback x -> Ref Canceler -> Effect Unit)
 
-onError :: ∀ x a y. (x -> Task y a) -> Task x a -> Task y a
-onError = onErrorImpl
+instance functorParTask :: Functor (ParTask x) where
+  map f (ParTask t) = ParTask $ t <. (.>) f
 
-foreign import reportImpl ::
-  ∀ x a.
-  (∀ b c. b -> Either b c) ->
-  (∀ b c. b -> Either c b) ->
-  (∀ b. b -> Effect Unit) ->
-  (Either x a -> Effect Unit) ->
-  Task x a ->
-  Effect Unit
+instance applyParTask :: Apply (ParTask x) where
+  apply (ParTask tf) (ParTask ta) =
+    ParTask
+      $ \bC xC ref -> do
+          fRef <- Ref.new Nothing
+          fErrorRef <- Ref.new false
+          fCancelerRef <- Ref.new $ pure unit
+          aRef <- Ref.new Nothing
+          aErrorRef <- Ref.new false
+          aCancelerRef <- Ref.new $ pure unit
+          let
+            errorCallback :: Ref Boolean -> Ref Boolean -> Callback x
+            errorCallback myErrorRef otherErrorRef x = do
+              otherError <- Ref.read otherErrorRef
+              if otherError then
+                pure unit
+              else do
+                join $ Ref.read fCancelerRef
+                join $ Ref.read aCancelerRef
+                Ref.write true myErrorRef
+                xC x
+          tf
+            ( \f -> do
+                ma <- Ref.read aRef
+                case ma of
+                  Just a -> bC $ f a
+                  Nothing -> Ref.write (Just f) fRef
+            )
+            (errorCallback fErrorRef aErrorRef)
+            fCancelerRef
+          ta
+            ( \a -> do
+                mf <- Ref.read fRef
+                case mf of
+                  Just f -> bC $ f a
+                  Nothing -> Ref.write (Just a) aRef
+            )
+            (errorCallback aErrorRef fErrorRef)
+            aCancelerRef
+          Ref.write
+            ( do
+                join $ Ref.read fCancelerRef
+                join $ Ref.read aCancelerRef
+            )
+            ref
 
-report ::
-  ∀ x a.
-  (∀ b. b -> Effect Unit) ->
-  (Either x a -> Effect Unit) ->
-  Task x a ->
-  Effect Unit
-report = reportImpl Left Right
+instance applicativePartask :: Applicative (ParTask x) where
+  pure a = ParTask \aC _ _ -> aC a
 
-foreign import logError :: ∀ a. a -> Effect Unit
+instance parallelTask :: Parallel (ParTask x) (Task x) where
+  parallel (Task t) = ParTask t
+  sequential (ParTask p) = Task p
 
-capture :: ∀ x a. (Either x a -> Effect Unit) -> Task x a -> Effect Unit
-capture = report logError
+mapError :: ∀ a x y. (x -> y) -> Task x a -> Task y a
+mapError f (Task t) = Task $ t <~. (.>) f
 
-foreign import unsafeCaptureImpl :: ∀ a b. (a -> b) -> Task Void a -> Effect Unit
+fail :: ∀ a x. x -> Task x a
+fail x = Task \_ xC _ -> xC x
 
-unsafeCapture :: ∀ a b. (a -> b) -> Task Void a -> Effect Unit
-unsafeCapture = unsafeCaptureImpl
+bindError :: ∀ a x y. Task x a -> (x -> Task y a) -> Task y a
+bindError (Task tx) f = Task \aC yC ref -> tx aC (\x -> unwrap (f x) aC yC ref) ref
 
-run :: ∀ x a. Task x a -> Effect Unit
-run = capture $ const mempty
+capture :: ∀ a x. (Either x a -> Effect Unit) -> Task x a -> Effect Unit
+capture handler (Task t) = do
+  ref <- Ref.new $ pure unit
+  t (handler <. Right) (handler <. Left) ref
 
-foreign import fromPromiseImpl :: ∀ a b. (a -> Promise b) -> a -> (Task String b)
+run :: ∀ a x. Task x a -> Effect Unit
+run = capture $ const $ pure unit
 
-fromPromise :: ∀ a b. (a -> Promise b) -> a -> Task String b
-fromPromise = fromPromiseImpl
+makeTask :: ∀ a x. (Callback a -> Callback x -> Effect Canceler) -> Task x a
+makeTask f = Task \aC xC ref -> f aC xC >>= Ref.write ~$ ref
 
-foreign import parallel :: ∀ x a. Array (Task x a) -> Task x (Array a)
+-- TEST
+wait :: ∀ x. Int -> Task x Unit
+wait ms =
+  makeTask \cb _ -> do
+    id <- setTimeout ms (cb unit)
+    pure $ clearTimeout id
 
-logSuccess :: ∀ x. Task x String -> Task x String
-logSuccess t = do
-  str <- t
-  liftEffect $ log str
-  pure str
-
-logShowSuccess :: ∀ x a. Show a => Task x a -> Task x a
-logShowSuccess t = do
-  a <- t
-  liftEffect $ logShow a
-  pure a
+main :: Effect Unit
+main =
+  capture logShow
+    $ parSequence
+        [ do
+            wait 500
+            log "1"
+            wait 500
+            log "2"
+            wait 500
+            log "3"
+        , do
+            wait 500
+            log "4"
+            wait 500
+            log "5"
+            wait 500
+            log "6"
+        , wait 700 *> fail 5
+        -- , fail 3
+        -- , fail 2
+        ]
