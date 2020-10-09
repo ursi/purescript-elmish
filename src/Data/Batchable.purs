@@ -3,8 +3,6 @@ module Data.Batchable where
 import MasonPrelude
 import Data.Array ((!!))
 import Data.Array as Array
-import Data.Diff (class Diffable, Diff, diff2)
-import Data.Diff as Diff
 import Data.FoldableWithIndex (foldlWithIndexDefault, foldrWithIndexDefault)
 import Data.Generic.Rep (class Generic)
 import Data.Generic.Rep.Show (genericShow)
