@@ -129,18 +129,18 @@ something activeSubs (Sub newSub) callback =
           (unsafePartial unsafeDeleteAt i newSubs)
           acc { keep = Array.snoc acc.keep head }
       Nothing ->
-        let
-          _ = Debug.taggedLog "canceled" head
-        in
-          go
-            tail
-            newSubs
-            $ acc { cancel = acc.cancel *> getCanceler head }
+        -- let
+        --   _ = Debug.taggedLog "canceled" head
+        -- in
+        go
+          tail
+          newSubs
+          $ acc { cancel = acc.cancel *> getCanceler head }
     Nothing -> do
       acc.cancel
       newAcitveSubs <- traverse (launch callback) newSubs
-      let
-        _ = Debug.taggedLog "kept" acc.keep
+      -- let
+      --   _ = Debug.taggedLog "kept" acc.keep
       pure $ (acc.keep <> newAcitveSubs)
 
 sameAsActive :: ∀ a. ActiveSub -> SingleSub a -> Boolean

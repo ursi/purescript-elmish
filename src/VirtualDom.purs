@@ -145,7 +145,6 @@ render doc parents oldVNodes newVNodes = do
               (vDomDiff oldVNodes.head $ makeStyleNode styleMap : newVNodes.head)
               { doc, parent: parents.head }
           )
-  liftEffect $ logShow $ styleMap
   pure
     $ { head: headVdom
       , body: bodyVdom
