@@ -3,7 +3,6 @@ module Main (main) where
 import MasonPrelude
 import Attribute as A
 import Control.Monad.Trans.Class (lift)
-import Control.Monad.Writer.Class (tell)
 import Css as C
 import Css.Functions as CF
 import Css.Global as CG
@@ -12,20 +11,12 @@ import Data.Array as Array
 import Data.Batchable (Batched(..))
 import Data.DateTime.Instant as Instant
 import Data.Newtype (unwrap)
-import Data.String (Pattern(..))
-import Data.String as String
-import Debug as Debug
-import Effect.Class.Console (log, logShow)
 import Effect.Now (now)
 import Html (Html)
 import Html as H
-import HTML.All as HA
-import Platform (Cmd, Program, Update, attemptTask)
+import Platform (Program, Update)
 import Platform as Platform
-import Task
-import Sub (Sub(..), SubBuilder)
-import Sub as Sub
-import VirtualDom
+import Sub (Sub)
 
 people :: Array String
 people = [ "Mason", "Belle", "Luke", "Nic" ]
@@ -107,19 +98,14 @@ view ::
 view model =
   { head:
       [ H.title model.newPerson
-      , H.style
-          [ CG.body
-              [ C.background "red"
-              , C.margin "0"
-              ]
-          ]
+      , default
+      , H.style [ CG.body [ C.background "red" ] ]
       ]
   , body:
       [ H.divS
           [ C.background "green"
           , C.border "1px solid black"
-          , C.mapSelector
-              (C.append " > div")
+          , C.mapSelector (C.append " > div")
               [ C.fontWeight "bold"
               , C.fontFamily "serif"
               ]
@@ -175,3 +161,14 @@ view model =
           ]
       ]
   }
+
+default :: ∀ msg. Html msg
+default =
+  Batch
+    [ H.meta [ A.charset "utf-8" ]
+    , H.meta
+        [ A.name "viewport"
+        , A.content "width=device-width"
+        ]
+    , H.style [ CG.body [ C.margin "0" ] ]
+    ]
