@@ -136,7 +136,6 @@ module Html
   , menu
   , menuS
   , meta
-  , metaS
   , meter
   , meterS
   , nav
@@ -680,11 +679,8 @@ menu = element "menu"
 menuS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 menuS = elementS "menu"
 
-meta :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-meta = element "meta"
-
-metaS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-metaS = elementS "meta"
+meta :: ∀ msg. Array (Attribute msg) -> VNode msg
+meta = element "meta" ~$ []
 
 meter :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 meter = element "meter"
