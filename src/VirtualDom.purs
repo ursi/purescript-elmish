@@ -5,8 +5,6 @@ import Control.Monad.Reader.Trans (ReaderT, ask, local, runReaderT)
 import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Writer.Trans (WriterT, runWriterT, tell)
-import VirtualDom.Css (Style)
-import VirtualDom.Css as C
 import Data.Array as Array
 import Data.Batchable (Batched(..))
 import Data.Diff (Diff, diff)
@@ -39,6 +37,8 @@ import HTML.All as H
 import Sub (Callback, Sub, SubBuilder)
 import Sub as Sub
 import Unsafe.Coerce (unsafeCoerce)
+import VirtualDom.Css (Style, Styles)
+import VirtualDom.Css as VC
 
 data SingleVNode msg
   = VElement
