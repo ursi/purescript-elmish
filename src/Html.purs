@@ -866,10 +866,10 @@ supS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> V
 supS = elementS "sup"
 
 svg :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-svg = element "SVG"
+svg = element "svg"
 
 svgS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-svgS = elementS "SVG"
+svgS = elementS "svg"
 
 table :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 table = element "table"
