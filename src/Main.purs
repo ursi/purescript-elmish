@@ -5,6 +5,8 @@ import Attribute as A
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Writer.Class (tell)
 import Css as C
+import Css.Functions as CF
+import Css.Global as CG
 import Data.Array ((..))
 import Data.Array as Array
 import Data.Batchable (Batched(..))
@@ -105,16 +107,11 @@ view ::
 view model =
   { head:
       [ H.title model.newPerson
-      , H.keyed "style" []
-          [ "style"
-              /\ H.element "style" []
-                  [ H.text
-                      """
-  body {
-    background: red;
-  }
-"""
-                  ]
+      , H.style
+          [ CG.body
+              [ C.background "red"
+              , C.margin "0"
+              ]
           ]
       ]
   , body:
@@ -127,23 +124,17 @@ view model =
               , C.fontFamily "serif"
               ]
           ]
-          [] --A.onMouseMove MouseMoved ]
+          [ A.onMouseMove MouseMoved ]
           [ H.divS
               [ C.fontSize "20px"
               , C.position "absolute"
-              , C.top $ show (snd model.mousePosition) <> "px"
-              , C.left $ "calc(" <> show (fst model.mousePosition) <> "px + 2px)"
+              , C.top $ C.px $ snd model.mousePosition
+              , C.left $ CF.calc $ CF.add (C.px $ fst model.mousePosition) "2px"
               , C.width "20px"
               , C.height "20px"
               , C.background "black"
               ]
               []
-              -- [ A.attribute "style" $ "position: absolute; top: "
-              --     <> show (snd model.mousePosition)
-              --     <> "px; left: calc("
-              --     <> show (fst model.mousePosition)
-              --     <> "px + 1px); width: 20px; height: 20px; background: black"
-              -- ]
               []
           , H.div []
               [ H.text $ "("
@@ -184,13 +175,3 @@ view model =
           ]
       ]
   }
-
-handler :: HA.Event -> Effect Msg
-handler =
-  HA.toMaybeMouseEvent
-    .> maybe (pure NoOp)
-        ( \e -> do
-            x <- HA.clientX e
-            y <- HA.clientY e
-            pure $ MouseMoved $ x /\ y
-        )
