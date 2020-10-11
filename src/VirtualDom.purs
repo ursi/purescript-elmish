@@ -37,7 +37,7 @@ import HTML.All as H
 import Sub (Callback, Sub, SubBuilder)
 import Sub as Sub
 import Unsafe.Coerce (unsafeCoerce)
-import VirtualDom.Css (Style, Styles)
+import VirtualDom.Css (Style)
 import VirtualDom.Css as VC
 
 data SingleVNode msg
