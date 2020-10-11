@@ -211,7 +211,7 @@ processStyles svn = case svn of
       }
   helper props@{ styles, attributes } = do
     let
-      mstyles = C.process styles
+      mstyles = VC.process styles
     case mstyles of
       Just r -> do
         tell $ mempty /\ Map.singleton r.class r.css
