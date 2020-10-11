@@ -241,6 +241,7 @@ import Data.Batchable (Batched(..), flatten)
 import Data.Batchable as Batchable
 import Data.List ((:))
 import VirtualDom (Attribute, SingleVNode(..), VNode)
+import VirtualDom as VD
 
 type Html msg
   = VNode msg
@@ -287,7 +288,7 @@ elementS tag styles attributes children =
         }
 
 text :: ∀ msg. String -> VNode msg
-text = Single <. VText <. { text: _, node: Nothing }
+text = Single <. VD.text
 
 a :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 a = element "a"
