@@ -427,18 +427,18 @@ on = on' ~~$ identity
 on_ :: ∀ msg. String -> msg -> Attribute msg
 on_ eventName msg =
   Single
-    $ Listener \target ->
+    $ Listener \targ ->
         Sub.new $ Sub.newBuilder on_RefEq
           <@@> msg
-          <@@> target
+          <@@> targ
           <@@> eventName
 
 makeListener :: ∀ msg. (Callback msg -> Callback Event) -> EventTarget -> String -> Presub msg
-makeListener toEventCallback target event = \send -> do
+makeListener toEventCallback targ event = \send -> do
   let
     callback = mkEffectFn1 $ toEventCallback send
-  H.addEventListener event callback {} target
-  pure $ H.removeEventListener event callback {} target
+  H.addEventListener event callback {} targ
+  pure $ H.removeEventListener event callback {} targ
 
 on_RefEq :: ∀ msg. msg -> EventTarget -> String -> Presub msg
 on_RefEq msg = makeListener (\send -> \_ -> send msg)
@@ -446,11 +446,11 @@ on_RefEq msg = makeListener (\send -> \_ -> send msg)
 on' :: ∀ a msg. String -> (Event -> Effect a) -> (a -> msg) -> Attribute msg
 on' eventName toA toMsg =
   Single
-    $ Listener \target ->
+    $ Listener \targ ->
         toMsg
           <$> ( Sub.new $ Sub.newBuilder on'RefEq
                 <@@> toA
-                <@@> target
+                <@@> targ
                 <@@> eventName
             )
 
@@ -464,11 +464,11 @@ throttledOn = throttledOn' ~~~$ identity
 throttledOn_ :: ∀ msg. Number -> String -> msg -> Attribute msg
 throttledOn_ ms eventName msg =
   Single
-    $ Listener \target ->
+    $ Listener \targ ->
         Sub.new $ Sub.newBuilder throttledOn_RefEq
           <@@> ms
           <@@> msg
-          <@@> target
+          <@@> targ
           <@@> eventName
 
 throttledOn_RefEq :: ∀ msg. Number -> msg -> EventTarget -> String -> Presub msg
@@ -481,23 +481,23 @@ makeThrottledListener ::
   EventTarget ->
   String ->
   Presub msg
-makeThrottledListener ms toEventCallback target event = \send -> do
+makeThrottledListener ms toEventCallback targ event = \send -> do
   callback <-
     toEventCallback send
       # throttleMs ms
       <#> mkEffectFn1
-  H.addEventListener event callback {} target
-  pure $ H.removeEventListener event callback {} target
+  H.addEventListener event callback {} targ
+  pure $ H.removeEventListener event callback {} targ
 
 throttledOn' :: ∀ a msg. Number -> String -> (Event -> Effect a) -> (a -> msg) -> Attribute msg
 throttledOn' ms eventName toA toMsg =
   Single
-    $ Listener \target ->
+    $ Listener \targ ->
         toMsg
           <$> ( Sub.new $ Sub.newBuilder throttledOn'RefEq
                 <@@> ms
                 <@@> toA
-                <@@> target
+                <@@> targ
                 <@@> eventName
             )
 
