@@ -26,6 +26,9 @@ attribute = Single <.. Attr
 property :: ∀ msg. String -> JSValue -> Attribute msg
 property = Single <.. Prop
 
+addClass :: ∀ msg. String -> Attribute msg
+addClass = Single <. AddClass
+
 abbr :: ∀ msg. String -> Attribute msg
 abbr = Single <. Attr "abbr"
 
