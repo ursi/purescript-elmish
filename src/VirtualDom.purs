@@ -360,10 +360,10 @@ diffSingle svn1 svn2 = do
     VElement r1, VElement r2 ->
       if r1.tag == r2.tag then
         fromMaybe replace do
-          element <- r1.node
+          elem <- r1.node
           Just do
-            attributes <- lift $ diffAttributes element r1.attributes r2.attributes
-            children <- local (changeParent element) $ vDomDiff r1.children r2.children
+            attributes <- lift $ diffAttributes elem r1.attributes r2.attributes
+            children <- local (changeParent elem) $ vDomDiff r1.children r2.children
             pure
               $ VElement
                   r1
@@ -375,10 +375,10 @@ diffSingle svn1 svn2 = do
     KeyedElement r1, KeyedElement r2 ->
       if r1.tag == r2.tag then
         fromMaybe replace do
-          element <- r1.node
+          elem <- r1.node
           Just do
-            attributes <- lift $ diffAttributes element r1.attributes r2.attributes
-            children <- local (changeParent element) $ keyedDiff r1.children r2.children
+            attributes <- lift $ diffAttributes elem r1.attributes r2.attributes
+            children <- local (changeParent elem) $ keyedDiff r1.children r2.children
             pure
               $ KeyedElement
                   r1
@@ -400,20 +400,20 @@ diffAttributes ::
   List (SingleAttribute msg) ->
   List (SingleAttribute msg) ->
   WriterT (Sub msg /\ Map String String) Effect (List (SingleAttribute msg))
-diffAttributes element =
+diffAttributes elem =
   diff
     ( case _ of
         Diff.Left sa -> do
-          lift $ removeAttribute sa element
+          lift $ removeAttribute sa elem
           pure Nothing
         Diff.Right sa -> do
-          addAttribute sa element
+          addAttribute sa elem
           pure $ Just sa
         Diff.Both sa1 sa2 ->
           let
             switch = do
-              lift $ removeAttribute sa1 element
-              addAttribute sa2 element
+              lift $ removeAttribute sa1 elem
+              addAttribute sa2 elem
               pure $ Just sa2
           in
             case sa1, sa2 of
@@ -422,7 +422,7 @@ diffAttributes element =
                   if value1 == value2 then
                     pure $ Just sa1
                   else do
-                    addAttribute sa2 element
+                    addAttribute sa2 elem
                     pure $ Just sa2
                 else do
                   switch
@@ -436,7 +436,7 @@ diffAttributes element =
                   if value1 == value2 then
                     pure $ Just sa1
                   else do
-                    addAttribute sa2 element
+                    addAttribute sa2 elem
                     pure $ Just sa2
                 else do
                   switch
@@ -445,18 +445,18 @@ diffAttributes element =
     )
 
 removeAttribute :: ∀ msg. SingleAttribute msg -> Element -> Effect Unit
-removeAttribute attr element = case attr of
-  Attr prop _ -> H.removeAttribute prop element
-  Prop prop _ -> setProperty prop (toJSValue null) element
-  AddClass c -> H.classList element >>= H.remove [ c ]
+removeAttribute attr elem = case attr of
+  Attr prop _ -> H.removeAttribute prop elem
+  Prop prop _ -> setProperty prop (toJSValue null) elem
+  AddClass c -> H.classList elem >>= H.remove [ c ]
   Listener _ -> pure unit
 
 addAttribute :: ∀ msg. SingleAttribute msg -> Element -> WriterT (Sub msg /\ Map String String) Effect Unit
-addAttribute attr element = case attr of
-  Attr prop value -> lift $ H.setAttribute prop value element
-  Prop prop value -> lift $ setProperty prop value element
-  AddClass c -> lift $ H.classList element >>= H.add [ c ]
-  Listener toSub -> tell $ toSub (H.toEventTarget element) /\ mempty
+addAttribute attr elem = case attr of
+  Attr prop value -> lift $ H.setAttribute prop value elem
+  Prop prop value -> lift $ setProperty prop value elem
+  AddClass c -> lift $ H.classList elem >>= H.add [ c ]
+  Listener toSub -> tell $ toSub (H.toEventTarget elem) /\ mempty
 
 getNode :: ∀ msg. SingleVNode msg -> Maybe Node
 getNode = case _ of
@@ -523,12 +523,12 @@ placeNodeHelper ::
   MyMonad msg (List children /\ Element)
 placeNodeHelper placer { tag, styles, attributes, children } traverser = do
   { doc, parent } <- ask
-  element <- liftEffect $ H.createElement tag {} doc
-  subs <- liftEffect $ setAttributes attributes element
+  elem <- liftEffect $ H.createElement tag {} doc
+  subs <- liftEffect $ setAttributes attributes elem
   tell $ subs /\ mempty
-  _ <- liftEffect $ placer { node: H.toNode element, parent }
-  newChildren <- traverse (local (changeParent element) <. traverser) children
-  pure $ newChildren /\ element
+  _ <- liftEffect $ placer { node: H.toNode elem, parent }
+  newChildren <- traverse (local (changeParent elem) <. traverser) children
+  pure $ newChildren /\ elem
 
 removeVNode :: ∀ msg. SingleVNode msg -> MyMonad msg Unit
 removeVNode svn = do
@@ -544,17 +544,17 @@ ifJust f = maybe (pure unit) (f .> (_ *> pure unit))
 foreign import setProperty :: String -> JSValue -> Element -> Effect Unit
 
 setAttributes :: ∀ msg. List (SingleAttribute msg) -> Element -> Effect (Sub msg)
-setAttributes attribute element = foldM go mempty attribute
+setAttributes attribute elem = foldM go mempty attribute
   where
   go :: Sub msg -> SingleAttribute msg -> Effect (Sub msg)
   go acc = case _ of
     Attr prop value -> do
-      H.setAttribute prop value element
+      H.setAttribute prop value elem
       pure acc
     Prop prop value -> do
-      setProperty prop value element
+      setProperty prop value elem
       pure acc
     AddClass c -> do
-      H.classList element >>= H.add [ c ]
+      H.classList elem >>= H.add [ c ]
       pure acc
-    Listener toSub -> pure $ acc <> toSub (H.toEventTarget element)
+    Listener toSub -> pure $ acc <> toSub (H.toEventTarget elem)
