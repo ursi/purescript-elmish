@@ -60,6 +60,39 @@ data SingleVNode msg
     , node :: Maybe Text
     }
 
+text :: ∀ msg. String -> SingleVNode msg
+text = VText <. { text: _, node: Nothing }
+
+element ::
+  ∀ msg.
+  String ->
+  List (SingleAttribute msg) ->
+  List (SingleVNode msg) ->
+  SingleVNode msg
+element tag attributes children =
+  VElement
+    { tag
+    , styles: Nil
+    , attributes: attributes
+    , children: children
+    , node: Nothing
+    }
+
+keyedElement ::
+  ∀ msg.
+  String ->
+  List (SingleAttribute msg) ->
+  List (String /\ SingleVNode msg) ->
+  SingleVNode msg
+keyedElement tag attributes children =
+  KeyedElement
+    { tag
+    , styles: Nil
+    , attributes: attributes
+    , children: children
+    , node: Nothing
+    }
+
 type MyMonad a b
   = ReaderT PatchContext (WriterT (Sub a /\ Map String String) Effect) b
 
