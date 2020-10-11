@@ -34,7 +34,7 @@ element tag attributes children =
   Single
     $ VElement
         { tag
-        , styles: mempty
+        , styles: Nil
         , attributes: flatten $ Batch attributes
         , children: flatten $ Batch children
         , node: Nothing
