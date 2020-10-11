@@ -794,6 +794,34 @@ module Css
   , wrapThrough
   , writingMode
   , zIndex
+  , pct
+  , em
+  , ex
+  , ch
+  , rem
+  , vw
+  , vh
+  , vmin
+  , vmax
+  , cm
+  , mm
+  , q
+  , in_
+  , pc
+  , pt
+  , px
+  , deg
+  , grad
+  , rad
+  , turn
+  , s
+  , ms
+  , hz
+  , kHz
+  , dpi
+  , dpcm
+  , dppx
+  , fr
   ) where
 
 import MasonPrelude
@@ -802,13 +830,13 @@ import Data.Batchable (Batched(..), flattenMap)
 import VirtualDom.Css (Style(..), Styles, StringOp(..))
 
 append :: String -> StringOp
-append s = Id <> Const s
+append str = Id <> Const str
 
 prepend :: String -> StringOp
-prepend s = Const s <> Id
+prepend str = Const str <> Id
 
 duplicate :: String -> StringOp
-duplicate s = Id <> Const s <> Id
+duplicate str = Id <> Const str <> Id
 
 declaration :: String -> String -> Styles
 declaration = Single <.. Declaration Id
@@ -3187,3 +3215,91 @@ writingMode = Single <. Declaration Id "writing-mode"
 
 zIndex :: String -> Styles
 zIndex = Single <. Declaration Id "z-index"
+
+-- Units
+toUnit :: String -> Number -> String
+toUnit suffix n = show n <> suffix
+
+pct :: Number -> String
+pct = toUnit "%"
+
+em :: Number -> String
+em = toUnit "em"
+
+ex :: Number -> String
+ex = toUnit "ex"
+
+ch :: Number -> String
+ch = toUnit "ch"
+
+rem :: Number -> String
+rem = toUnit "rem"
+
+vw :: Number -> String
+vw = toUnit "vw"
+
+vh :: Number -> String
+vh = toUnit "vh"
+
+vmin :: Number -> String
+vmin = toUnit "vmin"
+
+vmax :: Number -> String
+vmax = toUnit "vmax"
+
+cm :: Number -> String
+cm = toUnit "cm"
+
+mm :: Number -> String
+mm = toUnit "mm"
+
+q :: Number -> String
+q = toUnit "Q"
+
+in_ :: Number -> String
+in_ = toUnit "in"
+
+pc :: Number -> String
+pc = toUnit "pc"
+
+pt :: Number -> String
+pt = toUnit "pt"
+
+px :: Number -> String
+px = toUnit "px"
+
+deg :: Number -> String
+deg = toUnit "deg"
+
+grad :: Number -> String
+grad = toUnit "grad"
+
+rad :: Number -> String
+rad = toUnit "rad"
+
+turn :: Number -> String
+turn = toUnit "turn"
+
+s :: Number -> String
+s = toUnit "s"
+
+ms :: Number -> String
+ms = toUnit "ms"
+
+hz :: Number -> String
+hz = toUnit "Hz"
+
+kHz :: Number -> String
+kHz = toUnit "kHz"
+
+dpi :: Number -> String
+dpi = toUnit "dpi"
+
+dpcm :: Number -> String
+dpcm = toUnit "dpcm"
+
+dppx :: Number -> String
+dppx = toUnit "dppx"
+
+fr :: Number -> String
+fr = toUnit "fr"
