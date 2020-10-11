@@ -56,7 +56,7 @@ process styles =
                     <> "\n}"
               in
                 case acc of
-                  Id -> Id <> Const declarations
+                  Id -> k <> Const declarations
                   _ -> acc <> Const "\n\n" <> k <> Const declarations
           )
           Id
