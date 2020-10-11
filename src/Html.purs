@@ -235,7 +235,7 @@ module Html
   ) where
 
 import MasonPrelude
-import Css (Style, Styles)
+import Css (Styles)
 import Css.Global (style)
 import Data.Batchable (Batched(..), flatten)
 import Data.Batchable as Batchable
