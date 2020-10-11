@@ -432,6 +432,12 @@ mathML = element "MathML"
 mathMLS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 mathMLS = elementS "MathML"
 
+math :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+math = element "math"
+
+mathS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+mathS = elementS "math"
+
 menu :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 menu = element "menu"
 
