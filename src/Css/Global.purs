@@ -60,7 +60,7 @@ toChildNodes =
   where
   go :: Stylesheet -> List Statement -> List (String /\ SingleVNode msg)
   go stylesheet = case _ of
-    head : tail -> case head of
+    head_ : tail -> case head_ of
       Rule rule_ ->
         go
           ( stylesheet
@@ -73,7 +73,7 @@ toChildNodes =
               }
           )
           tail
-      Import imports -> go (stylesheet { imports = imports }) tail
+      Import imports_ -> go (stylesheet { imports = imports_ }) tail
     -- Keyframes keyframes ->
     --   go
     --     (stylesheet { keyframes = keyframes : stylesheet.keyframes })
