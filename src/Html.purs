@@ -122,7 +122,7 @@ module Html
   , li
   , liS
   , link
-  , linkS
+  , linkStylesheet
   , main
   , mainS
   , map
@@ -234,6 +234,7 @@ module Html
   ) where
 
 import MasonPrelude
+import Attribute as A
 import Css (Styles)
 import Css.Global (style)
 import Data.Batchable (Batched(..), flatten)
@@ -637,11 +638,11 @@ li = element "li"
 liS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 liS = elementS "li"
 
-link :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-link = element "link"
+link :: ∀ msg. Array (Attribute msg) -> VNode msg
+link = element "link" ~$ []
 
-linkS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
-linkS = elementS "link"
+linkStylesheet :: ∀ msg. String -> VNode msg
+linkStylesheet src = link [ A.rel "stylesheet", A.href src ]
 
 main :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 main = element "main"
