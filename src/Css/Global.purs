@@ -2,20 +2,16 @@ module Css.Global where
 
 import MasonPrelude
 import Css as C
-import VirtualDom.Css as CV
-import Data.Array as Array
 import Data.Foldable (surroundMap)
 import Data.List ((:))
 import Data.List as List
+import Data.Batchable (Batched(..), flatten)
 import Data.Map (Map)
 import Data.Map as Map
-import Data.Batchable (Batched(..), flatten)
 import Murmur3 (hash)
 import VirtualDom.Css (Styles, Style)
 import VirtualDom.Css as VC
-import VirtualDom (SingleVNode, text)
-import VirtualDom (element, text)
-import VirtualDom (VNode)
+import VirtualDom (SingleVNode, VNode, element, text)
 import VirtualDom as VD
 
 data Statement
