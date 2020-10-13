@@ -164,9 +164,14 @@ attribute = Single <.. Attr
 property :: ∀ msg. String -> JSValue -> Attribute msg
 property = Single <.. Prop
 
+-- SPECIAL
 addClass :: ∀ msg. String -> Attribute msg
 addClass = Single <. AddClass
 
+value :: ∀ msg. String -> Attribute msg
+value = Single <. Prop "value" <. toJSValue
+
+-- STANDARD
 abbr :: ∀ msg. String -> Attribute msg
 abbr = Single <. Attr "abbr"
 
@@ -529,9 +534,6 @@ type_ = Single <. Attr "type"
 
 usemap :: ∀ msg. String -> Attribute msg
 usemap = Single <. Attr "usemap"
-
-value :: ∀ msg. String -> Attribute msg
-value = Single <. Prop "value" <. toJSValue
 
 width :: ∀ msg. String -> Attribute msg
 width = Single <. Attr "width"
