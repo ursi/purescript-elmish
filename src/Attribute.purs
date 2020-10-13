@@ -138,20 +138,13 @@ module Attribute
   ) where
 
 import MasonPrelude
-import Control.Apply (lift3)
-import Data.Array as Array
 import Data.Batchable (Batched(..))
 import Data.Int as Int
-import Data.JSDate as Date
 import Data.JSValue (JSValue, toJSValue)
-import Effect.Console (logShow)
-import Effect.Ref (Ref)
-import Effect.Ref as Ref
-import Effect.Timer (TimeoutId, clearTimeout, setTimeout)
-import Effect.Uncurried
-import HTML.All (Event, EventTarget, HTMLInputElement)
+import Effect.Timer (setTimeout)
+import HTML.All (Event, EventTarget)
 import HTML.All as H
-import Sub (Callback, Sub(..), SubBuilder, Presub, (<@@>))
+import Sub (Callback, Presub, (<@@>))
 import Sub as Sub
 import Throttle (throttle)
 import Unsafe.Coerce (unsafeCoerce)
