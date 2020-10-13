@@ -5,6 +5,7 @@ module Html
   , element
   , elementS
   , text
+  , textIn
   , a
   , aS
   , abbr
@@ -289,6 +290,9 @@ elementS tag styles attributes children =
 
 text :: ∀ msg. String -> VNode msg
 text = Single <. VD.text
+
+textIn :: ∀ msg. (Array (Attribute msg) -> Array (Html msg) -> Html msg) -> String -> Html msg
+textIn elem t = elem [] [ text t ]
 
 a :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
 a = element "a"
