@@ -247,7 +247,7 @@ import VirtualDom as VD
 type Html msg
   = VNode msg
 
-keyed :: ∀ msg. String -> Array (Attribute msg) -> Array (String /\ VNode msg) -> VNode msg
+keyed :: ∀ msg. String -> Array (Attribute msg) -> Array (String /\ Html msg) -> Html msg
 keyed tag attributes children =
   Single
     $ KeyedElement
@@ -266,7 +266,7 @@ keyed tag attributes children =
         , node: Nothing
         }
 
-element :: ∀ msg. String -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+element :: ∀ msg. String -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 element tag attributes children =
   Single
     $ VElement
@@ -277,7 +277,7 @@ element tag attributes children =
         , node: Nothing
         }
 
-elementS :: ∀ msg. String -> Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+elementS :: ∀ msg. String -> Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 elementS tag styles attributes children =
   Single
     $ VElement
@@ -288,686 +288,686 @@ elementS tag styles attributes children =
         , node: Nothing
         }
 
-text :: ∀ msg. String -> VNode msg
+text :: ∀ msg. String -> Html msg
 text = Single <. VD.text
 
 textIn :: ∀ msg. (Array (Attribute msg) -> Array (Html msg) -> Html msg) -> String -> Html msg
 textIn elem t = elem [] [ text t ]
 
-a :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+a :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 a = element "a"
 
-aS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+aS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 aS = elementS "a"
 
-abbr :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+abbr :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 abbr = element "abbr"
 
-abbrS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+abbrS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 abbrS = elementS "abbr"
 
-address :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+address :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 address = element "address"
 
-addressS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+addressS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 addressS = elementS "address"
 
-area :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+area :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 area = element "area"
 
-areaS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+areaS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 areaS = elementS "area"
 
-article :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+article :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 article = element "article"
 
-articleS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+articleS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 articleS = elementS "article"
 
-aside :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+aside :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 aside = element "aside"
 
-asideS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+asideS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 asideS = elementS "aside"
 
-audio :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+audio :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 audio = element "audio"
 
-audioS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+audioS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 audioS = elementS "audio"
 
-b :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+b :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 b = element "b"
 
-bS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+bS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 bS = elementS "b"
 
-base :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+base :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 base = element "base"
 
-baseS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+baseS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 baseS = elementS "base"
 
-bdi :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+bdi :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 bdi = element "bdi"
 
-bdiS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+bdiS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 bdiS = elementS "bdi"
 
-bdo :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+bdo :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 bdo = element "bdo"
 
-bdoS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+bdoS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 bdoS = elementS "bdo"
 
-blockquote :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+blockquote :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 blockquote = element "blockquote"
 
-blockquoteS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+blockquoteS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 blockquoteS = elementS "blockquote"
 
-body :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+body :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 body = element "body"
 
-bodyS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+bodyS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 bodyS = elementS "body"
 
-br :: ∀ msg. Array (Attribute msg) -> VNode msg
+br :: ∀ msg. Array (Attribute msg) -> Html msg
 br = element "br" ~$ []
 
-brS :: ∀ msg. Array Styles -> Array (Attribute msg) -> VNode msg
+brS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Html msg
 brS = elementS "br" ~~$ []
 
-button :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+button :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 button = element "button"
 
-buttonS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+buttonS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 buttonS = elementS "button"
 
-canvas :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+canvas :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 canvas = element "canvas"
 
-canvasS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+canvasS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 canvasS = elementS "canvas"
 
-caption :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+caption :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 caption = element "caption"
 
-captionS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+captionS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 captionS = elementS "caption"
 
-cite :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+cite :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 cite = element "cite"
 
-citeS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+citeS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 citeS = elementS "cite"
 
-code :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+code :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 code = element "code"
 
-codeS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+codeS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 codeS = elementS "code"
 
-col :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+col :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 col = element "col"
 
-colS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+colS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 colS = elementS "col"
 
-colgroup :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+colgroup :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 colgroup = element "colgroup"
 
-colgroupS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+colgroupS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 colgroupS = elementS "colgroup"
 
-data_ :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+data_ :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 data_ = element "data"
 
-data_S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+data_S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 data_S = elementS "data"
 
-datalist :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+datalist :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 datalist = element "datalist"
 
-datalistS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+datalistS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 datalistS = elementS "datalist"
 
-dd :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+dd :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 dd = element "dd"
 
-ddS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+ddS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 ddS = elementS "dd"
 
-del :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+del :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 del = element "del"
 
-delS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+delS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 delS = elementS "del"
 
-details :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+details :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 details = element "details"
 
-detailsS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+detailsS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 detailsS = elementS "details"
 
-dfn :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+dfn :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 dfn = element "dfn"
 
-dfnS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+dfnS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 dfnS = elementS "dfn"
 
-dialog :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+dialog :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 dialog = element "dialog"
 
-dialogS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+dialogS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 dialogS = elementS "dialog"
 
-div :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+div :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 div = element "div"
 
-divS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+divS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 divS = elementS "div"
 
-dl :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+dl :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 dl = element "dl"
 
-dlS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+dlS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 dlS = elementS "dl"
 
-dt :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+dt :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 dt = element "dt"
 
-dtS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+dtS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 dtS = elementS "dt"
 
-em :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+em :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 em = element "em"
 
-emS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+emS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 emS = elementS "em"
 
-embed :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+embed :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 embed = element "embed"
 
-embedS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+embedS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 embedS = elementS "embed"
 
-fieldset :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+fieldset :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 fieldset = element "fieldset"
 
-fieldsetS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+fieldsetS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 fieldsetS = elementS "fieldset"
 
-figcaption :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+figcaption :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 figcaption = element "figcaption"
 
-figcaptionS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+figcaptionS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 figcaptionS = elementS "figcaption"
 
-figure :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+figure :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 figure = element "figure"
 
-figureS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+figureS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 figureS = elementS "figure"
 
-footer :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+footer :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 footer = element "footer"
 
-footerS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+footerS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 footerS = elementS "footer"
 
-form :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+form :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 form = element "form"
 
-formS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+formS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 formS = elementS "form"
 
-h1 :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h1 :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 h1 = element "h1"
 
-h1S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h1S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 h1S = elementS "h1"
 
-h2 :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h2 :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 h2 = element "h2"
 
-h2S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h2S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 h2S = elementS "h2"
 
-h3 :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h3 :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 h3 = element "h3"
 
-h3S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h3S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 h3S = elementS "h3"
 
-h4 :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h4 :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 h4 = element "h4"
 
-h4S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h4S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 h4S = elementS "h4"
 
-h5 :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h5 :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 h5 = element "h5"
 
-h5S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h5S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 h5S = elementS "h5"
 
-h6 :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h6 :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 h6 = element "h6"
 
-h6S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+h6S :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 h6S = elementS "h6"
 
-head :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+head :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 head = element "head"
 
-headS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+headS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 headS = elementS "head"
 
-header :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+header :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 header = element "header"
 
-headerS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+headerS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 headerS = elementS "header"
 
-hgroup :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+hgroup :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 hgroup = element "hgroup"
 
-hgroupS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+hgroupS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 hgroupS = elementS "hgroup"
 
-hr :: ∀ msg. Array (Attribute msg) -> VNode msg
+hr :: ∀ msg. Array (Attribute msg) -> Html msg
 hr = element "hr" ~$ []
 
-hrS :: ∀ msg. Array Styles -> Array (Attribute msg) -> VNode msg
+hrS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Html msg
 hrS = elementS "hr" ~~$ []
 
-html :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+html :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 html = element "html"
 
-htmlS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+htmlS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 htmlS = elementS "html"
 
-i :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+i :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 i = element "i"
 
-iS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+iS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 iS = elementS "i"
 
-iframe :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+iframe :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 iframe = element "iframe"
 
-iframeS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+iframeS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 iframeS = elementS "iframe"
 
-img :: ∀ msg. Array (Attribute msg) -> VNode msg
+img :: ∀ msg. Array (Attribute msg) -> Html msg
 img = element "img" ~$ []
 
-imgS :: ∀ msg. Array Styles -> Array (Attribute msg) -> VNode msg
+imgS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Html msg
 imgS = elementS "img" ~~$ []
 
-input :: ∀ msg. Array (Attribute msg) -> VNode msg
+input :: ∀ msg. Array (Attribute msg) -> Html msg
 input = element "input" ~$ []
 
-inputS :: ∀ msg. Array Styles -> Array (Attribute msg) -> VNode msg
+inputS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Html msg
 inputS = elementS "input" ~~$ []
 
-ins :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+ins :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 ins = element "ins"
 
-insS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+insS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 insS = elementS "ins"
 
-kbd :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+kbd :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 kbd = element "kbd"
 
-kbdS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+kbdS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 kbdS = elementS "kbd"
 
-label :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+label :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 label = element "label"
 
-labelS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+labelS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 labelS = elementS "label"
 
-legend :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+legend :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 legend = element "legend"
 
-legendS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+legendS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 legendS = elementS "legend"
 
-li :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+li :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 li = element "li"
 
-liS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+liS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 liS = elementS "li"
 
-link :: ∀ msg. Array (Attribute msg) -> VNode msg
+link :: ∀ msg. Array (Attribute msg) -> Html msg
 link = element "link" ~$ []
 
-linkStylesheet :: ∀ msg. String -> VNode msg
+linkStylesheet :: ∀ msg. String -> Html msg
 linkStylesheet src = link [ A.rel "stylesheet", A.href src ]
 
-main :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+main :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 main = element "main"
 
-mainS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+mainS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 mainS = elementS "main"
 
-map :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+map :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 map = element "map"
 
-mapS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+mapS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 mapS = elementS "map"
 
-mark :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+mark :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 mark = element "mark"
 
-markS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+markS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 markS = elementS "mark"
 
-mathML :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+mathML :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 mathML = element "MathML"
 
-mathMLS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+mathMLS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 mathMLS = elementS "MathML"
 
-math :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+math :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 math = element "math"
 
-mathS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+mathS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 mathS = elementS "math"
 
-menu :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+menu :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 menu = element "menu"
 
-menuS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+menuS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 menuS = elementS "menu"
 
-meta :: ∀ msg. Array (Attribute msg) -> VNode msg
+meta :: ∀ msg. Array (Attribute msg) -> Html msg
 meta = element "meta" ~$ []
 
-meter :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+meter :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 meter = element "meter"
 
-meterS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+meterS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 meterS = elementS "meter"
 
-nav :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+nav :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 nav = element "nav"
 
-navS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+navS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 navS = elementS "nav"
 
-noscript :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+noscript :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 noscript = element "noscript"
 
-noscriptS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+noscriptS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 noscriptS = elementS "noscript"
 
-object :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+object :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 object = element "object"
 
-objectS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+objectS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 objectS = elementS "object"
 
-ol :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+ol :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 ol = element "ol"
 
-olS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+olS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 olS = elementS "ol"
 
-optgroup :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+optgroup :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 optgroup = element "optgroup"
 
-optgroupS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+optgroupS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 optgroupS = elementS "optgroup"
 
-option :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+option :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 option = element "option"
 
-optionS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+optionS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 optionS = elementS "option"
 
-output :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+output :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 output = element "output"
 
-outputS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+outputS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 outputS = elementS "output"
 
-p :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+p :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 p = element "p"
 
-pS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+pS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 pS = elementS "p"
 
-param :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+param :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 param = element "param"
 
-paramS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+paramS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 paramS = elementS "param"
 
-picture :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+picture :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 picture = element "picture"
 
-pictureS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+pictureS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 pictureS = elementS "picture"
 
-pre :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+pre :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 pre = element "pre"
 
-preS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+preS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 preS = elementS "pre"
 
-progress :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+progress :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 progress = element "progress"
 
-progressS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+progressS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 progressS = elementS "progress"
 
-q :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+q :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 q = element "q"
 
-qS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+qS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 qS = elementS "q"
 
-rp :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+rp :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 rp = element "rp"
 
-rpS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+rpS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 rpS = elementS "rp"
 
-rt :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+rt :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 rt = element "rt"
 
-rtS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+rtS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 rtS = elementS "rt"
 
-ruby :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+ruby :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 ruby = element "ruby"
 
-rubyS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+rubyS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 rubyS = elementS "ruby"
 
-s :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+s :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 s = element "s"
 
-sS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+sS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 sS = elementS "s"
 
-samp :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+samp :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 samp = element "samp"
 
-sampS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+sampS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 sampS = elementS "samp"
 
-script :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+script :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 script = element "script"
 
-scriptS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+scriptS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 scriptS = elementS "script"
 
-section :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+section :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 section = element "section"
 
-sectionS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+sectionS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 sectionS = elementS "section"
 
-select :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+select :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 select = element "select"
 
-selectS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+selectS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 selectS = elementS "select"
 
-slot :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+slot :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 slot = element "slot"
 
-slotS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+slotS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 slotS = elementS "slot"
 
-small :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+small :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 small = element "small"
 
-smallS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+smallS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 smallS = elementS "small"
 
-source :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+source :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 source = element "source"
 
-sourceS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+sourceS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 sourceS = elementS "source"
 
-span :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+span :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 span = element "span"
 
-spanS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+spanS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 spanS = elementS "span"
 
-strong :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+strong :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 strong = element "strong"
 
-strongS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+strongS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 strongS = elementS "strong"
 
-sub :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+sub :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 sub = element "sub"
 
-subS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+subS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 subS = elementS "sub"
 
-summary :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+summary :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 summary = element "summary"
 
-summaryS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+summaryS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 summaryS = elementS "summary"
 
-sup :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+sup :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 sup = element "sup"
 
-supS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+supS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 supS = elementS "sup"
 
-svg :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+svg :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 svg = element "svg"
 
-svgS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+svgS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 svgS = elementS "svg"
 
-table :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+table :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 table = element "table"
 
-tableS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+tableS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 tableS = elementS "table"
 
-tbody :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+tbody :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 tbody = element "tbody"
 
-tbodyS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+tbodyS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 tbodyS = elementS "tbody"
 
-td :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+td :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 td = element "td"
 
-tdS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+tdS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 tdS = elementS "td"
 
-template :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+template :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 template = element "template"
 
-templateS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+templateS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 templateS = elementS "template"
 
-textarea :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+textarea :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 textarea = element "textarea"
 
-textareaS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+textareaS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 textareaS = elementS "textarea"
 
-tfoot :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+tfoot :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 tfoot = element "tfoot"
 
-tfootS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+tfootS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 tfootS = elementS "tfoot"
 
-th :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+th :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 th = element "th"
 
-thS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+thS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 thS = elementS "th"
 
-thead :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+thead :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 thead = element "thead"
 
-theadS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+theadS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 theadS = elementS "thead"
 
-time :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+time :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 time = element "time"
 
-timeS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+timeS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 timeS = elementS "time"
 
-title :: ∀ msg. String -> VNode msg
+title :: ∀ msg. String -> Html msg
 title t = element "title" [] [ text t ]
 
-tr :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+tr :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 tr = element "tr"
 
-trS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+trS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 trS = elementS "tr"
 
-track :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+track :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 track = element "track"
 
-trackS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+trackS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 trackS = elementS "track"
 
-u :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+u :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 u = element "u"
 
-uS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+uS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 uS = elementS "u"
 
-ul :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+ul :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 ul = element "ul"
 
-ulS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+ulS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 ulS = elementS "ul"
 
-var :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+var :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 var = element "var"
 
-varS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+varS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 varS = elementS "var"
 
-video :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+video :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 video = element "video"
 
-videoS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+videoS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 videoS = elementS "video"
 
-wbr :: ∀ msg. Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+wbr :: ∀ msg. Array (Attribute msg) -> Array (Html msg) -> Html msg
 wbr = element "wbr"
 
-wbrS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (VNode msg) -> VNode msg
+wbrS :: ∀ msg. Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 wbrS = elementS "wbr"
