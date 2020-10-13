@@ -1,4 +1,4 @@
--- TODO: give credit to original place which was the 30th source on the murmurhash wikipedia article
+-- source: https://github.com/garycourt/murmurhash-js/blob/master/murmurhash3_gc.js
 module Murmur3 (hash) where
 
 import MasonPrelude
