@@ -1,7 +1,6 @@
 module GenCss where
 
 import MasonPrelude
-import Attribute
 import Data.Array as Array
 import Data.String (Pattern(..), Replacement(..))
 import Data.String as String
