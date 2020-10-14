@@ -6,6 +6,7 @@ module Css
   , duplicate
   , declaration
   , mapSelector
+  , variable
   , alignContent
   , alignContentJ
   , alignItems
@@ -850,6 +851,9 @@ mapSelector op styles =
         )
     # Array.fromFoldable
     # Batch
+
+variable :: String -> String -> Styles
+variable = declaration <. (<>) "--"
 
 alignContent :: String -> Styles
 alignContent = declaration "align-content"
