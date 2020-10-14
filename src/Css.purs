@@ -851,7 +851,6 @@ mapSelector op styles =
     # Array.fromFoldable
     # Batch
 
--- TODO: add generated classes
 alignContent :: String -> Styles
 alignContent = declaration "align-content"
 
