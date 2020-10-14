@@ -853,2368 +853,2368 @@ mapSelector op styles =
 
 -- TODO: add generated classes
 alignContent :: String -> Styles
-alignContent = Single <. Declaration Id "align-content"
+alignContent = declaration "align-content"
 
 alignContentJ :: Array String -> Styles
-alignContentJ = Single <. Declaration Id "align-content" <. intercalate " "
+alignContentJ = declaration "align-content" <. intercalate " "
 
 alignItems :: String -> Styles
-alignItems = Single <. Declaration Id "align-items"
+alignItems = declaration "align-items"
 
 alignItemsJ :: Array String -> Styles
-alignItemsJ = Single <. Declaration Id "align-items" <. intercalate " "
+alignItemsJ = declaration "align-items" <. intercalate " "
 
 alignSelf :: String -> Styles
-alignSelf = Single <. Declaration Id "align-self"
+alignSelf = declaration "align-self"
 
 alignSelfJ :: Array String -> Styles
-alignSelfJ = Single <. Declaration Id "align-self" <. intercalate " "
+alignSelfJ = declaration "align-self" <. intercalate " "
 
 alignmentBaseline :: String -> Styles
-alignmentBaseline = Single <. Declaration Id "alignment-baseline"
+alignmentBaseline = declaration "alignment-baseline"
 
 all :: String -> Styles
-all = Single <. Declaration Id "all"
+all = declaration "all"
 
 animation :: String -> Styles
-animation = Single <. Declaration Id "animation"
+animation = declaration "animation"
 
 animationJ :: Array String -> Styles
-animationJ = Single <. Declaration Id "animation" <. intercalate " "
+animationJ = declaration "animation" <. intercalate " "
 
 animationJJ :: Array (Array String) -> Styles
-animationJJ = Single <. Declaration Id "animation" <. intercalate ", " <. map (intercalate " ")
+animationJJ = declaration "animation" <. intercalate ", " <. map (intercalate " ")
 
 animationDelay :: String -> Styles
-animationDelay = Single <. Declaration Id "animation-delay"
+animationDelay = declaration "animation-delay"
 
 animationDelayJ :: Array String -> Styles
-animationDelayJ = Single <. Declaration Id "animation-delay" <. intercalate ", "
+animationDelayJ = declaration "animation-delay" <. intercalate ", "
 
 animationDirection :: String -> Styles
-animationDirection = Single <. Declaration Id "animation-direction"
+animationDirection = declaration "animation-direction"
 
 animationDirectionJ :: Array String -> Styles
-animationDirectionJ = Single <. Declaration Id "animation-direction" <. intercalate ", "
+animationDirectionJ = declaration "animation-direction" <. intercalate ", "
 
 animationDuration :: String -> Styles
-animationDuration = Single <. Declaration Id "animation-duration"
+animationDuration = declaration "animation-duration"
 
 animationDurationJ :: Array String -> Styles
-animationDurationJ = Single <. Declaration Id "animation-duration" <. intercalate ", "
+animationDurationJ = declaration "animation-duration" <. intercalate ", "
 
 animationFillMode :: String -> Styles
-animationFillMode = Single <. Declaration Id "animation-fill-mode"
+animationFillMode = declaration "animation-fill-mode"
 
 animationFillModeJ :: Array String -> Styles
-animationFillModeJ = Single <. Declaration Id "animation-fill-mode" <. intercalate ", "
+animationFillModeJ = declaration "animation-fill-mode" <. intercalate ", "
 
 animationIterationCount :: String -> Styles
-animationIterationCount = Single <. Declaration Id "animation-iteration-count"
+animationIterationCount = declaration "animation-iteration-count"
 
 animationIterationCountJ :: Array String -> Styles
-animationIterationCountJ = Single <. Declaration Id "animation-iteration-count" <. intercalate ", "
+animationIterationCountJ = declaration "animation-iteration-count" <. intercalate ", "
 
 animationName :: String -> Styles
-animationName = Single <. Declaration Id "animation-name"
+animationName = declaration "animation-name"
 
 animationNameJ :: Array String -> Styles
-animationNameJ = Single <. Declaration Id "animation-name" <. intercalate ", "
+animationNameJ = declaration "animation-name" <. intercalate ", "
 
 animationPlayState :: String -> Styles
-animationPlayState = Single <. Declaration Id "animation-play-state"
+animationPlayState = declaration "animation-play-state"
 
 animationPlayStateJ :: Array String -> Styles
-animationPlayStateJ = Single <. Declaration Id "animation-play-state" <. intercalate ", "
+animationPlayStateJ = declaration "animation-play-state" <. intercalate ", "
 
 animationTimingFunction :: String -> Styles
-animationTimingFunction = Single <. Declaration Id "animation-timing-function"
+animationTimingFunction = declaration "animation-timing-function"
 
 animationTimingFunctionJ :: Array String -> Styles
-animationTimingFunctionJ = Single <. Declaration Id "animation-timing-function" <. intercalate ", "
+animationTimingFunctionJ = declaration "animation-timing-function" <. intercalate ", "
 
 appearance :: String -> Styles
-appearance = Single <. Declaration Id "appearance"
+appearance = declaration "appearance"
 
 azimuth :: String -> Styles
-azimuth = Single <. Declaration Id "azimuth"
+azimuth = declaration "azimuth"
 
 azimuthJ :: Array String -> Styles
-azimuthJ = Single <. Declaration Id "azimuth" <. intercalate " "
+azimuthJ = declaration "azimuth" <. intercalate " "
 
 backfaceVisibility :: String -> Styles
-backfaceVisibility = Single <. Declaration Id "backface-visibility"
+backfaceVisibility = declaration "backface-visibility"
 
 background :: String -> Styles
-background = Single <. Declaration Id "background"
+background = declaration "background"
 
 backgroundJ :: Array String -> Styles
-backgroundJ = Single <. Declaration Id "background" <. intercalate " "
+backgroundJ = declaration "background" <. intercalate " "
 
 backgroundJJ :: Array (Array String) -> Styles
-backgroundJJ = Single <. Declaration Id "background" <. intercalate ", " <. map (intercalate " ")
+backgroundJJ = declaration "background" <. intercalate ", " <. map (intercalate " ")
 
 backgroundAttachment :: String -> Styles
-backgroundAttachment = Single <. Declaration Id "background-attachment"
+backgroundAttachment = declaration "background-attachment"
 
 backgroundAttachmentJ :: Array String -> Styles
-backgroundAttachmentJ = Single <. Declaration Id "background-attachment" <. intercalate ", "
+backgroundAttachmentJ = declaration "background-attachment" <. intercalate ", "
 
 backgroundBlendMode :: String -> Styles
-backgroundBlendMode = Single <. Declaration Id "background-blend-mode"
+backgroundBlendMode = declaration "background-blend-mode"
 
 backgroundClip :: String -> Styles
-backgroundClip = Single <. Declaration Id "background-clip"
+backgroundClip = declaration "background-clip"
 
 backgroundClipJ :: Array String -> Styles
-backgroundClipJ = Single <. Declaration Id "background-clip" <. intercalate ", "
+backgroundClipJ = declaration "background-clip" <. intercalate ", "
 
 backgroundColor :: String -> Styles
-backgroundColor = Single <. Declaration Id "background-color"
+backgroundColor = declaration "background-color"
 
 backgroundImage :: String -> Styles
-backgroundImage = Single <. Declaration Id "background-image"
+backgroundImage = declaration "background-image"
 
 backgroundImageJ :: Array String -> Styles
-backgroundImageJ = Single <. Declaration Id "background-image" <. intercalate ", "
+backgroundImageJ = declaration "background-image" <. intercalate ", "
 
 backgroundOrigin :: String -> Styles
-backgroundOrigin = Single <. Declaration Id "background-origin"
+backgroundOrigin = declaration "background-origin"
 
 backgroundOriginJ :: Array String -> Styles
-backgroundOriginJ = Single <. Declaration Id "background-origin" <. intercalate ", "
+backgroundOriginJ = declaration "background-origin" <. intercalate ", "
 
 backgroundPosition :: String -> Styles
-backgroundPosition = Single <. Declaration Id "background-position"
+backgroundPosition = declaration "background-position"
 
 backgroundPositionJ :: Array String -> Styles
-backgroundPositionJ = Single <. Declaration Id "background-position" <. intercalate " "
+backgroundPositionJ = declaration "background-position" <. intercalate " "
 
 backgroundRepeat :: String -> Styles
-backgroundRepeat = Single <. Declaration Id "background-repeat"
+backgroundRepeat = declaration "background-repeat"
 
 backgroundRepeatJ :: Array String -> Styles
-backgroundRepeatJ = Single <. Declaration Id "background-repeat" <. intercalate " "
+backgroundRepeatJ = declaration "background-repeat" <. intercalate " "
 
 backgroundRepeatJJ :: Array (Array String) -> Styles
-backgroundRepeatJJ = Single <. Declaration Id "background-repeat" <. intercalate ", " <. map (intercalate " ")
+backgroundRepeatJJ = declaration "background-repeat" <. intercalate ", " <. map (intercalate " ")
 
 backgroundSize :: String -> Styles
-backgroundSize = Single <. Declaration Id "background-size"
+backgroundSize = declaration "background-size"
 
 backgroundSizeJ :: Array String -> Styles
-backgroundSizeJ = Single <. Declaration Id "background-size" <. intercalate " "
+backgroundSizeJ = declaration "background-size" <. intercalate " "
 
 backgroundSizeJJ :: Array (Array String) -> Styles
-backgroundSizeJJ = Single <. Declaration Id "background-size" <. intercalate ", " <. map (intercalate " ")
+backgroundSizeJJ = declaration "background-size" <. intercalate ", " <. map (intercalate " ")
 
 baselineShift :: String -> Styles
-baselineShift = Single <. Declaration Id "baseline-shift"
+baselineShift = declaration "baseline-shift"
 
 blockOverflow :: String -> Styles
-blockOverflow = Single <. Declaration Id "block-overflow"
+blockOverflow = declaration "block-overflow"
 
 blockSize :: String -> Styles
-blockSize = Single <. Declaration Id "block-size"
+blockSize = declaration "block-size"
 
 blockStep :: String -> Styles
-blockStep = Single <. Declaration Id "block-step"
+blockStep = declaration "block-step"
 
 blockStepJ :: Array String -> Styles
-blockStepJ = Single <. Declaration Id "block-step" <. intercalate " "
+blockStepJ = declaration "block-step" <. intercalate " "
 
 blockStepAlign :: String -> Styles
-blockStepAlign = Single <. Declaration Id "block-step-align"
+blockStepAlign = declaration "block-step-align"
 
 blockStepInsert :: String -> Styles
-blockStepInsert = Single <. Declaration Id "block-step-insert"
+blockStepInsert = declaration "block-step-insert"
 
 blockStepRound :: String -> Styles
-blockStepRound = Single <. Declaration Id "block-step-round"
+blockStepRound = declaration "block-step-round"
 
 blockStepSize :: String -> Styles
-blockStepSize = Single <. Declaration Id "block-step-size"
+blockStepSize = declaration "block-step-size"
 
 bookmarkLabel :: String -> Styles
-bookmarkLabel = Single <. Declaration Id "bookmark-label"
+bookmarkLabel = declaration "bookmark-label"
 
 bookmarkLabelJ :: Array String -> Styles
-bookmarkLabelJ = Single <. Declaration Id "bookmark-label" <. intercalate " "
+bookmarkLabelJ = declaration "bookmark-label" <. intercalate " "
 
 bookmarkLevel :: String -> Styles
-bookmarkLevel = Single <. Declaration Id "bookmark-level"
+bookmarkLevel = declaration "bookmark-level"
 
 bookmarkState :: String -> Styles
-bookmarkState = Single <. Declaration Id "bookmark-state"
+bookmarkState = declaration "bookmark-state"
 
 border :: String -> Styles
-border = Single <. Declaration Id "border"
+border = declaration "border"
 
 borderJ :: Array String -> Styles
-borderJ = Single <. Declaration Id "border" <. intercalate " "
+borderJ = declaration "border" <. intercalate " "
 
 borderBlock :: String -> Styles
-borderBlock = Single <. Declaration Id "border-block"
+borderBlock = declaration "border-block"
 
 borderBlockJ :: Array String -> Styles
-borderBlockJ = Single <. Declaration Id "border-block" <. intercalate " "
+borderBlockJ = declaration "border-block" <. intercalate " "
 
 borderBlockColor :: String -> Styles
-borderBlockColor = Single <. Declaration Id "border-block-color"
+borderBlockColor = declaration "border-block-color"
 
 borderBlockColorJ :: Array String -> Styles
-borderBlockColorJ = Single <. Declaration Id "border-block-color" <. intercalate " "
+borderBlockColorJ = declaration "border-block-color" <. intercalate " "
 
 borderBlockEnd :: String -> Styles
-borderBlockEnd = Single <. Declaration Id "border-block-end"
+borderBlockEnd = declaration "border-block-end"
 
 borderBlockEndJ :: Array String -> Styles
-borderBlockEndJ = Single <. Declaration Id "border-block-end" <. intercalate " "
+borderBlockEndJ = declaration "border-block-end" <. intercalate " "
 
 borderBlockEndColor :: String -> Styles
-borderBlockEndColor = Single <. Declaration Id "border-block-end-color"
+borderBlockEndColor = declaration "border-block-end-color"
 
 borderBlockEndStyle :: String -> Styles
-borderBlockEndStyle = Single <. Declaration Id "border-block-end-style"
+borderBlockEndStyle = declaration "border-block-end-style"
 
 borderBlockEndWidth :: String -> Styles
-borderBlockEndWidth = Single <. Declaration Id "border-block-end-width"
+borderBlockEndWidth = declaration "border-block-end-width"
 
 borderBlockStart :: String -> Styles
-borderBlockStart = Single <. Declaration Id "border-block-start"
+borderBlockStart = declaration "border-block-start"
 
 borderBlockStartJ :: Array String -> Styles
-borderBlockStartJ = Single <. Declaration Id "border-block-start" <. intercalate " "
+borderBlockStartJ = declaration "border-block-start" <. intercalate " "
 
 borderBlockStartColor :: String -> Styles
-borderBlockStartColor = Single <. Declaration Id "border-block-start-color"
+borderBlockStartColor = declaration "border-block-start-color"
 
 borderBlockStartStyle :: String -> Styles
-borderBlockStartStyle = Single <. Declaration Id "border-block-start-style"
+borderBlockStartStyle = declaration "border-block-start-style"
 
 borderBlockStartWidth :: String -> Styles
-borderBlockStartWidth = Single <. Declaration Id "border-block-start-width"
+borderBlockStartWidth = declaration "border-block-start-width"
 
 borderBlockStyle :: String -> Styles
-borderBlockStyle = Single <. Declaration Id "border-block-style"
+borderBlockStyle = declaration "border-block-style"
 
 borderBlockStyleJ :: Array String -> Styles
-borderBlockStyleJ = Single <. Declaration Id "border-block-style" <. intercalate " "
+borderBlockStyleJ = declaration "border-block-style" <. intercalate " "
 
 borderBlockWidth :: String -> Styles
-borderBlockWidth = Single <. Declaration Id "border-block-width"
+borderBlockWidth = declaration "border-block-width"
 
 borderBlockWidthJ :: Array String -> Styles
-borderBlockWidthJ = Single <. Declaration Id "border-block-width" <. intercalate " "
+borderBlockWidthJ = declaration "border-block-width" <. intercalate " "
 
 borderBottom :: String -> Styles
-borderBottom = Single <. Declaration Id "border-bottom"
+borderBottom = declaration "border-bottom"
 
 borderBottomJ :: Array String -> Styles
-borderBottomJ = Single <. Declaration Id "border-bottom" <. intercalate " "
+borderBottomJ = declaration "border-bottom" <. intercalate " "
 
 borderBottomColor :: String -> Styles
-borderBottomColor = Single <. Declaration Id "border-bottom-color"
+borderBottomColor = declaration "border-bottom-color"
 
 borderBottomLeftRadius :: String -> Styles
-borderBottomLeftRadius = Single <. Declaration Id "border-bottom-left-radius"
+borderBottomLeftRadius = declaration "border-bottom-left-radius"
 
 borderBottomLeftRadiusJ :: Array String -> Styles
-borderBottomLeftRadiusJ = Single <. Declaration Id "border-bottom-left-radius" <. intercalate " "
+borderBottomLeftRadiusJ = declaration "border-bottom-left-radius" <. intercalate " "
 
 borderBottomRightRadius :: String -> Styles
-borderBottomRightRadius = Single <. Declaration Id "border-bottom-right-radius"
+borderBottomRightRadius = declaration "border-bottom-right-radius"
 
 borderBottomRightRadiusJ :: Array String -> Styles
-borderBottomRightRadiusJ = Single <. Declaration Id "border-bottom-right-radius" <. intercalate " "
+borderBottomRightRadiusJ = declaration "border-bottom-right-radius" <. intercalate " "
 
 borderBottomStyle :: String -> Styles
-borderBottomStyle = Single <. Declaration Id "border-bottom-style"
+borderBottomStyle = declaration "border-bottom-style"
 
 borderBottomWidth :: String -> Styles
-borderBottomWidth = Single <. Declaration Id "border-bottom-width"
+borderBottomWidth = declaration "border-bottom-width"
 
 borderBoundary :: String -> Styles
-borderBoundary = Single <. Declaration Id "border-boundary"
+borderBoundary = declaration "border-boundary"
 
 borderCollapse :: String -> Styles
-borderCollapse = Single <. Declaration Id "border-collapse"
+borderCollapse = declaration "border-collapse"
 
 borderColor :: String -> Styles
-borderColor = Single <. Declaration Id "border-color"
+borderColor = declaration "border-color"
 
 borderColorJ :: Array String -> Styles
-borderColorJ = Single <. Declaration Id "border-color" <. intercalate " "
+borderColorJ = declaration "border-color" <. intercalate " "
 
 borderEndEndRadius :: String -> Styles
-borderEndEndRadius = Single <. Declaration Id "border-end-end-radius"
+borderEndEndRadius = declaration "border-end-end-radius"
 
 borderEndEndRadiusJ :: Array String -> Styles
-borderEndEndRadiusJ = Single <. Declaration Id "border-end-end-radius" <. intercalate " "
+borderEndEndRadiusJ = declaration "border-end-end-radius" <. intercalate " "
 
 borderEndStartRadius :: String -> Styles
-borderEndStartRadius = Single <. Declaration Id "border-end-start-radius"
+borderEndStartRadius = declaration "border-end-start-radius"
 
 borderEndStartRadiusJ :: Array String -> Styles
-borderEndStartRadiusJ = Single <. Declaration Id "border-end-start-radius" <. intercalate " "
+borderEndStartRadiusJ = declaration "border-end-start-radius" <. intercalate " "
 
 borderImage :: String -> Styles
-borderImage = Single <. Declaration Id "border-image"
+borderImage = declaration "border-image"
 
 borderImageJ :: Array String -> Styles
-borderImageJ = Single <. Declaration Id "border-image" <. intercalate " "
+borderImageJ = declaration "border-image" <. intercalate " "
 
 borderImageOutset :: String -> Styles
-borderImageOutset = Single <. Declaration Id "border-image-outset"
+borderImageOutset = declaration "border-image-outset"
 
 borderImageOutsetJ :: Array String -> Styles
-borderImageOutsetJ = Single <. Declaration Id "border-image-outset" <. intercalate " "
+borderImageOutsetJ = declaration "border-image-outset" <. intercalate " "
 
 borderImageRepeat :: String -> Styles
-borderImageRepeat = Single <. Declaration Id "border-image-repeat"
+borderImageRepeat = declaration "border-image-repeat"
 
 borderImageRepeatJ :: Array String -> Styles
-borderImageRepeatJ = Single <. Declaration Id "border-image-repeat" <. intercalate " "
+borderImageRepeatJ = declaration "border-image-repeat" <. intercalate " "
 
 borderImageSlice :: String -> Styles
-borderImageSlice = Single <. Declaration Id "border-image-slice"
+borderImageSlice = declaration "border-image-slice"
 
 borderImageSliceJ :: Array String -> Styles
-borderImageSliceJ = Single <. Declaration Id "border-image-slice" <. intercalate " "
+borderImageSliceJ = declaration "border-image-slice" <. intercalate " "
 
 borderImageSource :: String -> Styles
-borderImageSource = Single <. Declaration Id "border-image-source"
+borderImageSource = declaration "border-image-source"
 
 borderImageWidth :: String -> Styles
-borderImageWidth = Single <. Declaration Id "border-image-width"
+borderImageWidth = declaration "border-image-width"
 
 borderImageWidthJ :: Array String -> Styles
-borderImageWidthJ = Single <. Declaration Id "border-image-width" <. intercalate " "
+borderImageWidthJ = declaration "border-image-width" <. intercalate " "
 
 borderInline :: String -> Styles
-borderInline = Single <. Declaration Id "border-inline"
+borderInline = declaration "border-inline"
 
 borderInlineJ :: Array String -> Styles
-borderInlineJ = Single <. Declaration Id "border-inline" <. intercalate " "
+borderInlineJ = declaration "border-inline" <. intercalate " "
 
 borderInlineColor :: String -> Styles
-borderInlineColor = Single <. Declaration Id "border-inline-color"
+borderInlineColor = declaration "border-inline-color"
 
 borderInlineColorJ :: Array String -> Styles
-borderInlineColorJ = Single <. Declaration Id "border-inline-color" <. intercalate " "
+borderInlineColorJ = declaration "border-inline-color" <. intercalate " "
 
 borderInlineEnd :: String -> Styles
-borderInlineEnd = Single <. Declaration Id "border-inline-end"
+borderInlineEnd = declaration "border-inline-end"
 
 borderInlineEndJ :: Array String -> Styles
-borderInlineEndJ = Single <. Declaration Id "border-inline-end" <. intercalate " "
+borderInlineEndJ = declaration "border-inline-end" <. intercalate " "
 
 borderInlineEndColor :: String -> Styles
-borderInlineEndColor = Single <. Declaration Id "border-inline-end-color"
+borderInlineEndColor = declaration "border-inline-end-color"
 
 borderInlineEndStyle :: String -> Styles
-borderInlineEndStyle = Single <. Declaration Id "border-inline-end-style"
+borderInlineEndStyle = declaration "border-inline-end-style"
 
 borderInlineEndWidth :: String -> Styles
-borderInlineEndWidth = Single <. Declaration Id "border-inline-end-width"
+borderInlineEndWidth = declaration "border-inline-end-width"
 
 borderInlineStart :: String -> Styles
-borderInlineStart = Single <. Declaration Id "border-inline-start"
+borderInlineStart = declaration "border-inline-start"
 
 borderInlineStartJ :: Array String -> Styles
-borderInlineStartJ = Single <. Declaration Id "border-inline-start" <. intercalate " "
+borderInlineStartJ = declaration "border-inline-start" <. intercalate " "
 
 borderInlineStartColor :: String -> Styles
-borderInlineStartColor = Single <. Declaration Id "border-inline-start-color"
+borderInlineStartColor = declaration "border-inline-start-color"
 
 borderInlineStartStyle :: String -> Styles
-borderInlineStartStyle = Single <. Declaration Id "border-inline-start-style"
+borderInlineStartStyle = declaration "border-inline-start-style"
 
 borderInlineStartWidth :: String -> Styles
-borderInlineStartWidth = Single <. Declaration Id "border-inline-start-width"
+borderInlineStartWidth = declaration "border-inline-start-width"
 
 borderInlineStyle :: String -> Styles
-borderInlineStyle = Single <. Declaration Id "border-inline-style"
+borderInlineStyle = declaration "border-inline-style"
 
 borderInlineStyleJ :: Array String -> Styles
-borderInlineStyleJ = Single <. Declaration Id "border-inline-style" <. intercalate " "
+borderInlineStyleJ = declaration "border-inline-style" <. intercalate " "
 
 borderInlineWidth :: String -> Styles
-borderInlineWidth = Single <. Declaration Id "border-inline-width"
+borderInlineWidth = declaration "border-inline-width"
 
 borderInlineWidthJ :: Array String -> Styles
-borderInlineWidthJ = Single <. Declaration Id "border-inline-width" <. intercalate " "
+borderInlineWidthJ = declaration "border-inline-width" <. intercalate " "
 
 borderLeft :: String -> Styles
-borderLeft = Single <. Declaration Id "border-left"
+borderLeft = declaration "border-left"
 
 borderLeftJ :: Array String -> Styles
-borderLeftJ = Single <. Declaration Id "border-left" <. intercalate " "
+borderLeftJ = declaration "border-left" <. intercalate " "
 
 borderLeftColor :: String -> Styles
-borderLeftColor = Single <. Declaration Id "border-left-color"
+borderLeftColor = declaration "border-left-color"
 
 borderLeftStyle :: String -> Styles
-borderLeftStyle = Single <. Declaration Id "border-left-style"
+borderLeftStyle = declaration "border-left-style"
 
 borderLeftWidth :: String -> Styles
-borderLeftWidth = Single <. Declaration Id "border-left-width"
+borderLeftWidth = declaration "border-left-width"
 
 borderRadius :: String -> Styles
-borderRadius = Single <. Declaration Id "border-radius"
+borderRadius = declaration "border-radius"
 
 borderRadiusJ :: Array String -> Styles
-borderRadiusJ = Single <. Declaration Id "border-radius" <. intercalate " "
+borderRadiusJ = declaration "border-radius" <. intercalate " "
 
 borderRight :: String -> Styles
-borderRight = Single <. Declaration Id "border-right"
+borderRight = declaration "border-right"
 
 borderRightJ :: Array String -> Styles
-borderRightJ = Single <. Declaration Id "border-right" <. intercalate " "
+borderRightJ = declaration "border-right" <. intercalate " "
 
 borderRightColor :: String -> Styles
-borderRightColor = Single <. Declaration Id "border-right-color"
+borderRightColor = declaration "border-right-color"
 
 borderRightStyle :: String -> Styles
-borderRightStyle = Single <. Declaration Id "border-right-style"
+borderRightStyle = declaration "border-right-style"
 
 borderRightWidth :: String -> Styles
-borderRightWidth = Single <. Declaration Id "border-right-width"
+borderRightWidth = declaration "border-right-width"
 
 borderSpacing :: String -> Styles
-borderSpacing = Single <. Declaration Id "border-spacing"
+borderSpacing = declaration "border-spacing"
 
 borderSpacingJ :: Array String -> Styles
-borderSpacingJ = Single <. Declaration Id "border-spacing" <. intercalate " "
+borderSpacingJ = declaration "border-spacing" <. intercalate " "
 
 borderStartEndRadius :: String -> Styles
-borderStartEndRadius = Single <. Declaration Id "border-start-end-radius"
+borderStartEndRadius = declaration "border-start-end-radius"
 
 borderStartEndRadiusJ :: Array String -> Styles
-borderStartEndRadiusJ = Single <. Declaration Id "border-start-end-radius" <. intercalate " "
+borderStartEndRadiusJ = declaration "border-start-end-radius" <. intercalate " "
 
 borderStartStartRadius :: String -> Styles
-borderStartStartRadius = Single <. Declaration Id "border-start-start-radius"
+borderStartStartRadius = declaration "border-start-start-radius"
 
 borderStartStartRadiusJ :: Array String -> Styles
-borderStartStartRadiusJ = Single <. Declaration Id "border-start-start-radius" <. intercalate " "
+borderStartStartRadiusJ = declaration "border-start-start-radius" <. intercalate " "
 
 borderStyle :: String -> Styles
-borderStyle = Single <. Declaration Id "border-style"
+borderStyle = declaration "border-style"
 
 borderStyleJ :: Array String -> Styles
-borderStyleJ = Single <. Declaration Id "border-style" <. intercalate " "
+borderStyleJ = declaration "border-style" <. intercalate " "
 
 borderTop :: String -> Styles
-borderTop = Single <. Declaration Id "border-top"
+borderTop = declaration "border-top"
 
 borderTopJ :: Array String -> Styles
-borderTopJ = Single <. Declaration Id "border-top" <. intercalate " "
+borderTopJ = declaration "border-top" <. intercalate " "
 
 borderTopColor :: String -> Styles
-borderTopColor = Single <. Declaration Id "border-top-color"
+borderTopColor = declaration "border-top-color"
 
 borderTopLeftRadius :: String -> Styles
-borderTopLeftRadius = Single <. Declaration Id "border-top-left-radius"
+borderTopLeftRadius = declaration "border-top-left-radius"
 
 borderTopLeftRadiusJ :: Array String -> Styles
-borderTopLeftRadiusJ = Single <. Declaration Id "border-top-left-radius" <. intercalate " "
+borderTopLeftRadiusJ = declaration "border-top-left-radius" <. intercalate " "
 
 borderTopRightRadius :: String -> Styles
-borderTopRightRadius = Single <. Declaration Id "border-top-right-radius"
+borderTopRightRadius = declaration "border-top-right-radius"
 
 borderTopRightRadiusJ :: Array String -> Styles
-borderTopRightRadiusJ = Single <. Declaration Id "border-top-right-radius" <. intercalate " "
+borderTopRightRadiusJ = declaration "border-top-right-radius" <. intercalate " "
 
 borderTopStyle :: String -> Styles
-borderTopStyle = Single <. Declaration Id "border-top-style"
+borderTopStyle = declaration "border-top-style"
 
 borderTopWidth :: String -> Styles
-borderTopWidth = Single <. Declaration Id "border-top-width"
+borderTopWidth = declaration "border-top-width"
 
 borderWidth :: String -> Styles
-borderWidth = Single <. Declaration Id "border-width"
+borderWidth = declaration "border-width"
 
 borderWidthJ :: Array String -> Styles
-borderWidthJ = Single <. Declaration Id "border-width" <. intercalate " "
+borderWidthJ = declaration "border-width" <. intercalate " "
 
 bottom :: String -> Styles
-bottom = Single <. Declaration Id "bottom"
+bottom = declaration "bottom"
 
 boxDecorationBreak :: String -> Styles
-boxDecorationBreak = Single <. Declaration Id "box-decoration-break"
+boxDecorationBreak = declaration "box-decoration-break"
 
 boxShadow :: String -> Styles
-boxShadow = Single <. Declaration Id "box-shadow"
+boxShadow = declaration "box-shadow"
 
 boxShadowJ :: Array String -> Styles
-boxShadowJ = Single <. Declaration Id "box-shadow" <. intercalate " "
+boxShadowJ = declaration "box-shadow" <. intercalate " "
 
 boxShadowJJ :: Array (Array String) -> Styles
-boxShadowJJ = Single <. Declaration Id "box-shadow" <. intercalate ", " <. map (intercalate " ")
+boxShadowJJ = declaration "box-shadow" <. intercalate ", " <. map (intercalate " ")
 
 boxSizing :: String -> Styles
-boxSizing = Single <. Declaration Id "box-sizing"
+boxSizing = declaration "box-sizing"
 
 boxSnap :: String -> Styles
-boxSnap = Single <. Declaration Id "box-snap"
+boxSnap = declaration "box-snap"
 
 breakAfter :: String -> Styles
-breakAfter = Single <. Declaration Id "break-after"
+breakAfter = declaration "break-after"
 
 breakBefore :: String -> Styles
-breakBefore = Single <. Declaration Id "break-before"
+breakBefore = declaration "break-before"
 
 breakInside :: String -> Styles
-breakInside = Single <. Declaration Id "break-inside"
+breakInside = declaration "break-inside"
 
 captionSide :: String -> Styles
-captionSide = Single <. Declaration Id "caption-side"
+captionSide = declaration "caption-side"
 
 caret :: String -> Styles
-caret = Single <. Declaration Id "caret"
+caret = declaration "caret"
 
 caretJ :: Array String -> Styles
-caretJ = Single <. Declaration Id "caret" <. intercalate " "
+caretJ = declaration "caret" <. intercalate " "
 
 caretColor :: String -> Styles
-caretColor = Single <. Declaration Id "caret-color"
+caretColor = declaration "caret-color"
 
 caretShape :: String -> Styles
-caretShape = Single <. Declaration Id "caret-shape"
+caretShape = declaration "caret-shape"
 
 clear :: String -> Styles
-clear = Single <. Declaration Id "clear"
+clear = declaration "clear"
 
 clip :: String -> Styles
-clip = Single <. Declaration Id "clip"
+clip = declaration "clip"
 
 clipPath :: String -> Styles
-clipPath = Single <. Declaration Id "clip-path"
+clipPath = declaration "clip-path"
 
 clipPathJ :: Array String -> Styles
-clipPathJ = Single <. Declaration Id "clip-path" <. intercalate " "
+clipPathJ = declaration "clip-path" <. intercalate " "
 
 clipRule :: String -> Styles
-clipRule = Single <. Declaration Id "clip-rule"
+clipRule = declaration "clip-rule"
 
 color :: String -> Styles
-color = Single <. Declaration Id "color"
+color = declaration "color"
 
 colorAdjust :: String -> Styles
-colorAdjust = Single <. Declaration Id "color-adjust"
+colorAdjust = declaration "color-adjust"
 
 colorInterpolationFilters :: String -> Styles
-colorInterpolationFilters = Single <. Declaration Id "color-interpolation-filters"
+colorInterpolationFilters = declaration "color-interpolation-filters"
 
 colorScheme :: String -> Styles
-colorScheme = Single <. Declaration Id "color-scheme"
+colorScheme = declaration "color-scheme"
 
 colorSchemeJ :: Array String -> Styles
-colorSchemeJ = Single <. Declaration Id "color-scheme" <. intercalate " "
+colorSchemeJ = declaration "color-scheme" <. intercalate " "
 
 columnCount :: String -> Styles
-columnCount = Single <. Declaration Id "column-count"
+columnCount = declaration "column-count"
 
 columnFill :: String -> Styles
-columnFill = Single <. Declaration Id "column-fill"
+columnFill = declaration "column-fill"
 
 columnGap :: String -> Styles
-columnGap = Single <. Declaration Id "column-gap"
+columnGap = declaration "column-gap"
 
 columnRule :: String -> Styles
-columnRule = Single <. Declaration Id "column-rule"
+columnRule = declaration "column-rule"
 
 columnRuleJ :: Array String -> Styles
-columnRuleJ = Single <. Declaration Id "column-rule" <. intercalate " "
+columnRuleJ = declaration "column-rule" <. intercalate " "
 
 columnRuleColor :: String -> Styles
-columnRuleColor = Single <. Declaration Id "column-rule-color"
+columnRuleColor = declaration "column-rule-color"
 
 columnRuleStyle :: String -> Styles
-columnRuleStyle = Single <. Declaration Id "column-rule-style"
+columnRuleStyle = declaration "column-rule-style"
 
 columnRuleWidth :: String -> Styles
-columnRuleWidth = Single <. Declaration Id "column-rule-width"
+columnRuleWidth = declaration "column-rule-width"
 
 columnSpan :: String -> Styles
-columnSpan = Single <. Declaration Id "column-span"
+columnSpan = declaration "column-span"
 
 columnWidth :: String -> Styles
-columnWidth = Single <. Declaration Id "column-width"
+columnWidth = declaration "column-width"
 
 columns :: String -> Styles
-columns = Single <. Declaration Id "columns"
+columns = declaration "columns"
 
 columnsJ :: Array String -> Styles
-columnsJ = Single <. Declaration Id "columns" <. intercalate " "
+columnsJ = declaration "columns" <. intercalate " "
 
 contain :: String -> Styles
-contain = Single <. Declaration Id "contain"
+contain = declaration "contain"
 
 containJ :: Array String -> Styles
-containJ = Single <. Declaration Id "contain" <. intercalate " "
+containJ = declaration "contain" <. intercalate " "
 
 content :: String -> Styles
-content = Single <. Declaration Id "content"
+content = declaration "content"
 
 contentJ :: Array String -> Styles
-contentJ = Single <. Declaration Id "content" <. intercalate " "
+contentJ = declaration "content" <. intercalate " "
 
 continue :: String -> Styles
-continue = Single <. Declaration Id "continue"
+continue = declaration "continue"
 
 counterIncrement :: String -> Styles
-counterIncrement = Single <. Declaration Id "counter-increment"
+counterIncrement = declaration "counter-increment"
 
 counterIncrementJ :: Array String -> Styles
-counterIncrementJ = Single <. Declaration Id "counter-increment" <. intercalate " "
+counterIncrementJ = declaration "counter-increment" <. intercalate " "
 
 counterIncrementJJ :: Array (Array String) -> Styles
-counterIncrementJJ = Single <. Declaration Id "counter-increment" <. intercalate " " <. map (intercalate " ")
+counterIncrementJJ = declaration "counter-increment" <. intercalate " " <. map (intercalate " ")
 
 counterReset :: String -> Styles
-counterReset = Single <. Declaration Id "counter-reset"
+counterReset = declaration "counter-reset"
 
 counterResetJ :: Array String -> Styles
-counterResetJ = Single <. Declaration Id "counter-reset" <. intercalate " "
+counterResetJ = declaration "counter-reset" <. intercalate " "
 
 counterResetJJ :: Array (Array String) -> Styles
-counterResetJJ = Single <. Declaration Id "counter-reset" <. intercalate " " <. map (intercalate " ")
+counterResetJJ = declaration "counter-reset" <. intercalate " " <. map (intercalate " ")
 
 counterSet :: String -> Styles
-counterSet = Single <. Declaration Id "counter-set"
+counterSet = declaration "counter-set"
 
 counterSetJ :: Array String -> Styles
-counterSetJ = Single <. Declaration Id "counter-set" <. intercalate " "
+counterSetJ = declaration "counter-set" <. intercalate " "
 
 counterSetJJ :: Array (Array String) -> Styles
-counterSetJJ = Single <. Declaration Id "counter-set" <. intercalate " " <. map (intercalate " ")
+counterSetJJ = declaration "counter-set" <. intercalate " " <. map (intercalate " ")
 
 cue :: String -> Styles
-cue = Single <. Declaration Id "cue"
+cue = declaration "cue"
 
 cueJ :: Array String -> Styles
-cueJ = Single <. Declaration Id "cue" <. intercalate " "
+cueJ = declaration "cue" <. intercalate " "
 
 cueJJ :: Array (Array String) -> Styles
-cueJJ = Single <. Declaration Id "cue" <. intercalate " " <. map (intercalate " ")
+cueJJ = declaration "cue" <. intercalate " " <. map (intercalate " ")
 
 cueAfter :: String -> Styles
-cueAfter = Single <. Declaration Id "cue-after"
+cueAfter = declaration "cue-after"
 
 cueAfterJ :: Array String -> Styles
-cueAfterJ = Single <. Declaration Id "cue-after" <. intercalate " "
+cueAfterJ = declaration "cue-after" <. intercalate " "
 
 cueBefore :: String -> Styles
-cueBefore = Single <. Declaration Id "cue-before"
+cueBefore = declaration "cue-before"
 
 cueBeforeJ :: Array String -> Styles
-cueBeforeJ = Single <. Declaration Id "cue-before" <. intercalate " "
+cueBeforeJ = declaration "cue-before" <. intercalate " "
 
 cursor :: String -> Styles
-cursor = Single <. Declaration Id "cursor"
+cursor = declaration "cursor"
 
 cursorJ :: Array String -> Styles
-cursorJ = Single <. Declaration Id "cursor" <. intercalate " "
+cursorJ = declaration "cursor" <. intercalate " "
 
 cursorJJ :: Array (Array String) -> Styles
-cursorJJ = Single <. Declaration Id "cursor" <. intercalate " " <. map (intercalate " ")
+cursorJJ = declaration "cursor" <. intercalate " " <. map (intercalate " ")
 
 direction :: String -> Styles
-direction = Single <. Declaration Id "direction"
+direction = declaration "direction"
 
 display :: String -> Styles
-display = Single <. Declaration Id "display"
+display = declaration "display"
 
 displayJ :: Array String -> Styles
-displayJ = Single <. Declaration Id "display" <. intercalate " "
+displayJ = declaration "display" <. intercalate " "
 
 dominantBaseline :: String -> Styles
-dominantBaseline = Single <. Declaration Id "dominant-baseline"
+dominantBaseline = declaration "dominant-baseline"
 
 elevation :: String -> Styles
-elevation = Single <. Declaration Id "elevation"
+elevation = declaration "elevation"
 
 emptyCells :: String -> Styles
-emptyCells = Single <. Declaration Id "empty-cells"
+emptyCells = declaration "empty-cells"
 
 fill :: String -> Styles
-fill = Single <. Declaration Id "fill"
+fill = declaration "fill"
 
 fillJ :: Array String -> Styles
-fillJ = Single <. Declaration Id "fill" <. intercalate " "
+fillJ = declaration "fill" <. intercalate " "
 
 fillBreak :: String -> Styles
-fillBreak = Single <. Declaration Id "fill-break"
+fillBreak = declaration "fill-break"
 
 fillColor :: String -> Styles
-fillColor = Single <. Declaration Id "fill-color"
+fillColor = declaration "fill-color"
 
 fillImage :: String -> Styles
-fillImage = Single <. Declaration Id "fill-image"
+fillImage = declaration "fill-image"
 
 fillImageJ :: Array String -> Styles
-fillImageJ = Single <. Declaration Id "fill-image" <. intercalate ", "
+fillImageJ = declaration "fill-image" <. intercalate ", "
 
 fillOpacity :: String -> Styles
-fillOpacity = Single <. Declaration Id "fill-opacity"
+fillOpacity = declaration "fill-opacity"
 
 fillOrigin :: String -> Styles
-fillOrigin = Single <. Declaration Id "fill-origin"
+fillOrigin = declaration "fill-origin"
 
 fillPosition :: String -> Styles
-fillPosition = Single <. Declaration Id "fill-position"
+fillPosition = declaration "fill-position"
 
 fillPositionJ :: Array String -> Styles
-fillPositionJ = Single <. Declaration Id "fill-position" <. intercalate " "
+fillPositionJ = declaration "fill-position" <. intercalate " "
 
 fillPositionJJ :: Array (Array String) -> Styles
-fillPositionJJ = Single <. Declaration Id "fill-position" <. intercalate ", " <. map (intercalate " ")
+fillPositionJJ = declaration "fill-position" <. intercalate ", " <. map (intercalate " ")
 
 fillRepeat :: String -> Styles
-fillRepeat = Single <. Declaration Id "fill-repeat"
+fillRepeat = declaration "fill-repeat"
 
 fillRepeatJ :: Array String -> Styles
-fillRepeatJ = Single <. Declaration Id "fill-repeat" <. intercalate " "
+fillRepeatJ = declaration "fill-repeat" <. intercalate " "
 
 fillRepeatJJ :: Array (Array String) -> Styles
-fillRepeatJJ = Single <. Declaration Id "fill-repeat" <. intercalate ", " <. map (intercalate " ")
+fillRepeatJJ = declaration "fill-repeat" <. intercalate ", " <. map (intercalate " ")
 
 fillRule :: String -> Styles
-fillRule = Single <. Declaration Id "fill-rule"
+fillRule = declaration "fill-rule"
 
 fillSize :: String -> Styles
-fillSize = Single <. Declaration Id "fill-size"
+fillSize = declaration "fill-size"
 
 fillSizeJ :: Array String -> Styles
-fillSizeJ = Single <. Declaration Id "fill-size" <. intercalate " "
+fillSizeJ = declaration "fill-size" <. intercalate " "
 
 fillSizeJJ :: Array (Array String) -> Styles
-fillSizeJJ = Single <. Declaration Id "fill-size" <. intercalate ", " <. map (intercalate " ")
+fillSizeJJ = declaration "fill-size" <. intercalate ", " <. map (intercalate " ")
 
 filter :: String -> Styles
-filter = Single <. Declaration Id "filter"
+filter = declaration "filter"
 
 filterJ :: Array String -> Styles
-filterJ = Single <. Declaration Id "filter" <. intercalate " "
+filterJ = declaration "filter" <. intercalate " "
 
 flex :: String -> Styles
-flex = Single <. Declaration Id "flex"
+flex = declaration "flex"
 
 flexJ :: Array String -> Styles
-flexJ = Single <. Declaration Id "flex" <. intercalate " "
+flexJ = declaration "flex" <. intercalate " "
 
 flexBasis :: String -> Styles
-flexBasis = Single <. Declaration Id "flex-basis"
+flexBasis = declaration "flex-basis"
 
 flexDirection :: String -> Styles
-flexDirection = Single <. Declaration Id "flex-direction"
+flexDirection = declaration "flex-direction"
 
 flexFlow :: String -> Styles
-flexFlow = Single <. Declaration Id "flex-flow"
+flexFlow = declaration "flex-flow"
 
 flexFlowJ :: Array String -> Styles
-flexFlowJ = Single <. Declaration Id "flex-flow" <. intercalate " "
+flexFlowJ = declaration "flex-flow" <. intercalate " "
 
 flexGrow :: String -> Styles
-flexGrow = Single <. Declaration Id "flex-grow"
+flexGrow = declaration "flex-grow"
 
 flexShrink :: String -> Styles
-flexShrink = Single <. Declaration Id "flex-shrink"
+flexShrink = declaration "flex-shrink"
 
 flexWrap :: String -> Styles
-flexWrap = Single <. Declaration Id "flex-wrap"
+flexWrap = declaration "flex-wrap"
 
 float :: String -> Styles
-float = Single <. Declaration Id "float"
+float = declaration "float"
 
 floatDefer :: String -> Styles
-floatDefer = Single <. Declaration Id "float-defer"
+floatDefer = declaration "float-defer"
 
 floatOffset :: String -> Styles
-floatOffset = Single <. Declaration Id "float-offset"
+floatOffset = declaration "float-offset"
 
 floatReference :: String -> Styles
-floatReference = Single <. Declaration Id "float-reference"
+floatReference = declaration "float-reference"
 
 floodColor :: String -> Styles
-floodColor = Single <. Declaration Id "flood-color"
+floodColor = declaration "flood-color"
 
 floodOpacity :: String -> Styles
-floodOpacity = Single <. Declaration Id "flood-opacity"
+floodOpacity = declaration "flood-opacity"
 
 flowFrom :: String -> Styles
-flowFrom = Single <. Declaration Id "flow-from"
+flowFrom = declaration "flow-from"
 
 flowInto :: String -> Styles
-flowInto = Single <. Declaration Id "flow-into"
+flowInto = declaration "flow-into"
 
 flowIntoJ :: Array String -> Styles
-flowIntoJ = Single <. Declaration Id "flow-into" <. intercalate " "
+flowIntoJ = declaration "flow-into" <. intercalate " "
 
 font :: String -> Styles
-font = Single <. Declaration Id "font"
+font = declaration "font"
 
 fontJ :: Array String -> Styles
-fontJ = Single <. Declaration Id "font" <. intercalate " "
+fontJ = declaration "font" <. intercalate " "
 
 fontFamily :: String -> Styles
-fontFamily = Single <. Declaration Id "font-family"
+fontFamily = declaration "font-family"
 
 fontFamilyJ :: Array String -> Styles
-fontFamilyJ = Single <. Declaration Id "font-family" <. intercalate ", "
+fontFamilyJ = declaration "font-family" <. intercalate ", "
 
 fontFeatureSettings :: String -> Styles
-fontFeatureSettings = Single <. Declaration Id "font-feature-settings"
+fontFeatureSettings = declaration "font-feature-settings"
 
 fontFeatureSettingsJ :: Array String -> Styles
-fontFeatureSettingsJ = Single <. Declaration Id "font-feature-settings" <. intercalate " "
+fontFeatureSettingsJ = declaration "font-feature-settings" <. intercalate " "
 
 fontFeatureSettingsJJ :: Array (Array String) -> Styles
-fontFeatureSettingsJJ = Single <. Declaration Id "font-feature-settings" <. intercalate ", " <. map (intercalate " ")
+fontFeatureSettingsJJ = declaration "font-feature-settings" <. intercalate ", " <. map (intercalate " ")
 
 fontKerning :: String -> Styles
-fontKerning = Single <. Declaration Id "font-kerning"
+fontKerning = declaration "font-kerning"
 
 fontLanguageOverride :: String -> Styles
-fontLanguageOverride = Single <. Declaration Id "font-language-override"
+fontLanguageOverride = declaration "font-language-override"
 
 fontOpticalSizing :: String -> Styles
-fontOpticalSizing = Single <. Declaration Id "font-optical-sizing"
+fontOpticalSizing = declaration "font-optical-sizing"
 
 fontPalette :: String -> Styles
-fontPalette = Single <. Declaration Id "font-palette"
+fontPalette = declaration "font-palette"
 
 fontSize :: String -> Styles
-fontSize = Single <. Declaration Id "font-size"
+fontSize = declaration "font-size"
 
 fontSizeAdjust :: String -> Styles
-fontSizeAdjust = Single <. Declaration Id "font-size-adjust"
+fontSizeAdjust = declaration "font-size-adjust"
 
 fontStretch :: String -> Styles
-fontStretch = Single <. Declaration Id "font-stretch"
+fontStretch = declaration "font-stretch"
 
 fontStyle :: String -> Styles
-fontStyle = Single <. Declaration Id "font-style"
+fontStyle = declaration "font-style"
 
 fontStyleJ :: Array String -> Styles
-fontStyleJ = Single <. Declaration Id "font-style" <. intercalate " "
+fontStyleJ = declaration "font-style" <. intercalate " "
 
 fontSynthesis :: String -> Styles
-fontSynthesis = Single <. Declaration Id "font-synthesis"
+fontSynthesis = declaration "font-synthesis"
 
 fontSynthesisJ :: Array String -> Styles
-fontSynthesisJ = Single <. Declaration Id "font-synthesis" <. intercalate " "
+fontSynthesisJ = declaration "font-synthesis" <. intercalate " "
 
 fontSynthesisSmallCaps :: String -> Styles
-fontSynthesisSmallCaps = Single <. Declaration Id "font-synthesis-small-caps"
+fontSynthesisSmallCaps = declaration "font-synthesis-small-caps"
 
 fontSynthesisStyle :: String -> Styles
-fontSynthesisStyle = Single <. Declaration Id "font-synthesis-style"
+fontSynthesisStyle = declaration "font-synthesis-style"
 
 fontSynthesisWeight :: String -> Styles
-fontSynthesisWeight = Single <. Declaration Id "font-synthesis-weight"
+fontSynthesisWeight = declaration "font-synthesis-weight"
 
 fontVariant :: String -> Styles
-fontVariant = Single <. Declaration Id "font-variant"
+fontVariant = declaration "font-variant"
 
 fontVariantJ :: Array String -> Styles
-fontVariantJ = Single <. Declaration Id "font-variant" <. intercalate " "
+fontVariantJ = declaration "font-variant" <. intercalate " "
 
 fontVariantAlternates :: String -> Styles
-fontVariantAlternates = Single <. Declaration Id "font-variant-alternates"
+fontVariantAlternates = declaration "font-variant-alternates"
 
 fontVariantAlternatesJ :: Array String -> Styles
-fontVariantAlternatesJ = Single <. Declaration Id "font-variant-alternates" <. intercalate " "
+fontVariantAlternatesJ = declaration "font-variant-alternates" <. intercalate " "
 
 fontVariantCaps :: String -> Styles
-fontVariantCaps = Single <. Declaration Id "font-variant-caps"
+fontVariantCaps = declaration "font-variant-caps"
 
 fontVariantEastAsian :: String -> Styles
-fontVariantEastAsian = Single <. Declaration Id "font-variant-east-asian"
+fontVariantEastAsian = declaration "font-variant-east-asian"
 
 fontVariantEastAsianJ :: Array String -> Styles
-fontVariantEastAsianJ = Single <. Declaration Id "font-variant-east-asian" <. intercalate " "
+fontVariantEastAsianJ = declaration "font-variant-east-asian" <. intercalate " "
 
 fontVariantEmoji :: String -> Styles
-fontVariantEmoji = Single <. Declaration Id "font-variant-emoji"
+fontVariantEmoji = declaration "font-variant-emoji"
 
 fontVariantLigatures :: String -> Styles
-fontVariantLigatures = Single <. Declaration Id "font-variant-ligatures"
+fontVariantLigatures = declaration "font-variant-ligatures"
 
 fontVariantLigaturesJ :: Array String -> Styles
-fontVariantLigaturesJ = Single <. Declaration Id "font-variant-ligatures" <. intercalate " "
+fontVariantLigaturesJ = declaration "font-variant-ligatures" <. intercalate " "
 
 fontVariantNumeric :: String -> Styles
-fontVariantNumeric = Single <. Declaration Id "font-variant-numeric"
+fontVariantNumeric = declaration "font-variant-numeric"
 
 fontVariantNumericJ :: Array String -> Styles
-fontVariantNumericJ = Single <. Declaration Id "font-variant-numeric" <. intercalate " "
+fontVariantNumericJ = declaration "font-variant-numeric" <. intercalate " "
 
 fontVariantPosition :: String -> Styles
-fontVariantPosition = Single <. Declaration Id "font-variant-position"
+fontVariantPosition = declaration "font-variant-position"
 
 fontVariationSettings :: String -> Styles
-fontVariationSettings = Single <. Declaration Id "font-variation-settings"
+fontVariationSettings = declaration "font-variation-settings"
 
 fontVariationSettingsJ :: Array String -> Styles
-fontVariationSettingsJ = Single <. Declaration Id "font-variation-settings" <. intercalate " "
+fontVariationSettingsJ = declaration "font-variation-settings" <. intercalate " "
 
 fontVariationSettingsJJ :: Array (Array String) -> Styles
-fontVariationSettingsJJ = Single <. Declaration Id "font-variation-settings" <. intercalate ", " <. map (intercalate " ")
+fontVariationSettingsJJ = declaration "font-variation-settings" <. intercalate ", " <. map (intercalate " ")
 
 fontWeight :: String -> Styles
-fontWeight = Single <. Declaration Id "font-weight"
+fontWeight = declaration "font-weight"
 
 footnoteDisplay :: String -> Styles
-footnoteDisplay = Single <. Declaration Id "footnote-display"
+footnoteDisplay = declaration "footnote-display"
 
 footnotePolicy :: String -> Styles
-footnotePolicy = Single <. Declaration Id "footnote-policy"
+footnotePolicy = declaration "footnote-policy"
 
 forcedColorAdjust :: String -> Styles
-forcedColorAdjust = Single <. Declaration Id "forced-color-adjust"
+forcedColorAdjust = declaration "forced-color-adjust"
 
 gap :: String -> Styles
-gap = Single <. Declaration Id "gap"
+gap = declaration "gap"
 
 gapJ :: Array String -> Styles
-gapJ = Single <. Declaration Id "gap" <. intercalate " "
+gapJ = declaration "gap" <. intercalate " "
 
 glyphOrientationVertical :: String -> Styles
-glyphOrientationVertical = Single <. Declaration Id "glyph-orientation-vertical"
+glyphOrientationVertical = declaration "glyph-orientation-vertical"
 
 grid :: String -> Styles
-grid = Single <. Declaration Id "grid"
+grid = declaration "grid"
 
 gridJ :: Array String -> Styles
-gridJ = Single <. Declaration Id "grid" <. intercalate " "
+gridJ = declaration "grid" <. intercalate " "
 
 gridJJ :: Array (Array String) -> Styles
-gridJJ = Single <. Declaration Id "grid" <. intercalate " " <. map (intercalate " ")
+gridJJ = declaration "grid" <. intercalate " " <. map (intercalate " ")
 
 gridArea :: String -> Styles
-gridArea = Single <. Declaration Id "grid-area"
+gridArea = declaration "grid-area"
 
 gridAreaJ :: Array String -> Styles
-gridAreaJ = Single <. Declaration Id "grid-area" <. intercalate " "
+gridAreaJ = declaration "grid-area" <. intercalate " "
 
 gridAreaJJ :: Array (Array String) -> Styles
-gridAreaJJ = Single <. Declaration Id "grid-area" <. intercalate " " <. map (intercalate " ")
+gridAreaJJ = declaration "grid-area" <. intercalate " " <. map (intercalate " ")
 
 gridAutoColumns :: String -> Styles
-gridAutoColumns = Single <. Declaration Id "grid-auto-columns"
+gridAutoColumns = declaration "grid-auto-columns"
 
 gridAutoColumnsJ :: Array String -> Styles
-gridAutoColumnsJ = Single <. Declaration Id "grid-auto-columns" <. intercalate " "
+gridAutoColumnsJ = declaration "grid-auto-columns" <. intercalate " "
 
 gridAutoFlow :: String -> Styles
-gridAutoFlow = Single <. Declaration Id "grid-auto-flow"
+gridAutoFlow = declaration "grid-auto-flow"
 
 gridAutoFlowJ :: Array String -> Styles
-gridAutoFlowJ = Single <. Declaration Id "grid-auto-flow" <. intercalate " "
+gridAutoFlowJ = declaration "grid-auto-flow" <. intercalate " "
 
 gridAutoRows :: String -> Styles
-gridAutoRows = Single <. Declaration Id "grid-auto-rows"
+gridAutoRows = declaration "grid-auto-rows"
 
 gridAutoRowsJ :: Array String -> Styles
-gridAutoRowsJ = Single <. Declaration Id "grid-auto-rows" <. intercalate " "
+gridAutoRowsJ = declaration "grid-auto-rows" <. intercalate " "
 
 gridColumn :: String -> Styles
-gridColumn = Single <. Declaration Id "grid-column"
+gridColumn = declaration "grid-column"
 
 gridColumnJ :: Array String -> Styles
-gridColumnJ = Single <. Declaration Id "grid-column" <. intercalate " "
+gridColumnJ = declaration "grid-column" <. intercalate " "
 
 gridColumnJJ :: Array (Array String) -> Styles
-gridColumnJJ = Single <. Declaration Id "grid-column" <. intercalate " " <. map (intercalate " ")
+gridColumnJJ = declaration "grid-column" <. intercalate " " <. map (intercalate " ")
 
 gridColumnEnd :: String -> Styles
-gridColumnEnd = Single <. Declaration Id "grid-column-end"
+gridColumnEnd = declaration "grid-column-end"
 
 gridColumnEndJ :: Array String -> Styles
-gridColumnEndJ = Single <. Declaration Id "grid-column-end" <. intercalate " "
+gridColumnEndJ = declaration "grid-column-end" <. intercalate " "
 
 gridColumnStart :: String -> Styles
-gridColumnStart = Single <. Declaration Id "grid-column-start"
+gridColumnStart = declaration "grid-column-start"
 
 gridColumnStartJ :: Array String -> Styles
-gridColumnStartJ = Single <. Declaration Id "grid-column-start" <. intercalate " "
+gridColumnStartJ = declaration "grid-column-start" <. intercalate " "
 
 gridRow :: String -> Styles
-gridRow = Single <. Declaration Id "grid-row"
+gridRow = declaration "grid-row"
 
 gridRowJ :: Array String -> Styles
-gridRowJ = Single <. Declaration Id "grid-row" <. intercalate " "
+gridRowJ = declaration "grid-row" <. intercalate " "
 
 gridRowJJ :: Array (Array String) -> Styles
-gridRowJJ = Single <. Declaration Id "grid-row" <. intercalate " " <. map (intercalate " ")
+gridRowJJ = declaration "grid-row" <. intercalate " " <. map (intercalate " ")
 
 gridRowEnd :: String -> Styles
-gridRowEnd = Single <. Declaration Id "grid-row-end"
+gridRowEnd = declaration "grid-row-end"
 
 gridRowEndJ :: Array String -> Styles
-gridRowEndJ = Single <. Declaration Id "grid-row-end" <. intercalate " "
+gridRowEndJ = declaration "grid-row-end" <. intercalate " "
 
 gridRowStart :: String -> Styles
-gridRowStart = Single <. Declaration Id "grid-row-start"
+gridRowStart = declaration "grid-row-start"
 
 gridRowStartJ :: Array String -> Styles
-gridRowStartJ = Single <. Declaration Id "grid-row-start" <. intercalate " "
+gridRowStartJ = declaration "grid-row-start" <. intercalate " "
 
 gridTemplate :: String -> Styles
-gridTemplate = Single <. Declaration Id "grid-template"
+gridTemplate = declaration "grid-template"
 
 gridTemplateJ :: Array String -> Styles
-gridTemplateJ = Single <. Declaration Id "grid-template" <. intercalate " "
+gridTemplateJ = declaration "grid-template" <. intercalate " "
 
 gridTemplateJJ :: Array (Array String) -> Styles
-gridTemplateJJ = Single <. Declaration Id "grid-template" <. intercalate " " <. map (intercalate " ")
+gridTemplateJJ = declaration "grid-template" <. intercalate " " <. map (intercalate " ")
 
 gridTemplateAreas :: String -> Styles
-gridTemplateAreas = Single <. Declaration Id "grid-template-areas"
+gridTemplateAreas = declaration "grid-template-areas"
 
 gridTemplateAreasJ :: Array String -> Styles
-gridTemplateAreasJ = Single <. Declaration Id "grid-template-areas" <. intercalate " "
+gridTemplateAreasJ = declaration "grid-template-areas" <. intercalate " "
 
 gridTemplateColumns :: String -> Styles
-gridTemplateColumns = Single <. Declaration Id "grid-template-columns"
+gridTemplateColumns = declaration "grid-template-columns"
 
 gridTemplateColumnsJ :: Array String -> Styles
-gridTemplateColumnsJ = Single <. Declaration Id "grid-template-columns" <. intercalate " "
+gridTemplateColumnsJ = declaration "grid-template-columns" <. intercalate " "
 
 gridTemplateColumnsJJ :: Array (Array String) -> Styles
-gridTemplateColumnsJJ = Single <. Declaration Id "grid-template-columns" <. intercalate " " <. map (intercalate " ")
+gridTemplateColumnsJJ = declaration "grid-template-columns" <. intercalate " " <. map (intercalate " ")
 
 gridTemplateRows :: String -> Styles
-gridTemplateRows = Single <. Declaration Id "grid-template-rows"
+gridTemplateRows = declaration "grid-template-rows"
 
 gridTemplateRowsJ :: Array String -> Styles
-gridTemplateRowsJ = Single <. Declaration Id "grid-template-rows" <. intercalate " "
+gridTemplateRowsJ = declaration "grid-template-rows" <. intercalate " "
 
 gridTemplateRowsJJ :: Array (Array String) -> Styles
-gridTemplateRowsJJ = Single <. Declaration Id "grid-template-rows" <. intercalate " " <. map (intercalate " ")
+gridTemplateRowsJJ = declaration "grid-template-rows" <. intercalate " " <. map (intercalate " ")
 
 hangingPunctuation :: String -> Styles
-hangingPunctuation = Single <. Declaration Id "hanging-punctuation"
+hangingPunctuation = declaration "hanging-punctuation"
 
 hangingPunctuationJ :: Array String -> Styles
-hangingPunctuationJ = Single <. Declaration Id "hanging-punctuation" <. intercalate " "
+hangingPunctuationJ = declaration "hanging-punctuation" <. intercalate " "
 
 height :: String -> Styles
-height = Single <. Declaration Id "height"
+height = declaration "height"
 
 hyphenateCharacter :: String -> Styles
-hyphenateCharacter = Single <. Declaration Id "hyphenate-character"
+hyphenateCharacter = declaration "hyphenate-character"
 
 hyphenateLimitChars :: String -> Styles
-hyphenateLimitChars = Single <. Declaration Id "hyphenate-limit-chars"
+hyphenateLimitChars = declaration "hyphenate-limit-chars"
 
 hyphenateLimitCharsJ :: Array String -> Styles
-hyphenateLimitCharsJ = Single <. Declaration Id "hyphenate-limit-chars" <. intercalate " "
+hyphenateLimitCharsJ = declaration "hyphenate-limit-chars" <. intercalate " "
 
 hyphenateLimitLast :: String -> Styles
-hyphenateLimitLast = Single <. Declaration Id "hyphenate-limit-last"
+hyphenateLimitLast = declaration "hyphenate-limit-last"
 
 hyphenateLimitLines :: String -> Styles
-hyphenateLimitLines = Single <. Declaration Id "hyphenate-limit-lines"
+hyphenateLimitLines = declaration "hyphenate-limit-lines"
 
 hyphenateLimitZone :: String -> Styles
-hyphenateLimitZone = Single <. Declaration Id "hyphenate-limit-zone"
+hyphenateLimitZone = declaration "hyphenate-limit-zone"
 
 hyphens :: String -> Styles
-hyphens = Single <. Declaration Id "hyphens"
+hyphens = declaration "hyphens"
 
 imageOrientation :: String -> Styles
-imageOrientation = Single <. Declaration Id "image-orientation"
+imageOrientation = declaration "image-orientation"
 
 imageOrientationJ :: Array String -> Styles
-imageOrientationJ = Single <. Declaration Id "image-orientation" <. intercalate " "
+imageOrientationJ = declaration "image-orientation" <. intercalate " "
 
 imageRendering :: String -> Styles
-imageRendering = Single <. Declaration Id "image-rendering"
+imageRendering = declaration "image-rendering"
 
 imageResolution :: String -> Styles
-imageResolution = Single <. Declaration Id "image-resolution"
+imageResolution = declaration "image-resolution"
 
 imageResolutionJ :: Array String -> Styles
-imageResolutionJ = Single <. Declaration Id "image-resolution" <. intercalate " "
+imageResolutionJ = declaration "image-resolution" <. intercalate " "
 
 initialLetters :: String -> Styles
-initialLetters = Single <. Declaration Id "initial-letters"
+initialLetters = declaration "initial-letters"
 
 initialLettersJ :: Array String -> Styles
-initialLettersJ = Single <. Declaration Id "initial-letters" <. intercalate " "
+initialLettersJ = declaration "initial-letters" <. intercalate " "
 
 initialLettersAlign :: String -> Styles
-initialLettersAlign = Single <. Declaration Id "initial-letters-align"
+initialLettersAlign = declaration "initial-letters-align"
 
 initialLettersAlignJ :: Array String -> Styles
-initialLettersAlignJ = Single <. Declaration Id "initial-letters-align" <. intercalate " "
+initialLettersAlignJ = declaration "initial-letters-align" <. intercalate " "
 
 initialLettersWrap :: String -> Styles
-initialLettersWrap = Single <. Declaration Id "initial-letters-wrap"
+initialLettersWrap = declaration "initial-letters-wrap"
 
 inlineSize :: String -> Styles
-inlineSize = Single <. Declaration Id "inline-size"
+inlineSize = declaration "inline-size"
 
 inlineSizing :: String -> Styles
-inlineSizing = Single <. Declaration Id "inline-sizing"
+inlineSizing = declaration "inline-sizing"
 
 inset :: String -> Styles
-inset = Single <. Declaration Id "inset"
+inset = declaration "inset"
 
 insetJ :: Array String -> Styles
-insetJ = Single <. Declaration Id "inset" <. intercalate " "
+insetJ = declaration "inset" <. intercalate " "
 
 insetBlock :: String -> Styles
-insetBlock = Single <. Declaration Id "inset-block"
+insetBlock = declaration "inset-block"
 
 insetBlockJ :: Array String -> Styles
-insetBlockJ = Single <. Declaration Id "inset-block" <. intercalate " "
+insetBlockJ = declaration "inset-block" <. intercalate " "
 
 insetBlockEnd :: String -> Styles
-insetBlockEnd = Single <. Declaration Id "inset-block-end"
+insetBlockEnd = declaration "inset-block-end"
 
 insetBlockStart :: String -> Styles
-insetBlockStart = Single <. Declaration Id "inset-block-start"
+insetBlockStart = declaration "inset-block-start"
 
 insetInline :: String -> Styles
-insetInline = Single <. Declaration Id "inset-inline"
+insetInline = declaration "inset-inline"
 
 insetInlineJ :: Array String -> Styles
-insetInlineJ = Single <. Declaration Id "inset-inline" <. intercalate " "
+insetInlineJ = declaration "inset-inline" <. intercalate " "
 
 insetInlineEnd :: String -> Styles
-insetInlineEnd = Single <. Declaration Id "inset-inline-end"
+insetInlineEnd = declaration "inset-inline-end"
 
 insetInlineStart :: String -> Styles
-insetInlineStart = Single <. Declaration Id "inset-inline-start"
+insetInlineStart = declaration "inset-inline-start"
 
 isolation :: String -> Styles
-isolation = Single <. Declaration Id "isolation"
+isolation = declaration "isolation"
 
 justifyContent :: String -> Styles
-justifyContent = Single <. Declaration Id "justify-content"
+justifyContent = declaration "justify-content"
 
 justifyContentJ :: Array String -> Styles
-justifyContentJ = Single <. Declaration Id "justify-content" <. intercalate " "
+justifyContentJ = declaration "justify-content" <. intercalate " "
 
 justifyItems :: String -> Styles
-justifyItems = Single <. Declaration Id "justify-items"
+justifyItems = declaration "justify-items"
 
 justifyItemsJ :: Array String -> Styles
-justifyItemsJ = Single <. Declaration Id "justify-items" <. intercalate " "
+justifyItemsJ = declaration "justify-items" <. intercalate " "
 
 justifySelf :: String -> Styles
-justifySelf = Single <. Declaration Id "justify-self"
+justifySelf = declaration "justify-self"
 
 justifySelfJ :: Array String -> Styles
-justifySelfJ = Single <. Declaration Id "justify-self" <. intercalate " "
+justifySelfJ = declaration "justify-self" <. intercalate " "
 
 left :: String -> Styles
-left = Single <. Declaration Id "left"
+left = declaration "left"
 
 letterSpacing :: String -> Styles
-letterSpacing = Single <. Declaration Id "letter-spacing"
+letterSpacing = declaration "letter-spacing"
 
 lightingColor :: String -> Styles
-lightingColor = Single <. Declaration Id "lighting-color"
+lightingColor = declaration "lighting-color"
 
 lineBreak :: String -> Styles
-lineBreak = Single <. Declaration Id "line-break"
+lineBreak = declaration "line-break"
 
 lineClamp :: String -> Styles
-lineClamp = Single <. Declaration Id "line-clamp"
+lineClamp = declaration "line-clamp"
 
 lineClampJ :: Array String -> Styles
-lineClampJ = Single <. Declaration Id "line-clamp" <. intercalate " "
+lineClampJ = declaration "line-clamp" <. intercalate " "
 
 lineGrid :: String -> Styles
-lineGrid = Single <. Declaration Id "line-grid"
+lineGrid = declaration "line-grid"
 
 lineHeight :: String -> Styles
-lineHeight = Single <. Declaration Id "line-height"
+lineHeight = declaration "line-height"
 
 lineHeightStep :: String -> Styles
-lineHeightStep = Single <. Declaration Id "line-height-step"
+lineHeightStep = declaration "line-height-step"
 
 linePadding :: String -> Styles
-linePadding = Single <. Declaration Id "line-padding"
+linePadding = declaration "line-padding"
 
 lineSnap :: String -> Styles
-lineSnap = Single <. Declaration Id "line-snap"
+lineSnap = declaration "line-snap"
 
 listStyle :: String -> Styles
-listStyle = Single <. Declaration Id "list-style"
+listStyle = declaration "list-style"
 
 listStyleJ :: Array String -> Styles
-listStyleJ = Single <. Declaration Id "list-style" <. intercalate " "
+listStyleJ = declaration "list-style" <. intercalate " "
 
 listStyleImage :: String -> Styles
-listStyleImage = Single <. Declaration Id "list-style-image"
+listStyleImage = declaration "list-style-image"
 
 listStylePosition :: String -> Styles
-listStylePosition = Single <. Declaration Id "list-style-position"
+listStylePosition = declaration "list-style-position"
 
 listStyleType :: String -> Styles
-listStyleType = Single <. Declaration Id "list-style-type"
+listStyleType = declaration "list-style-type"
 
 margin :: String -> Styles
-margin = Single <. Declaration Id "margin"
+margin = declaration "margin"
 
 marginJ :: Array String -> Styles
-marginJ = Single <. Declaration Id "margin" <. intercalate " "
+marginJ = declaration "margin" <. intercalate " "
 
 marginBlock :: String -> Styles
-marginBlock = Single <. Declaration Id "margin-block"
+marginBlock = declaration "margin-block"
 
 marginBlockJ :: Array String -> Styles
-marginBlockJ = Single <. Declaration Id "margin-block" <. intercalate " "
+marginBlockJ = declaration "margin-block" <. intercalate " "
 
 marginBlockEnd :: String -> Styles
-marginBlockEnd = Single <. Declaration Id "margin-block-end"
+marginBlockEnd = declaration "margin-block-end"
 
 marginBlockStart :: String -> Styles
-marginBlockStart = Single <. Declaration Id "margin-block-start"
+marginBlockStart = declaration "margin-block-start"
 
 marginBottom :: String -> Styles
-marginBottom = Single <. Declaration Id "margin-bottom"
+marginBottom = declaration "margin-bottom"
 
 marginBreak :: String -> Styles
-marginBreak = Single <. Declaration Id "margin-break"
+marginBreak = declaration "margin-break"
 
 marginInline :: String -> Styles
-marginInline = Single <. Declaration Id "margin-inline"
+marginInline = declaration "margin-inline"
 
 marginInlineJ :: Array String -> Styles
-marginInlineJ = Single <. Declaration Id "margin-inline" <. intercalate " "
+marginInlineJ = declaration "margin-inline" <. intercalate " "
 
 marginInlineEnd :: String -> Styles
-marginInlineEnd = Single <. Declaration Id "margin-inline-end"
+marginInlineEnd = declaration "margin-inline-end"
 
 marginInlineStart :: String -> Styles
-marginInlineStart = Single <. Declaration Id "margin-inline-start"
+marginInlineStart = declaration "margin-inline-start"
 
 marginLeft :: String -> Styles
-marginLeft = Single <. Declaration Id "margin-left"
+marginLeft = declaration "margin-left"
 
 marginRight :: String -> Styles
-marginRight = Single <. Declaration Id "margin-right"
+marginRight = declaration "margin-right"
 
 marginTop :: String -> Styles
-marginTop = Single <. Declaration Id "margin-top"
+marginTop = declaration "margin-top"
 
 marginTrim :: String -> Styles
-marginTrim = Single <. Declaration Id "margin-trim"
+marginTrim = declaration "margin-trim"
 
 marker :: String -> Styles
-marker = Single <. Declaration Id "marker"
+marker = declaration "marker"
 
 markerJ :: Array String -> Styles
-markerJ = Single <. Declaration Id "marker" <. intercalate " "
+markerJ = declaration "marker" <. intercalate " "
 
 markerEnd :: String -> Styles
-markerEnd = Single <. Declaration Id "marker-end"
+markerEnd = declaration "marker-end"
 
 markerKnockoutLeft :: String -> Styles
-markerKnockoutLeft = Single <. Declaration Id "marker-knockout-left"
+markerKnockoutLeft = declaration "marker-knockout-left"
 
 markerKnockoutLeftJ :: Array String -> Styles
-markerKnockoutLeftJ = Single <. Declaration Id "marker-knockout-left" <. intercalate " "
+markerKnockoutLeftJ = declaration "marker-knockout-left" <. intercalate " "
 
 markerKnockoutRight :: String -> Styles
-markerKnockoutRight = Single <. Declaration Id "marker-knockout-right"
+markerKnockoutRight = declaration "marker-knockout-right"
 
 markerKnockoutRightJ :: Array String -> Styles
-markerKnockoutRightJ = Single <. Declaration Id "marker-knockout-right" <. intercalate " "
+markerKnockoutRightJ = declaration "marker-knockout-right" <. intercalate " "
 
 markerMid :: String -> Styles
-markerMid = Single <. Declaration Id "marker-mid"
+markerMid = declaration "marker-mid"
 
 markerPattern :: String -> Styles
-markerPattern = Single <. Declaration Id "marker-pattern"
+markerPattern = declaration "marker-pattern"
 
 markerPatternJ :: Array String -> Styles
-markerPatternJ = Single <. Declaration Id "marker-pattern" <. intercalate " "
+markerPatternJ = declaration "marker-pattern" <. intercalate " "
 
 markerPatternJJ :: Array (Array String) -> Styles
-markerPatternJJ = Single <. Declaration Id "marker-pattern" <. intercalate " " <. map (intercalate " ")
+markerPatternJJ = declaration "marker-pattern" <. intercalate " " <. map (intercalate " ")
 
 markerSegment :: String -> Styles
-markerSegment = Single <. Declaration Id "marker-segment"
+markerSegment = declaration "marker-segment"
 
 markerSide :: String -> Styles
-markerSide = Single <. Declaration Id "marker-side"
+markerSide = declaration "marker-side"
 
 markerStart :: String -> Styles
-markerStart = Single <. Declaration Id "marker-start"
+markerStart = declaration "marker-start"
 
 mask :: String -> Styles
-mask = Single <. Declaration Id "mask"
+mask = declaration "mask"
 
 maskJ :: Array String -> Styles
-maskJ = Single <. Declaration Id "mask" <. intercalate " "
+maskJ = declaration "mask" <. intercalate " "
 
 maskJJ :: Array (Array String) -> Styles
-maskJJ = Single <. Declaration Id "mask" <. intercalate ", " <. map (intercalate " ")
+maskJJ = declaration "mask" <. intercalate ", " <. map (intercalate " ")
 
 maskBorder :: String -> Styles
-maskBorder = Single <. Declaration Id "mask-border"
+maskBorder = declaration "mask-border"
 
 maskBorderJ :: Array String -> Styles
-maskBorderJ = Single <. Declaration Id "mask-border" <. intercalate " "
+maskBorderJ = declaration "mask-border" <. intercalate " "
 
 maskBorderJJ :: Array (Array String) -> Styles
-maskBorderJJ = Single <. Declaration Id "mask-border" <. intercalate " " <. map (intercalate " ")
+maskBorderJJ = declaration "mask-border" <. intercalate " " <. map (intercalate " ")
 
 maskBorderMode :: String -> Styles
-maskBorderMode = Single <. Declaration Id "mask-border-mode"
+maskBorderMode = declaration "mask-border-mode"
 
 maskBorderOutset :: String -> Styles
-maskBorderOutset = Single <. Declaration Id "mask-border-outset"
+maskBorderOutset = declaration "mask-border-outset"
 
 maskBorderOutsetJ :: Array String -> Styles
-maskBorderOutsetJ = Single <. Declaration Id "mask-border-outset" <. intercalate " "
+maskBorderOutsetJ = declaration "mask-border-outset" <. intercalate " "
 
 maskBorderRepeat :: String -> Styles
-maskBorderRepeat = Single <. Declaration Id "mask-border-repeat"
+maskBorderRepeat = declaration "mask-border-repeat"
 
 maskBorderRepeatJ :: Array String -> Styles
-maskBorderRepeatJ = Single <. Declaration Id "mask-border-repeat" <. intercalate " "
+maskBorderRepeatJ = declaration "mask-border-repeat" <. intercalate " "
 
 maskBorderSlice :: String -> Styles
-maskBorderSlice = Single <. Declaration Id "mask-border-slice"
+maskBorderSlice = declaration "mask-border-slice"
 
 maskBorderSliceJ :: Array String -> Styles
-maskBorderSliceJ = Single <. Declaration Id "mask-border-slice" <. intercalate " "
+maskBorderSliceJ = declaration "mask-border-slice" <. intercalate " "
 
 maskBorderSliceJJ :: Array (Array String) -> Styles
-maskBorderSliceJJ = Single <. Declaration Id "mask-border-slice" <. intercalate " " <. map (intercalate " ")
+maskBorderSliceJJ = declaration "mask-border-slice" <. intercalate " " <. map (intercalate " ")
 
 maskBorderSource :: String -> Styles
-maskBorderSource = Single <. Declaration Id "mask-border-source"
+maskBorderSource = declaration "mask-border-source"
 
 maskBorderWidth :: String -> Styles
-maskBorderWidth = Single <. Declaration Id "mask-border-width"
+maskBorderWidth = declaration "mask-border-width"
 
 maskBorderWidthJ :: Array String -> Styles
-maskBorderWidthJ = Single <. Declaration Id "mask-border-width" <. intercalate " "
+maskBorderWidthJ = declaration "mask-border-width" <. intercalate " "
 
 maskClip :: String -> Styles
-maskClip = Single <. Declaration Id "mask-clip"
+maskClip = declaration "mask-clip"
 
 maskClipJ :: Array String -> Styles
-maskClipJ = Single <. Declaration Id "mask-clip" <. intercalate ", "
+maskClipJ = declaration "mask-clip" <. intercalate ", "
 
 maskComposite :: String -> Styles
-maskComposite = Single <. Declaration Id "mask-composite"
+maskComposite = declaration "mask-composite"
 
 maskCompositeJ :: Array String -> Styles
-maskCompositeJ = Single <. Declaration Id "mask-composite" <. intercalate ", "
+maskCompositeJ = declaration "mask-composite" <. intercalate ", "
 
 maskImage :: String -> Styles
-maskImage = Single <. Declaration Id "mask-image"
+maskImage = declaration "mask-image"
 
 maskImageJ :: Array String -> Styles
-maskImageJ = Single <. Declaration Id "mask-image" <. intercalate ", "
+maskImageJ = declaration "mask-image" <. intercalate ", "
 
 maskMode :: String -> Styles
-maskMode = Single <. Declaration Id "mask-mode"
+maskMode = declaration "mask-mode"
 
 maskModeJ :: Array String -> Styles
-maskModeJ = Single <. Declaration Id "mask-mode" <. intercalate ", "
+maskModeJ = declaration "mask-mode" <. intercalate ", "
 
 maskOrigin :: String -> Styles
-maskOrigin = Single <. Declaration Id "mask-origin"
+maskOrigin = declaration "mask-origin"
 
 maskOriginJ :: Array String -> Styles
-maskOriginJ = Single <. Declaration Id "mask-origin" <. intercalate ", "
+maskOriginJ = declaration "mask-origin" <. intercalate ", "
 
 maskPosition :: String -> Styles
-maskPosition = Single <. Declaration Id "mask-position"
+maskPosition = declaration "mask-position"
 
 maskPositionJ :: Array String -> Styles
-maskPositionJ = Single <. Declaration Id "mask-position" <. intercalate ", "
+maskPositionJ = declaration "mask-position" <. intercalate ", "
 
 maskRepeat :: String -> Styles
-maskRepeat = Single <. Declaration Id "mask-repeat"
+maskRepeat = declaration "mask-repeat"
 
 maskRepeatJ :: Array String -> Styles
-maskRepeatJ = Single <. Declaration Id "mask-repeat" <. intercalate ", "
+maskRepeatJ = declaration "mask-repeat" <. intercalate ", "
 
 maskSize :: String -> Styles
-maskSize = Single <. Declaration Id "mask-size"
+maskSize = declaration "mask-size"
 
 maskSizeJ :: Array String -> Styles
-maskSizeJ = Single <. Declaration Id "mask-size" <. intercalate ", "
+maskSizeJ = declaration "mask-size" <. intercalate ", "
 
 maskType :: String -> Styles
-maskType = Single <. Declaration Id "mask-type"
+maskType = declaration "mask-type"
 
 maxBlockSize :: String -> Styles
-maxBlockSize = Single <. Declaration Id "max-block-size"
+maxBlockSize = declaration "max-block-size"
 
 maxHeight :: String -> Styles
-maxHeight = Single <. Declaration Id "max-height"
+maxHeight = declaration "max-height"
 
 maxInlineSize :: String -> Styles
-maxInlineSize = Single <. Declaration Id "max-inline-size"
+maxInlineSize = declaration "max-inline-size"
 
 maxLines :: String -> Styles
-maxLines = Single <. Declaration Id "max-lines"
+maxLines = declaration "max-lines"
 
 maxWidth :: String -> Styles
-maxWidth = Single <. Declaration Id "max-width"
+maxWidth = declaration "max-width"
 
 minBlockSize :: String -> Styles
-minBlockSize = Single <. Declaration Id "min-block-size"
+minBlockSize = declaration "min-block-size"
 
 minHeight :: String -> Styles
-minHeight = Single <. Declaration Id "min-height"
+minHeight = declaration "min-height"
 
 minInlineSize :: String -> Styles
-minInlineSize = Single <. Declaration Id "min-inline-size"
+minInlineSize = declaration "min-inline-size"
 
 minWidth :: String -> Styles
-minWidth = Single <. Declaration Id "min-width"
+minWidth = declaration "min-width"
 
 mixBlendMode :: String -> Styles
-mixBlendMode = Single <. Declaration Id "mix-blend-mode"
+mixBlendMode = declaration "mix-blend-mode"
 
 navDown :: String -> Styles
-navDown = Single <. Declaration Id "nav-down"
+navDown = declaration "nav-down"
 
 navDownJ :: Array String -> Styles
-navDownJ = Single <. Declaration Id "nav-down" <. intercalate " "
+navDownJ = declaration "nav-down" <. intercalate " "
 
 navLeft :: String -> Styles
-navLeft = Single <. Declaration Id "nav-left"
+navLeft = declaration "nav-left"
 
 navLeftJ :: Array String -> Styles
-navLeftJ = Single <. Declaration Id "nav-left" <. intercalate " "
+navLeftJ = declaration "nav-left" <. intercalate " "
 
 navRight :: String -> Styles
-navRight = Single <. Declaration Id "nav-right"
+navRight = declaration "nav-right"
 
 navRightJ :: Array String -> Styles
-navRightJ = Single <. Declaration Id "nav-right" <. intercalate " "
+navRightJ = declaration "nav-right" <. intercalate " "
 
 navUp :: String -> Styles
-navUp = Single <. Declaration Id "nav-up"
+navUp = declaration "nav-up"
 
 navUpJ :: Array String -> Styles
-navUpJ = Single <. Declaration Id "nav-up" <. intercalate " "
+navUpJ = declaration "nav-up" <. intercalate " "
 
 objectFit :: String -> Styles
-objectFit = Single <. Declaration Id "object-fit"
+objectFit = declaration "object-fit"
 
 objectPosition :: String -> Styles
-objectPosition = Single <. Declaration Id "object-position"
+objectPosition = declaration "object-position"
 
 objectPositionJ :: Array String -> Styles
-objectPositionJ = Single <. Declaration Id "object-position" <. intercalate " "
+objectPositionJ = declaration "object-position" <. intercalate " "
 
 offset :: String -> Styles
-offset = Single <. Declaration Id "offset"
+offset = declaration "offset"
 
 offsetJ :: Array String -> Styles
-offsetJ = Single <. Declaration Id "offset" <. intercalate " "
+offsetJ = declaration "offset" <. intercalate " "
 
 offsetJJ :: Array (Array String) -> Styles
-offsetJJ = Single <. Declaration Id "offset" <. intercalate " " <. map (intercalate " ")
+offsetJJ = declaration "offset" <. intercalate " " <. map (intercalate " ")
 
 offsetAfter :: String -> Styles
-offsetAfter = Single <. Declaration Id "offset-after"
+offsetAfter = declaration "offset-after"
 
 offsetAnchor :: String -> Styles
-offsetAnchor = Single <. Declaration Id "offset-anchor"
+offsetAnchor = declaration "offset-anchor"
 
 offsetAnchorJ :: Array String -> Styles
-offsetAnchorJ = Single <. Declaration Id "offset-anchor" <. intercalate " "
+offsetAnchorJ = declaration "offset-anchor" <. intercalate " "
 
 offsetBefore :: String -> Styles
-offsetBefore = Single <. Declaration Id "offset-before"
+offsetBefore = declaration "offset-before"
 
 offsetDistance :: String -> Styles
-offsetDistance = Single <. Declaration Id "offset-distance"
+offsetDistance = declaration "offset-distance"
 
 offsetEnd :: String -> Styles
-offsetEnd = Single <. Declaration Id "offset-end"
+offsetEnd = declaration "offset-end"
 
 offsetPath :: String -> Styles
-offsetPath = Single <. Declaration Id "offset-path"
+offsetPath = declaration "offset-path"
 
 offsetPathJ :: Array String -> Styles
-offsetPathJ = Single <. Declaration Id "offset-path" <. intercalate " "
+offsetPathJ = declaration "offset-path" <. intercalate " "
 
 offsetPosition :: String -> Styles
-offsetPosition = Single <. Declaration Id "offset-position"
+offsetPosition = declaration "offset-position"
 
 offsetPositionJ :: Array String -> Styles
-offsetPositionJ = Single <. Declaration Id "offset-position" <. intercalate " "
+offsetPositionJ = declaration "offset-position" <. intercalate " "
 
 offsetRotate :: String -> Styles
-offsetRotate = Single <. Declaration Id "offset-rotate"
+offsetRotate = declaration "offset-rotate"
 
 offsetStart :: String -> Styles
-offsetStart = Single <. Declaration Id "offset-start"
+offsetStart = declaration "offset-start"
 
 opacity :: String -> Styles
-opacity = Single <. Declaration Id "opacity"
+opacity = declaration "opacity"
 
 order :: String -> Styles
-order = Single <. Declaration Id "order"
+order = declaration "order"
 
 orphans :: String -> Styles
-orphans = Single <. Declaration Id "orphans"
+orphans = declaration "orphans"
 
 outline :: String -> Styles
-outline = Single <. Declaration Id "outline"
+outline = declaration "outline"
 
 outlineJ :: Array String -> Styles
-outlineJ = Single <. Declaration Id "outline" <. intercalate " "
+outlineJ = declaration "outline" <. intercalate " "
 
 outlineColor :: String -> Styles
-outlineColor = Single <. Declaration Id "outline-color"
+outlineColor = declaration "outline-color"
 
 outlineOffset :: String -> Styles
-outlineOffset = Single <. Declaration Id "outline-offset"
+outlineOffset = declaration "outline-offset"
 
 outlineStyle :: String -> Styles
-outlineStyle = Single <. Declaration Id "outline-style"
+outlineStyle = declaration "outline-style"
 
 outlineWidth :: String -> Styles
-outlineWidth = Single <. Declaration Id "outline-width"
+outlineWidth = declaration "outline-width"
 
 overflow :: String -> Styles
-overflow = Single <. Declaration Id "overflow"
+overflow = declaration "overflow"
 
 overflowJ :: Array String -> Styles
-overflowJ = Single <. Declaration Id "overflow" <. intercalate " "
+overflowJ = declaration "overflow" <. intercalate " "
 
 overflowAnchor :: String -> Styles
-overflowAnchor = Single <. Declaration Id "overflow-anchor"
+overflowAnchor = declaration "overflow-anchor"
 
 overflowBlock :: String -> Styles
-overflowBlock = Single <. Declaration Id "overflow-block"
+overflowBlock = declaration "overflow-block"
 
 overflowBlockJ :: Array String -> Styles
-overflowBlockJ = Single <. Declaration Id "overflow-block" <. intercalate " "
+overflowBlockJ = declaration "overflow-block" <. intercalate " "
 
 overflowInline :: String -> Styles
-overflowInline = Single <. Declaration Id "overflow-inline"
+overflowInline = declaration "overflow-inline"
 
 overflowInlineJ :: Array String -> Styles
-overflowInlineJ = Single <. Declaration Id "overflow-inline" <. intercalate " "
+overflowInlineJ = declaration "overflow-inline" <. intercalate " "
 
 overflowWrap :: String -> Styles
-overflowWrap = Single <. Declaration Id "overflow-wrap"
+overflowWrap = declaration "overflow-wrap"
 
 overflowX :: String -> Styles
-overflowX = Single <. Declaration Id "overflow-x"
+overflowX = declaration "overflow-x"
 
 overflowY :: String -> Styles
-overflowY = Single <. Declaration Id "overflow-y"
+overflowY = declaration "overflow-y"
 
 overscrollBehavior :: String -> Styles
-overscrollBehavior = Single <. Declaration Id "overscroll-behavior"
+overscrollBehavior = declaration "overscroll-behavior"
 
 overscrollBehaviorJ :: Array String -> Styles
-overscrollBehaviorJ = Single <. Declaration Id "overscroll-behavior" <. intercalate " "
+overscrollBehaviorJ = declaration "overscroll-behavior" <. intercalate " "
 
 overscrollBehaviorBlock :: String -> Styles
-overscrollBehaviorBlock = Single <. Declaration Id "overscroll-behavior-block"
+overscrollBehaviorBlock = declaration "overscroll-behavior-block"
 
 overscrollBehaviorInline :: String -> Styles
-overscrollBehaviorInline = Single <. Declaration Id "overscroll-behavior-inline"
+overscrollBehaviorInline = declaration "overscroll-behavior-inline"
 
 overscrollBehaviorX :: String -> Styles
-overscrollBehaviorX = Single <. Declaration Id "overscroll-behavior-x"
+overscrollBehaviorX = declaration "overscroll-behavior-x"
 
 overscrollBehaviorY :: String -> Styles
-overscrollBehaviorY = Single <. Declaration Id "overscroll-behavior-y"
+overscrollBehaviorY = declaration "overscroll-behavior-y"
 
 padding :: String -> Styles
-padding = Single <. Declaration Id "padding"
+padding = declaration "padding"
 
 paddingJ :: Array String -> Styles
-paddingJ = Single <. Declaration Id "padding" <. intercalate " "
+paddingJ = declaration "padding" <. intercalate " "
 
 paddingBlock :: String -> Styles
-paddingBlock = Single <. Declaration Id "padding-block"
+paddingBlock = declaration "padding-block"
 
 paddingBlockJ :: Array String -> Styles
-paddingBlockJ = Single <. Declaration Id "padding-block" <. intercalate " "
+paddingBlockJ = declaration "padding-block" <. intercalate " "
 
 paddingBlockEnd :: String -> Styles
-paddingBlockEnd = Single <. Declaration Id "padding-block-end"
+paddingBlockEnd = declaration "padding-block-end"
 
 paddingBlockStart :: String -> Styles
-paddingBlockStart = Single <. Declaration Id "padding-block-start"
+paddingBlockStart = declaration "padding-block-start"
 
 paddingBottom :: String -> Styles
-paddingBottom = Single <. Declaration Id "padding-bottom"
+paddingBottom = declaration "padding-bottom"
 
 paddingInline :: String -> Styles
-paddingInline = Single <. Declaration Id "padding-inline"
+paddingInline = declaration "padding-inline"
 
 paddingInlineJ :: Array String -> Styles
-paddingInlineJ = Single <. Declaration Id "padding-inline" <. intercalate " "
+paddingInlineJ = declaration "padding-inline" <. intercalate " "
 
 paddingInlineEnd :: String -> Styles
-paddingInlineEnd = Single <. Declaration Id "padding-inline-end"
+paddingInlineEnd = declaration "padding-inline-end"
 
 paddingInlineStart :: String -> Styles
-paddingInlineStart = Single <. Declaration Id "padding-inline-start"
+paddingInlineStart = declaration "padding-inline-start"
 
 paddingLeft :: String -> Styles
-paddingLeft = Single <. Declaration Id "padding-left"
+paddingLeft = declaration "padding-left"
 
 paddingRight :: String -> Styles
-paddingRight = Single <. Declaration Id "padding-right"
+paddingRight = declaration "padding-right"
 
 paddingTop :: String -> Styles
-paddingTop = Single <. Declaration Id "padding-top"
+paddingTop = declaration "padding-top"
 
 page :: String -> Styles
-page = Single <. Declaration Id "page"
+page = declaration "page"
 
 pageBreakAfter :: String -> Styles
-pageBreakAfter = Single <. Declaration Id "page-break-after"
+pageBreakAfter = declaration "page-break-after"
 
 pageBreakBefore :: String -> Styles
-pageBreakBefore = Single <. Declaration Id "page-break-before"
+pageBreakBefore = declaration "page-break-before"
 
 pageBreakInside :: String -> Styles
-pageBreakInside = Single <. Declaration Id "page-break-inside"
+pageBreakInside = declaration "page-break-inside"
 
 pause :: String -> Styles
-pause = Single <. Declaration Id "pause"
+pause = declaration "pause"
 
 pauseJ :: Array String -> Styles
-pauseJ = Single <. Declaration Id "pause" <. intercalate " "
+pauseJ = declaration "pause" <. intercalate " "
 
 pauseAfter :: String -> Styles
-pauseAfter = Single <. Declaration Id "pause-after"
+pauseAfter = declaration "pause-after"
 
 pauseBefore :: String -> Styles
-pauseBefore = Single <. Declaration Id "pause-before"
+pauseBefore = declaration "pause-before"
 
 perspective :: String -> Styles
-perspective = Single <. Declaration Id "perspective"
+perspective = declaration "perspective"
 
 perspectiveOrigin :: String -> Styles
-perspectiveOrigin = Single <. Declaration Id "perspective-origin"
+perspectiveOrigin = declaration "perspective-origin"
 
 perspectiveOriginJ :: Array String -> Styles
-perspectiveOriginJ = Single <. Declaration Id "perspective-origin" <. intercalate " "
+perspectiveOriginJ = declaration "perspective-origin" <. intercalate " "
 
 pitch :: String -> Styles
-pitch = Single <. Declaration Id "pitch"
+pitch = declaration "pitch"
 
 pitchRange :: String -> Styles
-pitchRange = Single <. Declaration Id "pitch-range"
+pitchRange = declaration "pitch-range"
 
 placeContent :: String -> Styles
-placeContent = Single <. Declaration Id "place-content"
+placeContent = declaration "place-content"
 
 placeContentJ :: Array String -> Styles
-placeContentJ = Single <. Declaration Id "place-content" <. intercalate " "
+placeContentJ = declaration "place-content" <. intercalate " "
 
 placeItems :: String -> Styles
-placeItems = Single <. Declaration Id "place-items"
+placeItems = declaration "place-items"
 
 placeItemsJ :: Array String -> Styles
-placeItemsJ = Single <. Declaration Id "place-items" <. intercalate " "
+placeItemsJ = declaration "place-items" <. intercalate " "
 
 placeSelf :: String -> Styles
-placeSelf = Single <. Declaration Id "place-self"
+placeSelf = declaration "place-self"
 
 placeSelfJ :: Array String -> Styles
-placeSelfJ = Single <. Declaration Id "place-self" <. intercalate " "
+placeSelfJ = declaration "place-self" <. intercalate " "
 
 playDuring :: String -> Styles
-playDuring = Single <. Declaration Id "play-during"
+playDuring = declaration "play-during"
 
 playDuringJ :: Array String -> Styles
-playDuringJ = Single <. Declaration Id "play-during" <. intercalate " "
+playDuringJ = declaration "play-during" <. intercalate " "
 
 pointerEvents :: String -> Styles
-pointerEvents = Single <. Declaration Id "pointer-events"
+pointerEvents = declaration "pointer-events"
 
 position :: String -> Styles
-position = Single <. Declaration Id "position"
+position = declaration "position"
 
 quotes :: String -> Styles
-quotes = Single <. Declaration Id "quotes"
+quotes = declaration "quotes"
 
 quotesJ :: Array String -> Styles
-quotesJ = Single <. Declaration Id "quotes" <. intercalate " "
+quotesJ = declaration "quotes" <. intercalate " "
 
 quotesJJ :: Array (Array String) -> Styles
-quotesJJ = Single <. Declaration Id "quotes" <. intercalate " " <. map (intercalate " ")
+quotesJJ = declaration "quotes" <. intercalate " " <. map (intercalate " ")
 
 regionFragment :: String -> Styles
-regionFragment = Single <. Declaration Id "region-fragment"
+regionFragment = declaration "region-fragment"
 
 resize :: String -> Styles
-resize = Single <. Declaration Id "resize"
+resize = declaration "resize"
 
 rest :: String -> Styles
-rest = Single <. Declaration Id "rest"
+rest = declaration "rest"
 
 restJ :: Array String -> Styles
-restJ = Single <. Declaration Id "rest" <. intercalate " "
+restJ = declaration "rest" <. intercalate " "
 
 restAfter :: String -> Styles
-restAfter = Single <. Declaration Id "rest-after"
+restAfter = declaration "rest-after"
 
 restBefore :: String -> Styles
-restBefore = Single <. Declaration Id "rest-before"
+restBefore = declaration "rest-before"
 
 richness :: String -> Styles
-richness = Single <. Declaration Id "richness"
+richness = declaration "richness"
 
 right :: String -> Styles
-right = Single <. Declaration Id "right"
+right = declaration "right"
 
 rotate :: String -> Styles
-rotate = Single <. Declaration Id "rotate"
+rotate = declaration "rotate"
 
 rotateJ :: Array String -> Styles
-rotateJ = Single <. Declaration Id "rotate" <. intercalate " "
+rotateJ = declaration "rotate" <. intercalate " "
 
 rowGap :: String -> Styles
-rowGap = Single <. Declaration Id "row-gap"
+rowGap = declaration "row-gap"
 
 rubyAlign :: String -> Styles
-rubyAlign = Single <. Declaration Id "ruby-align"
+rubyAlign = declaration "ruby-align"
 
 rubyAlignJ :: Array String -> Styles
-rubyAlignJ = Single <. Declaration Id "ruby-align" <. intercalate " "
+rubyAlignJ = declaration "ruby-align" <. intercalate " "
 
 rubyMerge :: String -> Styles
-rubyMerge = Single <. Declaration Id "ruby-merge"
+rubyMerge = declaration "ruby-merge"
 
 rubyPosition :: String -> Styles
-rubyPosition = Single <. Declaration Id "ruby-position"
+rubyPosition = declaration "ruby-position"
 
 rubyPositionJ :: Array String -> Styles
-rubyPositionJ = Single <. Declaration Id "ruby-position" <. intercalate " "
+rubyPositionJ = declaration "ruby-position" <. intercalate " "
 
 running :: String -> Styles
-running = Single <. Declaration Id "running"
+running = declaration "running"
 
 scale :: String -> Styles
-scale = Single <. Declaration Id "scale"
+scale = declaration "scale"
 
 scaleJ :: Array String -> Styles
-scaleJ = Single <. Declaration Id "scale" <. intercalate " "
+scaleJ = declaration "scale" <. intercalate " "
 
 scrollBehavior :: String -> Styles
-scrollBehavior = Single <. Declaration Id "scroll-behavior"
+scrollBehavior = declaration "scroll-behavior"
 
 scrollMargin :: String -> Styles
-scrollMargin = Single <. Declaration Id "scroll-margin"
+scrollMargin = declaration "scroll-margin"
 
 scrollMarginJ :: Array String -> Styles
-scrollMarginJ = Single <. Declaration Id "scroll-margin" <. intercalate " "
+scrollMarginJ = declaration "scroll-margin" <. intercalate " "
 
 scrollMarginBlock :: String -> Styles
-scrollMarginBlock = Single <. Declaration Id "scroll-margin-block"
+scrollMarginBlock = declaration "scroll-margin-block"
 
 scrollMarginBlockJ :: Array String -> Styles
-scrollMarginBlockJ = Single <. Declaration Id "scroll-margin-block" <. intercalate " "
+scrollMarginBlockJ = declaration "scroll-margin-block" <. intercalate " "
 
 scrollMarginBlockEnd :: String -> Styles
-scrollMarginBlockEnd = Single <. Declaration Id "scroll-margin-block-end"
+scrollMarginBlockEnd = declaration "scroll-margin-block-end"
 
 scrollMarginBlockStart :: String -> Styles
-scrollMarginBlockStart = Single <. Declaration Id "scroll-margin-block-start"
+scrollMarginBlockStart = declaration "scroll-margin-block-start"
 
 scrollMarginBottom :: String -> Styles
-scrollMarginBottom = Single <. Declaration Id "scroll-margin-bottom"
+scrollMarginBottom = declaration "scroll-margin-bottom"
 
 scrollMarginInline :: String -> Styles
-scrollMarginInline = Single <. Declaration Id "scroll-margin-inline"
+scrollMarginInline = declaration "scroll-margin-inline"
 
 scrollMarginInlineJ :: Array String -> Styles
-scrollMarginInlineJ = Single <. Declaration Id "scroll-margin-inline" <. intercalate " "
+scrollMarginInlineJ = declaration "scroll-margin-inline" <. intercalate " "
 
 scrollMarginInlineEnd :: String -> Styles
-scrollMarginInlineEnd = Single <. Declaration Id "scroll-margin-inline-end"
+scrollMarginInlineEnd = declaration "scroll-margin-inline-end"
 
 scrollMarginInlineStart :: String -> Styles
-scrollMarginInlineStart = Single <. Declaration Id "scroll-margin-inline-start"
+scrollMarginInlineStart = declaration "scroll-margin-inline-start"
 
 scrollMarginLeft :: String -> Styles
-scrollMarginLeft = Single <. Declaration Id "scroll-margin-left"
+scrollMarginLeft = declaration "scroll-margin-left"
 
 scrollMarginRight :: String -> Styles
-scrollMarginRight = Single <. Declaration Id "scroll-margin-right"
+scrollMarginRight = declaration "scroll-margin-right"
 
 scrollMarginTop :: String -> Styles
-scrollMarginTop = Single <. Declaration Id "scroll-margin-top"
+scrollMarginTop = declaration "scroll-margin-top"
 
 scrollPadding :: String -> Styles
-scrollPadding = Single <. Declaration Id "scroll-padding"
+scrollPadding = declaration "scroll-padding"
 
 scrollPaddingJ :: Array String -> Styles
-scrollPaddingJ = Single <. Declaration Id "scroll-padding" <. intercalate " "
+scrollPaddingJ = declaration "scroll-padding" <. intercalate " "
 
 scrollPaddingBlock :: String -> Styles
-scrollPaddingBlock = Single <. Declaration Id "scroll-padding-block"
+scrollPaddingBlock = declaration "scroll-padding-block"
 
 scrollPaddingBlockJ :: Array String -> Styles
-scrollPaddingBlockJ = Single <. Declaration Id "scroll-padding-block" <. intercalate " "
+scrollPaddingBlockJ = declaration "scroll-padding-block" <. intercalate " "
 
 scrollPaddingBlockEnd :: String -> Styles
-scrollPaddingBlockEnd = Single <. Declaration Id "scroll-padding-block-end"
+scrollPaddingBlockEnd = declaration "scroll-padding-block-end"
 
 scrollPaddingBlockStart :: String -> Styles
-scrollPaddingBlockStart = Single <. Declaration Id "scroll-padding-block-start"
+scrollPaddingBlockStart = declaration "scroll-padding-block-start"
 
 scrollPaddingBottom :: String -> Styles
-scrollPaddingBottom = Single <. Declaration Id "scroll-padding-bottom"
+scrollPaddingBottom = declaration "scroll-padding-bottom"
 
 scrollPaddingInline :: String -> Styles
-scrollPaddingInline = Single <. Declaration Id "scroll-padding-inline"
+scrollPaddingInline = declaration "scroll-padding-inline"
 
 scrollPaddingInlineJ :: Array String -> Styles
-scrollPaddingInlineJ = Single <. Declaration Id "scroll-padding-inline" <. intercalate " "
+scrollPaddingInlineJ = declaration "scroll-padding-inline" <. intercalate " "
 
 scrollPaddingInlineEnd :: String -> Styles
-scrollPaddingInlineEnd = Single <. Declaration Id "scroll-padding-inline-end"
+scrollPaddingInlineEnd = declaration "scroll-padding-inline-end"
 
 scrollPaddingInlineStart :: String -> Styles
-scrollPaddingInlineStart = Single <. Declaration Id "scroll-padding-inline-start"
+scrollPaddingInlineStart = declaration "scroll-padding-inline-start"
 
 scrollPaddingLeft :: String -> Styles
-scrollPaddingLeft = Single <. Declaration Id "scroll-padding-left"
+scrollPaddingLeft = declaration "scroll-padding-left"
 
 scrollPaddingRight :: String -> Styles
-scrollPaddingRight = Single <. Declaration Id "scroll-padding-right"
+scrollPaddingRight = declaration "scroll-padding-right"
 
 scrollPaddingTop :: String -> Styles
-scrollPaddingTop = Single <. Declaration Id "scroll-padding-top"
+scrollPaddingTop = declaration "scroll-padding-top"
 
 scrollSnapAlign :: String -> Styles
-scrollSnapAlign = Single <. Declaration Id "scroll-snap-align"
+scrollSnapAlign = declaration "scroll-snap-align"
 
 scrollSnapAlignJ :: Array String -> Styles
-scrollSnapAlignJ = Single <. Declaration Id "scroll-snap-align" <. intercalate " "
+scrollSnapAlignJ = declaration "scroll-snap-align" <. intercalate " "
 
 scrollSnapStop :: String -> Styles
-scrollSnapStop = Single <. Declaration Id "scroll-snap-stop"
+scrollSnapStop = declaration "scroll-snap-stop"
 
 scrollSnapType :: String -> Styles
-scrollSnapType = Single <. Declaration Id "scroll-snap-type"
+scrollSnapType = declaration "scroll-snap-type"
 
 scrollSnapTypeJ :: Array String -> Styles
-scrollSnapTypeJ = Single <. Declaration Id "scroll-snap-type" <. intercalate " "
+scrollSnapTypeJ = declaration "scroll-snap-type" <. intercalate " "
 
 scrollbarColor :: String -> Styles
-scrollbarColor = Single <. Declaration Id "scrollbar-color"
+scrollbarColor = declaration "scrollbar-color"
 
 scrollbarColorJ :: Array String -> Styles
-scrollbarColorJ = Single <. Declaration Id "scrollbar-color" <. intercalate " "
+scrollbarColorJ = declaration "scrollbar-color" <. intercalate " "
 
 scrollbarGutter :: String -> Styles
-scrollbarGutter = Single <. Declaration Id "scrollbar-gutter"
+scrollbarGutter = declaration "scrollbar-gutter"
 
 scrollbarGutterJ :: Array String -> Styles
-scrollbarGutterJ = Single <. Declaration Id "scrollbar-gutter" <. intercalate " "
+scrollbarGutterJ = declaration "scrollbar-gutter" <. intercalate " "
 
 scrollbarWidth :: String -> Styles
-scrollbarWidth = Single <. Declaration Id "scrollbar-width"
+scrollbarWidth = declaration "scrollbar-width"
 
 shapeImageThreshold :: String -> Styles
-shapeImageThreshold = Single <. Declaration Id "shape-image-threshold"
+shapeImageThreshold = declaration "shape-image-threshold"
 
 shapeInside :: String -> Styles
-shapeInside = Single <. Declaration Id "shape-inside"
+shapeInside = declaration "shape-inside"
 
 shapeInsideJ :: Array String -> Styles
-shapeInsideJ = Single <. Declaration Id "shape-inside" <. intercalate " "
+shapeInsideJ = declaration "shape-inside" <. intercalate " "
 
 shapeMargin :: String -> Styles
-shapeMargin = Single <. Declaration Id "shape-margin"
+shapeMargin = declaration "shape-margin"
 
 shapeOutside :: String -> Styles
-shapeOutside = Single <. Declaration Id "shape-outside"
+shapeOutside = declaration "shape-outside"
 
 shapeOutsideJ :: Array String -> Styles
-shapeOutsideJ = Single <. Declaration Id "shape-outside" <. intercalate " "
+shapeOutsideJ = declaration "shape-outside" <. intercalate " "
 
 spatialNavigationAction :: String -> Styles
-spatialNavigationAction = Single <. Declaration Id "spatial-navigation-action"
+spatialNavigationAction = declaration "spatial-navigation-action"
 
 spatialNavigationContain :: String -> Styles
-spatialNavigationContain = Single <. Declaration Id "spatial-navigation-contain"
+spatialNavigationContain = declaration "spatial-navigation-contain"
 
 spatialNavigationFunction :: String -> Styles
-spatialNavigationFunction = Single <. Declaration Id "spatial-navigation-function"
+spatialNavigationFunction = declaration "spatial-navigation-function"
 
 speak :: String -> Styles
-speak = Single <. Declaration Id "speak"
+speak = declaration "speak"
 
 speakAs :: String -> Styles
-speakAs = Single <. Declaration Id "speak-as"
+speakAs = declaration "speak-as"
 
 speakAsJ :: Array String -> Styles
-speakAsJ = Single <. Declaration Id "speak-as" <. intercalate " "
+speakAsJ = declaration "speak-as" <. intercalate " "
 
 speakHeader :: String -> Styles
-speakHeader = Single <. Declaration Id "speak-header"
+speakHeader = declaration "speak-header"
 
 speakNumeral :: String -> Styles
-speakNumeral = Single <. Declaration Id "speak-numeral"
+speakNumeral = declaration "speak-numeral"
 
 speakPunctuation :: String -> Styles
-speakPunctuation = Single <. Declaration Id "speak-punctuation"
+speakPunctuation = declaration "speak-punctuation"
 
 speechRate :: String -> Styles
-speechRate = Single <. Declaration Id "speech-rate"
+speechRate = declaration "speech-rate"
 
 stress :: String -> Styles
-stress = Single <. Declaration Id "stress"
+stress = declaration "stress"
 
 stringSet :: String -> Styles
-stringSet = Single <. Declaration Id "string-set"
+stringSet = declaration "string-set"
 
 stringSetJ :: Array String -> Styles
-stringSetJ = Single <. Declaration Id "string-set" <. intercalate " "
+stringSetJ = declaration "string-set" <. intercalate " "
 
 stringSetJJ :: Array (Array String) -> Styles
-stringSetJJ = Single <. Declaration Id "string-set" <. intercalate ", " <. map (intercalate " ")
+stringSetJJ = declaration "string-set" <. intercalate ", " <. map (intercalate " ")
 
 stroke :: String -> Styles
-stroke = Single <. Declaration Id "stroke"
+stroke = declaration "stroke"
 
 strokeJ :: Array String -> Styles
-strokeJ = Single <. Declaration Id "stroke" <. intercalate " "
+strokeJ = declaration "stroke" <. intercalate " "
 
 strokeJJ :: Array (Array String) -> Styles
-strokeJJ = Single <. Declaration Id "stroke" <. intercalate ", " <. map (intercalate " ")
+strokeJJ = declaration "stroke" <. intercalate ", " <. map (intercalate " ")
 
 strokeAlign :: String -> Styles
-strokeAlign = Single <. Declaration Id "stroke-align"
+strokeAlign = declaration "stroke-align"
 
 strokeAlignment :: String -> Styles
-strokeAlignment = Single <. Declaration Id "stroke-alignment"
+strokeAlignment = declaration "stroke-alignment"
 
 strokeBreak :: String -> Styles
-strokeBreak = Single <. Declaration Id "stroke-break"
+strokeBreak = declaration "stroke-break"
 
 strokeColor :: String -> Styles
-strokeColor = Single <. Declaration Id "stroke-color"
+strokeColor = declaration "stroke-color"
 
 strokeColorJ :: Array String -> Styles
-strokeColorJ = Single <. Declaration Id "stroke-color" <. intercalate ", "
+strokeColorJ = declaration "stroke-color" <. intercalate ", "
 
 strokeDashCorner :: String -> Styles
-strokeDashCorner = Single <. Declaration Id "stroke-dash-corner"
+strokeDashCorner = declaration "stroke-dash-corner"
 
 strokeDashJustify :: String -> Styles
-strokeDashJustify = Single <. Declaration Id "stroke-dash-justify"
+strokeDashJustify = declaration "stroke-dash-justify"
 
 strokeDashJustifyJ :: Array String -> Styles
-strokeDashJustifyJ = Single <. Declaration Id "stroke-dash-justify" <. intercalate " "
+strokeDashJustifyJ = declaration "stroke-dash-justify" <. intercalate " "
 
 strokeDashadjust :: String -> Styles
-strokeDashadjust = Single <. Declaration Id "stroke-dashadjust"
+strokeDashadjust = declaration "stroke-dashadjust"
 
 strokeDashadjustJ :: Array String -> Styles
-strokeDashadjustJ = Single <. Declaration Id "stroke-dashadjust" <. intercalate " "
+strokeDashadjustJ = declaration "stroke-dashadjust" <. intercalate " "
 
 strokeDasharray :: String -> Styles
-strokeDasharray = Single <. Declaration Id "stroke-dasharray"
+strokeDasharray = declaration "stroke-dasharray"
 
 strokeDasharrayJ :: Array String -> Styles
-strokeDasharrayJ = Single <. Declaration Id "stroke-dasharray" <. intercalate " "
+strokeDasharrayJ = declaration "stroke-dasharray" <. intercalate " "
 
 strokeDasharrayJJ :: Array (Array String) -> Styles
-strokeDasharrayJJ = Single <. Declaration Id "stroke-dasharray" <. intercalate ", " <. map (intercalate " ")
+strokeDasharrayJJ = declaration "stroke-dasharray" <. intercalate ", " <. map (intercalate " ")
 
 strokeDashcorner :: String -> Styles
-strokeDashcorner = Single <. Declaration Id "stroke-dashcorner"
+strokeDashcorner = declaration "stroke-dashcorner"
 
 strokeDashoffset :: String -> Styles
-strokeDashoffset = Single <. Declaration Id "stroke-dashoffset"
+strokeDashoffset = declaration "stroke-dashoffset"
 
 strokeImage :: String -> Styles
-strokeImage = Single <. Declaration Id "stroke-image"
+strokeImage = declaration "stroke-image"
 
 strokeImageJ :: Array String -> Styles
-strokeImageJ = Single <. Declaration Id "stroke-image" <. intercalate ", "
+strokeImageJ = declaration "stroke-image" <. intercalate ", "
 
 strokeLinecap :: String -> Styles
-strokeLinecap = Single <. Declaration Id "stroke-linecap"
+strokeLinecap = declaration "stroke-linecap"
 
 strokeLinejoin :: String -> Styles
-strokeLinejoin = Single <. Declaration Id "stroke-linejoin"
+strokeLinejoin = declaration "stroke-linejoin"
 
 strokeLinejoinJ :: Array String -> Styles
-strokeLinejoinJ = Single <. Declaration Id "stroke-linejoin" <. intercalate " "
+strokeLinejoinJ = declaration "stroke-linejoin" <. intercalate " "
 
 strokeMiterlimit :: String -> Styles
-strokeMiterlimit = Single <. Declaration Id "stroke-miterlimit"
+strokeMiterlimit = declaration "stroke-miterlimit"
 
 strokeOpacity :: String -> Styles
-strokeOpacity = Single <. Declaration Id "stroke-opacity"
+strokeOpacity = declaration "stroke-opacity"
 
 strokeOrigin :: String -> Styles
-strokeOrigin = Single <. Declaration Id "stroke-origin"
+strokeOrigin = declaration "stroke-origin"
 
 strokePosition :: String -> Styles
-strokePosition = Single <. Declaration Id "stroke-position"
+strokePosition = declaration "stroke-position"
 
 strokePositionJ :: Array String -> Styles
-strokePositionJ = Single <. Declaration Id "stroke-position" <. intercalate " "
+strokePositionJ = declaration "stroke-position" <. intercalate " "
 
 strokePositionJJ :: Array (Array String) -> Styles
-strokePositionJJ = Single <. Declaration Id "stroke-position" <. intercalate ", " <. map (intercalate " ")
+strokePositionJJ = declaration "stroke-position" <. intercalate ", " <. map (intercalate " ")
 
 strokeRepeat :: String -> Styles
-strokeRepeat = Single <. Declaration Id "stroke-repeat"
+strokeRepeat = declaration "stroke-repeat"
 
 strokeRepeatJ :: Array String -> Styles
-strokeRepeatJ = Single <. Declaration Id "stroke-repeat" <. intercalate " "
+strokeRepeatJ = declaration "stroke-repeat" <. intercalate " "
 
 strokeRepeatJJ :: Array (Array String) -> Styles
-strokeRepeatJJ = Single <. Declaration Id "stroke-repeat" <. intercalate ", " <. map (intercalate " ")
+strokeRepeatJJ = declaration "stroke-repeat" <. intercalate ", " <. map (intercalate " ")
 
 strokeSize :: String -> Styles
-strokeSize = Single <. Declaration Id "stroke-size"
+strokeSize = declaration "stroke-size"
 
 strokeSizeJ :: Array String -> Styles
-strokeSizeJ = Single <. Declaration Id "stroke-size" <. intercalate " "
+strokeSizeJ = declaration "stroke-size" <. intercalate " "
 
 strokeSizeJJ :: Array (Array String) -> Styles
-strokeSizeJJ = Single <. Declaration Id "stroke-size" <. intercalate ", " <. map (intercalate " ")
+strokeSizeJJ = declaration "stroke-size" <. intercalate ", " <. map (intercalate " ")
 
 strokeWidth :: String -> Styles
-strokeWidth = Single <. Declaration Id "stroke-width"
+strokeWidth = declaration "stroke-width"
 
 strokeWidthJ :: Array String -> Styles
-strokeWidthJ = Single <. Declaration Id "stroke-width" <. intercalate ", "
+strokeWidthJ = declaration "stroke-width" <. intercalate ", "
 
 tabSize :: String -> Styles
-tabSize = Single <. Declaration Id "tab-size"
+tabSize = declaration "tab-size"
 
 tableLayout :: String -> Styles
-tableLayout = Single <. Declaration Id "table-layout"
+tableLayout = declaration "table-layout"
 
 textAlign :: String -> Styles
-textAlign = Single <. Declaration Id "text-align"
+textAlign = declaration "text-align"
 
 textAlignAll :: String -> Styles
-textAlignAll = Single <. Declaration Id "text-align-all"
+textAlignAll = declaration "text-align-all"
 
 textAlignLast :: String -> Styles
-textAlignLast = Single <. Declaration Id "text-align-last"
+textAlignLast = declaration "text-align-last"
 
 textCombineUpright :: String -> Styles
-textCombineUpright = Single <. Declaration Id "text-combine-upright"
+textCombineUpright = declaration "text-combine-upright"
 
 textCombineUprightJ :: Array String -> Styles
-textCombineUprightJ = Single <. Declaration Id "text-combine-upright" <. intercalate " "
+textCombineUprightJ = declaration "text-combine-upright" <. intercalate " "
 
 textDecoration :: String -> Styles
-textDecoration = Single <. Declaration Id "text-decoration"
+textDecoration = declaration "text-decoration"
 
 textDecorationJ :: Array String -> Styles
-textDecorationJ = Single <. Declaration Id "text-decoration" <. intercalate " "
+textDecorationJ = declaration "text-decoration" <. intercalate " "
 
 textDecorationJJ :: Array (Array String) -> Styles
-textDecorationJJ = Single <. Declaration Id "text-decoration" <. intercalate " " <. map (intercalate " ")
+textDecorationJJ = declaration "text-decoration" <. intercalate " " <. map (intercalate " ")
 
 textDecorationColor :: String -> Styles
-textDecorationColor = Single <. Declaration Id "text-decoration-color"
+textDecorationColor = declaration "text-decoration-color"
 
 textDecorationLine :: String -> Styles
-textDecorationLine = Single <. Declaration Id "text-decoration-line"
+textDecorationLine = declaration "text-decoration-line"
 
 textDecorationLineJ :: Array String -> Styles
-textDecorationLineJ = Single <. Declaration Id "text-decoration-line" <. intercalate " "
+textDecorationLineJ = declaration "text-decoration-line" <. intercalate " "
 
 textDecorationSkip :: String -> Styles
-textDecorationSkip = Single <. Declaration Id "text-decoration-skip"
+textDecorationSkip = declaration "text-decoration-skip"
 
 textDecorationSkipJ :: Array String -> Styles
-textDecorationSkipJ = Single <. Declaration Id "text-decoration-skip" <. intercalate " "
+textDecorationSkipJ = declaration "text-decoration-skip" <. intercalate " "
 
 textDecorationSkipInk :: String -> Styles
-textDecorationSkipInk = Single <. Declaration Id "text-decoration-skip-ink"
+textDecorationSkipInk = declaration "text-decoration-skip-ink"
 
 textDecorationStyle :: String -> Styles
-textDecorationStyle = Single <. Declaration Id "text-decoration-style"
+textDecorationStyle = declaration "text-decoration-style"
 
 textDecorationWidth :: String -> Styles
-textDecorationWidth = Single <. Declaration Id "text-decoration-width"
+textDecorationWidth = declaration "text-decoration-width"
 
 textEmphasis :: String -> Styles
-textEmphasis = Single <. Declaration Id "text-emphasis"
+textEmphasis = declaration "text-emphasis"
 
 textEmphasisJ :: Array String -> Styles
-textEmphasisJ = Single <. Declaration Id "text-emphasis" <. intercalate " "
+textEmphasisJ = declaration "text-emphasis" <. intercalate " "
 
 textEmphasisJJ :: Array (Array String) -> Styles
-textEmphasisJJ = Single <. Declaration Id "text-emphasis" <. intercalate " " <. map (intercalate " ")
+textEmphasisJJ = declaration "text-emphasis" <. intercalate " " <. map (intercalate " ")
 
 textEmphasisColor :: String -> Styles
-textEmphasisColor = Single <. Declaration Id "text-emphasis-color"
+textEmphasisColor = declaration "text-emphasis-color"
 
 textEmphasisPosition :: String -> Styles
-textEmphasisPosition = Single <. Declaration Id "text-emphasis-position"
+textEmphasisPosition = declaration "text-emphasis-position"
 
 textEmphasisPositionJ :: Array String -> Styles
-textEmphasisPositionJ = Single <. Declaration Id "text-emphasis-position" <. intercalate " "
+textEmphasisPositionJ = declaration "text-emphasis-position" <. intercalate " "
 
 textEmphasisSkip :: String -> Styles
-textEmphasisSkip = Single <. Declaration Id "text-emphasis-skip"
+textEmphasisSkip = declaration "text-emphasis-skip"
 
 textEmphasisSkipJ :: Array String -> Styles
-textEmphasisSkipJ = Single <. Declaration Id "text-emphasis-skip" <. intercalate " "
+textEmphasisSkipJ = declaration "text-emphasis-skip" <. intercalate " "
 
 textEmphasisStyle :: String -> Styles
-textEmphasisStyle = Single <. Declaration Id "text-emphasis-style"
+textEmphasisStyle = declaration "text-emphasis-style"
 
 textEmphasisStyleJ :: Array String -> Styles
-textEmphasisStyleJ = Single <. Declaration Id "text-emphasis-style" <. intercalate " "
+textEmphasisStyleJ = declaration "text-emphasis-style" <. intercalate " "
 
 textGroupAlign :: String -> Styles
-textGroupAlign = Single <. Declaration Id "text-group-align"
+textGroupAlign = declaration "text-group-align"
 
 textIndent :: String -> Styles
-textIndent = Single <. Declaration Id "text-indent"
+textIndent = declaration "text-indent"
 
 textIndentJ :: Array String -> Styles
-textIndentJ = Single <. Declaration Id "text-indent" <. intercalate " "
+textIndentJ = declaration "text-indent" <. intercalate " "
 
 textJustify :: String -> Styles
-textJustify = Single <. Declaration Id "text-justify"
+textJustify = declaration "text-justify"
 
 textOrientation :: String -> Styles
-textOrientation = Single <. Declaration Id "text-orientation"
+textOrientation = declaration "text-orientation"
 
 textOverflow :: String -> Styles
-textOverflow = Single <. Declaration Id "text-overflow"
+textOverflow = declaration "text-overflow"
 
 textShadow :: String -> Styles
-textShadow = Single <. Declaration Id "text-shadow"
+textShadow = declaration "text-shadow"
 
 textShadowJ :: Array String -> Styles
-textShadowJ = Single <. Declaration Id "text-shadow" <. intercalate " "
+textShadowJ = declaration "text-shadow" <. intercalate " "
 
 textShadowJJ :: Array (Array String) -> Styles
-textShadowJJ = Single <. Declaration Id "text-shadow" <. intercalate ", " <. map (intercalate " ")
+textShadowJJ = declaration "text-shadow" <. intercalate ", " <. map (intercalate " ")
 
 textSpaceCollapse :: String -> Styles
-textSpaceCollapse = Single <. Declaration Id "text-space-collapse"
+textSpaceCollapse = declaration "text-space-collapse"
 
 textSpaceTrim :: String -> Styles
-textSpaceTrim = Single <. Declaration Id "text-space-trim"
+textSpaceTrim = declaration "text-space-trim"
 
 textSpaceTrimJ :: Array String -> Styles
-textSpaceTrimJ = Single <. Declaration Id "text-space-trim" <. intercalate " "
+textSpaceTrimJ = declaration "text-space-trim" <. intercalate " "
 
 textSpacing :: String -> Styles
-textSpacing = Single <. Declaration Id "text-spacing"
+textSpacing = declaration "text-spacing"
 
 textSpacingJ :: Array String -> Styles
-textSpacingJ = Single <. Declaration Id "text-spacing" <. intercalate " "
+textSpacingJ = declaration "text-spacing" <. intercalate " "
 
 textTransform :: String -> Styles
-textTransform = Single <. Declaration Id "text-transform"
+textTransform = declaration "text-transform"
 
 textTransformJ :: Array String -> Styles
-textTransformJ = Single <. Declaration Id "text-transform" <. intercalate " "
+textTransformJ = declaration "text-transform" <. intercalate " "
 
 textUnderlineOffset :: String -> Styles
-textUnderlineOffset = Single <. Declaration Id "text-underline-offset"
+textUnderlineOffset = declaration "text-underline-offset"
 
 textUnderlinePosition :: String -> Styles
-textUnderlinePosition = Single <. Declaration Id "text-underline-position"
+textUnderlinePosition = declaration "text-underline-position"
 
 textUnderlinePositionJ :: Array String -> Styles
-textUnderlinePositionJ = Single <. Declaration Id "text-underline-position" <. intercalate " "
+textUnderlinePositionJ = declaration "text-underline-position" <. intercalate " "
 
 textWrap :: String -> Styles
-textWrap = Single <. Declaration Id "text-wrap"
+textWrap = declaration "text-wrap"
 
 top :: String -> Styles
-top = Single <. Declaration Id "top"
+top = declaration "top"
 
 transform :: String -> Styles
-transform = Single <. Declaration Id "transform"
+transform = declaration "transform"
 
 transformJ :: Array String -> Styles
-transformJ = Single <. Declaration Id "transform" <. intercalate " "
+transformJ = declaration "transform" <. intercalate " "
 
 transformBox :: String -> Styles
-transformBox = Single <. Declaration Id "transform-box"
+transformBox = declaration "transform-box"
 
 transformOrigin :: String -> Styles
-transformOrigin = Single <. Declaration Id "transform-origin"
+transformOrigin = declaration "transform-origin"
 
 transformOriginJ :: Array String -> Styles
-transformOriginJ = Single <. Declaration Id "transform-origin" <. intercalate " "
+transformOriginJ = declaration "transform-origin" <. intercalate " "
 
 transformStyle :: String -> Styles
-transformStyle = Single <. Declaration Id "transform-style"
+transformStyle = declaration "transform-style"
 
 transition :: String -> Styles
-transition = Single <. Declaration Id "transition"
+transition = declaration "transition"
 
 transitionJ :: Array String -> Styles
-transitionJ = Single <. Declaration Id "transition" <. intercalate " "
+transitionJ = declaration "transition" <. intercalate " "
 
 transitionJJ :: Array (Array String) -> Styles
-transitionJJ = Single <. Declaration Id "transition" <. intercalate ", " <. map (intercalate " ")
+transitionJJ = declaration "transition" <. intercalate ", " <. map (intercalate " ")
 
 transitionDelay :: String -> Styles
-transitionDelay = Single <. Declaration Id "transition-delay"
+transitionDelay = declaration "transition-delay"
 
 transitionDelayJ :: Array String -> Styles
-transitionDelayJ = Single <. Declaration Id "transition-delay" <. intercalate ", "
+transitionDelayJ = declaration "transition-delay" <. intercalate ", "
 
 transitionDuration :: String -> Styles
-transitionDuration = Single <. Declaration Id "transition-duration"
+transitionDuration = declaration "transition-duration"
 
 transitionDurationJ :: Array String -> Styles
-transitionDurationJ = Single <. Declaration Id "transition-duration" <. intercalate ", "
+transitionDurationJ = declaration "transition-duration" <. intercalate ", "
 
 transitionProperty :: String -> Styles
-transitionProperty = Single <. Declaration Id "transition-property"
+transitionProperty = declaration "transition-property"
 
 transitionPropertyJ :: Array String -> Styles
-transitionPropertyJ = Single <. Declaration Id "transition-property" <. intercalate ", "
+transitionPropertyJ = declaration "transition-property" <. intercalate ", "
 
 transitionTimingFunction :: String -> Styles
-transitionTimingFunction = Single <. Declaration Id "transition-timing-function"
+transitionTimingFunction = declaration "transition-timing-function"
 
 transitionTimingFunctionJ :: Array String -> Styles
-transitionTimingFunctionJ = Single <. Declaration Id "transition-timing-function" <. intercalate ", "
+transitionTimingFunctionJ = declaration "transition-timing-function" <. intercalate ", "
 
 translate :: String -> Styles
-translate = Single <. Declaration Id "translate"
+translate = declaration "translate"
 
 translateJ :: Array String -> Styles
-translateJ = Single <. Declaration Id "translate" <. intercalate " "
+translateJ = declaration "translate" <. intercalate " "
 
 unicodeBidi :: String -> Styles
-unicodeBidi = Single <. Declaration Id "unicode-bidi"
+unicodeBidi = declaration "unicode-bidi"
 
 userSelect :: String -> Styles
-userSelect = Single <. Declaration Id "user-select"
+userSelect = declaration "user-select"
 
 verticalAlign :: String -> Styles
-verticalAlign = Single <. Declaration Id "vertical-align"
+verticalAlign = declaration "vertical-align"
 
 verticalAlignJ :: Array String -> Styles
-verticalAlignJ = Single <. Declaration Id "vertical-align" <. intercalate " "
+verticalAlignJ = declaration "vertical-align" <. intercalate " "
 
 visibility :: String -> Styles
-visibility = Single <. Declaration Id "visibility"
+visibility = declaration "visibility"
 
 voiceBalance :: String -> Styles
-voiceBalance = Single <. Declaration Id "voice-balance"
+voiceBalance = declaration "voice-balance"
 
 voiceDuration :: String -> Styles
-voiceDuration = Single <. Declaration Id "voice-duration"
+voiceDuration = declaration "voice-duration"
 
 voiceFamily :: String -> Styles
-voiceFamily = Single <. Declaration Id "voice-family"
+voiceFamily = declaration "voice-family"
 
 voiceFamilyJ :: Array String -> Styles
-voiceFamilyJ = Single <. Declaration Id "voice-family" <. intercalate " "
+voiceFamilyJ = declaration "voice-family" <. intercalate " "
 
 voiceFamilyJJ :: Array (Array String) -> Styles
-voiceFamilyJJ = Single <. Declaration Id "voice-family" <. intercalate ", " <. map (intercalate " ")
+voiceFamilyJJ = declaration "voice-family" <. intercalate ", " <. map (intercalate " ")
 
 voicePitch :: String -> Styles
-voicePitch = Single <. Declaration Id "voice-pitch"
+voicePitch = declaration "voice-pitch"
 
 voicePitchJ :: Array String -> Styles
-voicePitchJ = Single <. Declaration Id "voice-pitch" <. intercalate " "
+voicePitchJ = declaration "voice-pitch" <. intercalate " "
 
 voiceRange :: String -> Styles
-voiceRange = Single <. Declaration Id "voice-range"
+voiceRange = declaration "voice-range"
 
 voiceRangeJ :: Array String -> Styles
-voiceRangeJ = Single <. Declaration Id "voice-range" <. intercalate " "
+voiceRangeJ = declaration "voice-range" <. intercalate " "
 
 voiceRate :: String -> Styles
-voiceRate = Single <. Declaration Id "voice-rate"
+voiceRate = declaration "voice-rate"
 
 voiceRateJ :: Array String -> Styles
-voiceRateJ = Single <. Declaration Id "voice-rate" <. intercalate " "
+voiceRateJ = declaration "voice-rate" <. intercalate " "
 
 voiceStress :: String -> Styles
-voiceStress = Single <. Declaration Id "voice-stress"
+voiceStress = declaration "voice-stress"
 
 voiceVolume :: String -> Styles
-voiceVolume = Single <. Declaration Id "voice-volume"
+voiceVolume = declaration "voice-volume"
 
 voiceVolumeJ :: Array String -> Styles
-voiceVolumeJ = Single <. Declaration Id "voice-volume" <. intercalate " "
+voiceVolumeJ = declaration "voice-volume" <. intercalate " "
 
 volume :: String -> Styles
-volume = Single <. Declaration Id "volume"
+volume = declaration "volume"
 
 whiteSpace :: String -> Styles
-whiteSpace = Single <. Declaration Id "white-space"
+whiteSpace = declaration "white-space"
 
 widows :: String -> Styles
-widows = Single <. Declaration Id "widows"
+widows = declaration "widows"
 
 width :: String -> Styles
-width = Single <. Declaration Id "width"
+width = declaration "width"
 
 willChange :: String -> Styles
-willChange = Single <. Declaration Id "will-change"
+willChange = declaration "will-change"
 
 willChangeJ :: Array String -> Styles
-willChangeJ = Single <. Declaration Id "will-change" <. intercalate ", "
+willChangeJ = declaration "will-change" <. intercalate ", "
 
 wordBoundaryDetection :: String -> Styles
-wordBoundaryDetection = Single <. Declaration Id "word-boundary-detection"
+wordBoundaryDetection = declaration "word-boundary-detection"
 
 wordBoundaryExpansion :: String -> Styles
-wordBoundaryExpansion = Single <. Declaration Id "word-boundary-expansion"
+wordBoundaryExpansion = declaration "word-boundary-expansion"
 
 wordBreak :: String -> Styles
-wordBreak = Single <. Declaration Id "word-break"
+wordBreak = declaration "word-break"
 
 wordSpacing :: String -> Styles
-wordSpacing = Single <. Declaration Id "word-spacing"
+wordSpacing = declaration "word-spacing"
 
 wordWrap :: String -> Styles
-wordWrap = Single <. Declaration Id "word-wrap"
+wordWrap = declaration "word-wrap"
 
 wrapAfter :: String -> Styles
-wrapAfter = Single <. Declaration Id "wrap-after"
+wrapAfter = declaration "wrap-after"
 
 wrapBefore :: String -> Styles
-wrapBefore = Single <. Declaration Id "wrap-before"
+wrapBefore = declaration "wrap-before"
 
 wrapFlow :: String -> Styles
-wrapFlow = Single <. Declaration Id "wrap-flow"
+wrapFlow = declaration "wrap-flow"
 
 wrapInside :: String -> Styles
-wrapInside = Single <. Declaration Id "wrap-inside"
+wrapInside = declaration "wrap-inside"
 
 wrapThrough :: String -> Styles
-wrapThrough = Single <. Declaration Id "wrap-through"
+wrapThrough = declaration "wrap-through"
 
 writingMode :: String -> Styles
-writingMode = Single <. Declaration Id "writing-mode"
+writingMode = declaration "writing-mode"
 
 zIndex :: String -> Styles
-zIndex = Single <. Declaration Id "z-index"
+zIndex = declaration "z-index"
 
 -- Units
 toUnit :: String -> Number -> String

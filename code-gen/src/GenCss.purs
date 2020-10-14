@@ -82,7 +82,7 @@ generateCode (Property (property /\ joinType)) =
     [ H.pre []
         [ ( """
 $ :: String -> Styles
-$ = Single <. Declaration Id "#"
+$ = declaration "#"
 """
               <> ( if joinType == Space1 || joinType == Space2 then
                     j " "
@@ -118,7 +118,7 @@ j separator =
     (Replacement separator)
     """
 $J :: Array String -> Styles
-$J = Single <. Declaration Id "#" <. intercalate "%"
+$J = declaration "#" <. intercalate "%"
 """
 
 jj :: String -> String
@@ -128,7 +128,7 @@ jj separator =
     (Replacement separator)
     """
 $JJ :: Array (Array String) -> Styles
-$JJ = Single <. Declaration Id "#" <. intercalate "%" <. map (intercalate " ")
+$JJ = declaration "#" <. intercalate "%" <. map (intercalate " ")
 """
 
 camelCase :: String -> String
