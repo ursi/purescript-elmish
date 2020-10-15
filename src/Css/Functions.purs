@@ -125,7 +125,6 @@ div :: String -> Number -> String
 div value = biOperator "/" value <. show
 
 -- misc
-{-| [spec](https:://drafts.csswg.org/css-values-3/#urls)
--}
+-- | [spec](https:://drafts.csswg.org/css-values-3/#urls)
 url :: String -> String
 url url_ = "url('" <> url_ <> "')"
