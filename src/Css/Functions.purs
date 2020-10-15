@@ -128,3 +128,6 @@ div value = biOperator "/" value <. show
 -- | [spec](https:://drafts.csswg.org/css-values-3/#urls)
 url :: String -> String
 url url_ = "url('" <> url_ <> "')"
+
+var :: String -> String
+var name = "var(--" <> name <> ")"
