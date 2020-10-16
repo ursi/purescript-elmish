@@ -21,10 +21,9 @@ makeVars vars =
     <#> uncurry variable
 
 makeVarValue ::
-  ∀ l r' r.
-  Homogeneous r String =>
+  ∀ a l r r'.
   IsSymbol l =>
-  Cons l String r' r =>
+  Cons l a r' r =>
   Record r ->
   SProxy l ->
   String
