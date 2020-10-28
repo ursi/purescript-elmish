@@ -21,7 +21,6 @@ module Attribute
   , charset
   , checked
   , cite
-  , class_
   , color
   , cols
   , colspan
@@ -215,9 +214,6 @@ checked = Single <. Attr "checked"
 
 cite :: ∀ msg. String -> Attribute msg
 cite = Single <. Attr "cite"
-
-class_ :: ∀ msg. String -> Attribute msg
-class_ = Single <. Attr "class"
 
 color :: ∀ msg. String -> Attribute msg
 color = Single <. Attr "color"
