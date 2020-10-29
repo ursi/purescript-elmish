@@ -11,6 +11,7 @@ import Data.Array as Array
 import Data.Batchable (Batched(..))
 import Data.DateTime.Instant as Instant
 import Data.Newtype (unwrap)
+import Ds as Ds
 import Effect.Now (now)
 import Html (Html)
 import Html as H
@@ -99,11 +100,16 @@ view model =
   { head:
       [ H.title model.newPerson
       , default
-      , H.style [ CG.body [ C.background "red" ] ]
+      , H.style
+          [ CG.body
+              [ Ds.vars
+              , C.background Ds.background
+              ]
+          ]
       ]
   , body:
       [ H.divS
-          [ C.background "green"
+          [ C.background Ds.accent
           , C.border "1px solid black"
           , C.mapSelector (C.append " > div")
               [ C.fontWeight "bold"
@@ -120,7 +126,7 @@ view model =
               , C.height "20px"
               , C.background "black"
               ]
-              []
+              [ A.addClass "test" ]
               []
           , H.div []
               [ H.text $ "("
