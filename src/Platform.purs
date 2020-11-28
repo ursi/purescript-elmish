@@ -15,8 +15,6 @@ import Effect.Exception (throw)
 import Effect.Ref (Ref)
 import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, mkEffectFn1)
-import HTML.All (Document, Element)
-import HTML.All as H
 import Html (Html)
 import Html as H
 import Sub (Sub, ActiveSub, SubBuilder)
@@ -26,6 +24,8 @@ import Task as Task
 import Throttle (throttle)
 import VirtualDom (VDOM)
 import VirtualDom as VDom
+import WHATWG.HTML.All (Document, Element)
+import WHATWG.HTML.All as H
 
 newtype Cmd msg
   = Cmd ((msg -> Effect Unit) -> Effect Unit)

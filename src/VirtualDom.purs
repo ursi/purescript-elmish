@@ -25,7 +25,12 @@ import Effect.Ref as Ref
 import Effect.Uncurried
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign.Object (Object)
-import HTML.All
+import Sub (Callback, Sub, SubBuilder)
+import Sub as Sub
+import Unsafe.Coerce (unsafeCoerce)
+import VirtualDom.Css (Style)
+import VirtualDom.Css as VC
+import WHATWG.HTML.All
   ( class IsNode
   , Document
   , Element
@@ -33,12 +38,7 @@ import HTML.All
   , Node
   , Text
   )
-import HTML.All as H
-import Sub (Callback, Sub, SubBuilder)
-import Sub as Sub
-import Unsafe.Coerce (unsafeCoerce)
-import VirtualDom.Css (Style)
-import VirtualDom.Css as VC
+import WHATWG.HTML.All as H
 
 data SingleVNode msg
   = VElement

@@ -141,14 +141,14 @@ import Data.Batchable (Batched(..))
 import Data.Int as Int
 import Data.JSValue (JSValue, toJSValue)
 import Effect.Timer (setTimeout)
-import HTML.All (Event, EventTarget)
-import HTML.All as H
 import Sub (Callback, Presub, (<@@>))
 import Sub as Sub
 import Throttle (throttle)
 import Unsafe.Coerce (unsafeCoerce)
 import VirtualDom (Attribute, SingleAttribute(..))
 import VirtualDom (Attribute) as Exports
+import WHATWG.HTML.All (Event, EventTarget)
+import WHATWG.HTML.All as H
 
 attribute :: ∀ msg. String -> String -> Attribute msg
 attribute = Single <.. Attr
