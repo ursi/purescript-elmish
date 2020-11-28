@@ -280,11 +280,10 @@ keyedDiff = case _, _ of
               pure $ (key2 /\ newKey1VNode) : (key1 /\ newKey2VNode) : rest
             else
               keyedDiffInsertBefore head1 (snd head2') head2 tail1 tail2'
+          else if key2 == fst head1' then
+            keyedDiffRemove vnode1 (snd head1') head2 tail1' tail2
           else
-            if key2 == fst head1' then
-              keyedDiffRemove vnode1 (snd head1') head2 tail1' tail2
-            else
-              keyedDiffReplace vnode1 head2 tail1 tail2
+            keyedDiffReplace vnode1 head2 tail1 tail2
         head : tail, Nil ->
           if key2 == fst head then
             keyedDiffRemove vnode1 (snd head) head2 tail tail2
