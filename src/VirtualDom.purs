@@ -1,10 +1,9 @@
 module VirtualDom where
 
 import MasonPrelude
-import Control.Monad.Reader.Trans (ReaderT, ask, local, runReaderT)
-import Control.Monad.Maybe.Trans (MaybeT(..), runMaybeT)
+import Control.Monad.Reader (ReaderT, ask, local, runReaderT)
 import Control.Monad.Trans.Class (lift)
-import Control.Monad.Writer.Trans (WriterT, runWriterT, tell)
+import Control.Monad.Writer (WriterT, runWriterT, tell)
 import Data.Array as Array
 import Data.Batchable (Batched(..))
 import Data.Diff (Diff, diff)

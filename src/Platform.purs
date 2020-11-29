@@ -12,9 +12,7 @@ module Platform
 import MasonPrelude
 import Attribute as A
 import Data.Identity
-import Control.Monad.Writer.Trans (WriterT, runWriterT)
-import Control.Monad.State (State, evalState)
-import Control.Monad.State.Trans (StateT(..), evalStateT, get)
+import Control.Monad.Writer (WriterT, runWriterT)
 import Control.Monad.Trans.Class (lift)
 import Data.Batchable (Batched(..), flatten)
 import Data.Newtype (class Newtype, unwrap)
