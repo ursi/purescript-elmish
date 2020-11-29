@@ -8,16 +8,16 @@ exports.exists = pth => fulfill => {
 	fulfill(fs.existsSync(pth));
 };
 
-exports.mkdirPromise = fsp.mkdir;
+exports.mkdirPromise = name => () => fsp.mkdir(name);
 
-exports.readdirPromise = fsp.readdir;
+exports.readdirPromise = dir => () => fsp.readdir(dir);
 
-exports.unlinkPromise = fsp.unlink;
+exports.unlinkPromise = path => () => fsp.unlink(path);
 
-exports.writeFilePromise = pth => contents => {
+exports.writeFilePromise = pth => contents => () => {
 	return fsp.writeFile(pth, contents);
 };
 
-exports.readFilePromise = pth => {
+exports.readFilePromise = pth => () => {
 	return fsp.readFile(pth, `utf8`);
 };

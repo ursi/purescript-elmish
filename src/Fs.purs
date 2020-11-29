@@ -7,30 +7,30 @@ import Task as Task
 
 foreign import exists :: ∀ x. String -> Task x Boolean
 
-foreign import mkdirPromise :: String -> Promise Unit
+foreign import mkdirPromise :: String -> Effect (Promise Error Unit)
 
 mkdir :: String -> Task Error Unit
-mkdir = Task.fromPromise <. const <. mkdirPromise
+mkdir = Task.fromPromise <. mkdirPromise
 
-foreign import readdirPromise :: String -> Promise (Array String)
+foreign import readdirPromise :: String -> Effect (Promise Error (Array String))
 
 readdir :: String -> Task Error (Array String)
-readdir = Task.fromPromise <. const <. readdirPromise
+readdir = Task.fromPromise <. readdirPromise
 
-foreign import unlinkPromise :: String -> Promise Unit
+foreign import unlinkPromise :: String -> Effect (Promise Error Unit)
 
 unlink :: String -> Task Error Unit
-unlink = Task.fromPromise <. const <. unlinkPromise
+unlink = Task.fromPromise <. unlinkPromise
 
-foreign import writeFilePromise :: String -> String -> Promise Unit
+foreign import writeFilePromise :: String -> String -> Effect (Promise Error Unit)
 
 writeFile :: String -> String -> Task Error Unit
-writeFile = Task.fromPromise <. const <.. writeFilePromise
+writeFile = Task.fromPromise <.. writeFilePromise
 
-foreign import readFilePromise :: String -> Promise String
+foreign import readFilePromise :: String -> Effect (Promise Error String)
 
 readFile :: String -> Task Error String
-readFile = Task.fromPromise <. const <. readFilePromise
+readFile = Task.fromPromise <. readFilePromise
 
 main :: Effect Unit
 main = Task.run $ writeFile "task.txt" "it worked!"

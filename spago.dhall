@@ -7,6 +7,7 @@
   , "mason-prelude"
   , "parallel"
   , "psci-support"
+  , "task"
   , "web-dom"
   , "web-events"
   , "web-html"
