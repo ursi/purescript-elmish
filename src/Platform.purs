@@ -1,4 +1,13 @@
-module Platform where
+module Platform
+  ( module Exports
+  , Cmd(..)
+  , Program
+  , Update
+  , app
+  , worker
+  , html
+  , attemptTask
+  ) where
 
 import MasonPrelude
 import Attribute as A
@@ -26,6 +35,7 @@ import VirtualDom (VDOM)
 import VirtualDom as VDom
 import WHATWG.HTML.All (Document, Element)
 import WHATWG.HTML.All as H
+import Control.Monad.Writer (tell) as Exports
 
 newtype Cmd msg
   = Cmd ((msg -> Effect Unit) -> Effect Unit)
