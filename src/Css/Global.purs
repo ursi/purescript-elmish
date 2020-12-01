@@ -107,8 +107,8 @@ rule selector styles =
         , declarations: flatten $ C.mapSelector (C.Const selector) styles
         }
 
-imports :: Array String -> Statement
-imports = Import
+imports :: Array String -> Statements
+imports = Single <. Import
 
 a :: Array Styles -> Statements
 a = rule "a"
