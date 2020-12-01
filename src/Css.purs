@@ -1,6 +1,34 @@
 -- jump to 830
 module Css
   ( module VirtualDom.Css
+  , adjacent
+  , child
+  , children
+  , descendant
+  , descendants
+  , link
+  , visited
+  , hover
+  , active
+  , focus
+  , target
+  , lang
+  , checked
+  , indeterminate
+  , root
+  , nthChild
+  , nthLastChild
+  , nthOfType
+  , nthLastOfType
+  , firstChild
+  , lastChild
+  , firstOfType
+  , lastOfType
+  , onlyChild
+  , onlyOfType
+  , empty
+  , not
+  , important
   , append
   , prepend
   , duplicate
@@ -825,7 +853,8 @@ module Css
   , fr
   ) where
 
-import MasonPrelude
+import MasonPrelude hiding (append)
+import Css.Functions as CF
 import Data.Array as Array
 import Data.Batchable (Batched(..), flattenMap)
 import VirtualDom.Css (Style(..), Styles, StringOp(..))
@@ -854,6 +883,123 @@ mapSelector op styles =
 
 variable :: String -> String -> Styles
 variable = declaration <. (<>) "--"
+
+adjacent :: Array Styles -> Styles
+adjacent = mapSelector $ duplicate " + "
+
+child :: String -> Array Styles -> Styles
+child tag = mapSelector $ append $ " > " <> tag
+
+children :: Array Styles -> Styles
+children = mapSelector $ append " > *"
+
+descendant :: String -> Array Styles -> Styles
+descendant tag = mapSelector $ append $ " " <> tag
+
+descendants :: Array Styles -> Styles
+descendants = mapSelector $ append " *"
+
+-- Pseudo-classes
+-- https://drafts.csswg.org/selectors-3/#pseudo-classes
+--
+-- The link pseudo-classes
+link :: Array Styles -> Styles
+link = mapSelector $ append ":link"
+
+visited :: Array Styles -> Styles
+visited = mapSelector $ append ":visited"
+
+-- The user action pseudo-classes
+hover :: Array Styles -> Styles
+hover = mapSelector $ append ":hover"
+
+active :: Array Styles -> Styles
+active = mapSelector $ append ":active"
+
+focus :: Array Styles -> Styles
+focus = mapSelector $ append ":focus"
+
+-- The target pseudo-class
+target :: Array Styles -> Styles
+target = mapSelector $ append ":target"
+
+-- The language pseudo-class
+lang :: String -> Array Styles -> Styles
+lang = mapSelector <. append <. CF.function ":lang"
+
+-- The UI element states pseudo-classes
+checked :: Array Styles -> Styles
+checked = mapSelector $ append ":checked"
+
+indeterminate :: Array Styles -> Styles
+indeterminate = mapSelector $ append ":indeterminate"
+
+-- Structural pseudo-classes
+-- these pseudo-classes are the reason style elements aren't inserted in the element they're attached to
+root :: Array Styles -> Styles
+root = mapSelector $ append ":root"
+
+nthChild :: Int -> Int -> Array Styles -> Styles
+nthChild a b =
+  anpb a b
+    # CF.function ":nth-child"
+    # append
+    # mapSelector
+
+nthLastChild :: Int -> Int -> Array Styles -> Styles
+nthLastChild a b =
+  anpb a b
+    # CF.function ":nth-last-child"
+    # append
+    # mapSelector
+
+nthOfType :: Int -> Int -> Array Styles -> Styles
+nthOfType a b =
+  anpb a b
+    # CF.function ":nth-of-type"
+    # append
+    # mapSelector
+
+nthLastOfType :: Int -> Int -> Array Styles -> Styles
+nthLastOfType a b =
+  anpb a b
+    # CF.function ":nth-last-of-type"
+    # append
+    # mapSelector
+
+firstChild :: Array Styles -> Styles
+firstChild = mapSelector $ append ":first-child"
+
+lastChild :: Array Styles -> Styles
+lastChild = mapSelector $ append ":last-child"
+
+firstOfType :: Array Styles -> Styles
+firstOfType = mapSelector $ append ":first-of-type"
+
+lastOfType :: Array Styles -> Styles
+lastOfType = mapSelector $ append ":last-of-type"
+
+onlyChild :: Array Styles -> Styles
+onlyChild = mapSelector $ append ":only-child"
+
+onlyOfType :: Array Styles -> Styles
+onlyOfType = mapSelector $ append ":only-of-type"
+
+empty :: Array Styles -> Styles
+empty = mapSelector $ append ":empty"
+
+anpb :: Int -> Int -> String
+anpb a b = show a <> "n+" <> show b
+
+-- The negation pseudo-class
+not :: String -> Array Styles -> Styles
+not = mapSelector <. append <. CF.function ":not"
+
+--
+important :: Styles -> Styles
+important styles = case styles of
+  Single (Declaration strOp p v) -> Single $ Declaration strOp p $ v <> " !important"
+  Batch styles' -> Batch $ important <$> styles'
 
 alignContent :: String -> Styles
 alignContent = declaration "align-content"
