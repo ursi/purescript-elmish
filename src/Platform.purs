@@ -124,9 +124,9 @@ app init =
       initialView = init.view initialModel
     newVDoms /\ domSubs <-
       VDom.render doc { head, body } mempty
-        $ { head: flatten $ Batch $ initialView.head
-          , body: flatten $ Batch $ initialView.body
-          }
+        { head: flatten $ Batch $ initialView.head
+        , body: flatten $ Batch $ initialView.body
+        }
     vdomsRef <- Ref.new newVDoms
     domSubsRef <- Ref.new domSubs
     render <-
