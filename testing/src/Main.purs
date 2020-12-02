@@ -117,6 +117,7 @@ view model =
               ]
           ]
           [ A.onMouseMove MouseMoved ]
+          -- []
           [ H.divS
               [ C.fontSize "20px"
               , C.position "absolute"
@@ -127,7 +128,7 @@ view model =
               , C.background "black"
               ]
               [ A.addClass "test" ]
-              []
+              [ H.text "t" ]
           , H.div []
               [ H.text $ "("
                   <> show (fst model.mousePosition)
