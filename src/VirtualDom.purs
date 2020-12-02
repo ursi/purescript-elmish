@@ -482,10 +482,10 @@ placeNode placer svn = do
             { children = newChildren
             , node = Just node
             }
-    VText { text } -> do
-      node <- liftEffect $ H.createTextNode text doc
+    VText r -> do
+      node <- liftEffect $ H.createTextNode r.text doc
       _ <- liftEffect $ placer { node: H.toNode node, parent }
-      pure (VText { text, node: Just node })
+      pure (VText { text: r.text, node: Just node })
 
 placeNodeHelper ::
   ∀ a msg r children.
