@@ -11,6 +11,7 @@ import Data.Diff as Diff
 import Data.Foldable (foldM)
 import Data.JSValue (JSValue, toJSValue)
 import Data.List ((:))
+import Data.List as List
 import Data.Map (Map)
 import Data.Map as Map
 import Data.Newtype (class Newtype, unwrap, wrap)
@@ -43,6 +44,7 @@ data SingleVNode msg
   = VElement
     { tag :: String
     , styles :: List Style
+    , css :: Maybe (Map String String)
     , attributes :: List (SingleAttribute msg)
     , children :: VDOM msg
     , node :: Maybe Element
@@ -50,6 +52,7 @@ data SingleVNode msg
   | KeyedElement
     { tag :: String
     , styles :: List Style
+    , css :: Maybe (Map String String)
     , attributes :: List (SingleAttribute msg)
     , children :: List (String /\ SingleVNode msg)
     , node :: Maybe Element
@@ -72,6 +75,7 @@ element tag attributes children =
   VElement
     { tag
     , styles: Nil
+    , css: Nothing
     , attributes: attributes
     , children: children
     , node: Nothing
@@ -87,6 +91,7 @@ keyedElement tag attributes children =
   KeyedElement
     { tag
     , styles: Nil
+    , css: Nothing
     , attributes: attributes
     , children: children
     , node: Nothing
@@ -188,6 +193,7 @@ makeStyleNode styleMap =
   KeyedElement
     { tag: "style"
     , styles: Nil
+    , css: Nothing
     , attributes: Nil
     , children:
         foldrWithIndex
@@ -196,6 +202,7 @@ makeStyleNode styleMap =
                   /\ ( VElement
                         { tag: "style"
                         , styles: Nil
+                        , css: Nothing
                         , attributes: Nil
                         , children: pure $ VText { text: v, node: Nothing }
                         , node: Nothing
@@ -223,32 +230,6 @@ vDomDiff =
         Diff.Both svn1 svn2 -> do
           Just <$> diffSingle svn1 svn2
     )
-
-processStyles :: ∀ msg. SingleVNode msg -> MyMonadCommon msg
-processStyles svn = case svn of
-  VElement r -> VElement <$> helper r
-  KeyedElement r -> KeyedElement <$> helper r
-  VText _ -> pure svn
-  where
-  helper ::
-    ∀ r.
-    { styles :: List Style
-    , attributes :: List (SingleAttribute msg)
-    | r
-    } ->
-    MyMonad msg
-      { styles :: List Style
-      , attributes :: List (SingleAttribute msg)
-      | r
-      }
-  helper props@{ styles, attributes } = do
-    let
-      mstyles = VC.process styles
-    case mstyles of
-      Just r -> do
-        tell $ mempty /\ Map.singleton r.class r.css
-        pure $ props { attributes = AddClass r.class : attributes }
-      Nothing -> pure props
 
 keyedDiff ::
   ∀ msg.
@@ -346,20 +327,20 @@ noNodeError = liftEffect $ throw "there is no node"
 
 diffSingle :: ∀ msg. SingleVNode msg -> SingleVNode msg -> MyMonadCommon msg
 diffSingle svn1 svn2 = do
-  styledSvn2 <- processStyles svn2
   let
     replace :: MyMonadCommon msg
     replace = case getNode svn1 of
       Just svn1Node -> do
-        svn <- replaceNode svn1Node styledSvn2
+        svn <- replaceNode svn1Node svn2
         pure svn
-      Nothing -> pure styledSvn2
-  case svn1, styledSvn2 of
+      Nothing -> pure svn2
+  case svn1, svn2 of
     VElement r1, VElement r2 ->
       if r1.tag == r2.tag then
         fromMaybe replace do
           elem <- r1.node
           Just do
+            addCss r2.css
             attributes <- lift $ diffAttributes elem r1.attributes r2.attributes
             children <- local (changeParent elem) $ vDomDiff r1.children r2.children
             pure
@@ -375,6 +356,7 @@ diffSingle svn1 svn2 = do
         fromMaybe replace do
           elem <- r1.node
           Just do
+            addCss r2.css
             attributes <- lift $ diffAttributes elem r1.attributes r2.attributes
             children <- local (changeParent elem) $ keyedDiff r1.children r2.children
             pure
@@ -482,10 +464,10 @@ placeNode ::
   ) ->
   SingleVNode msg -> MyMonadCommon msg
 placeNode placer svn = do
-  styledNode <- processStyles svn
   { doc, parent } <- ask
-  case styledNode of
+  case svn of
     VElement r -> do
+      addCss r.css
       newChildren /\ node <- placeNodeHelper placer r addNode
       pure $ VElement
         $ r
@@ -493,6 +475,7 @@ placeNode placer svn = do
             , node = Just node
             }
     KeyedElement r -> do
+      addCss r.css
       newChildren /\ node <- placeNodeHelper placer r addKeyedNode
       pure $ KeyedElement
         $ r
@@ -527,6 +510,11 @@ placeNodeHelper placer { tag, styles, attributes, children } traverser = do
   _ <- liftEffect $ placer { node: H.toNode elem, parent }
   newChildren <- traverse (local (changeParent elem) <. traverser) children
   pure $ newChildren /\ elem
+
+addCss :: ∀ msg. Maybe (Map String String) -> MyMonad msg Unit
+addCss = case _ of
+  Just map -> tell $ mempty /\ map
+  Nothing -> pure unit
 
 removeVNode :: ∀ msg. SingleVNode msg -> MyMonad msg Unit
 removeVNode svn = do

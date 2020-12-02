@@ -240,8 +240,10 @@ import Css.Global (style)
 import Data.Batchable (Batched(..), flatten)
 import Data.Batchable as Batchable
 import Data.List ((:))
-import VirtualDom (Attribute, SingleVNode(..), VNode)
+import Data.Map as Map
+import VirtualDom (Attribute, SingleAttribute(..), SingleVNode(..), VNode)
 import VirtualDom as VD
+import VirtualDom.Css as VC
 
 type Html msg
   = VNode msg
@@ -252,6 +254,7 @@ keyed tag attributes children =
     $ KeyedElement
         { tag
         , styles: mempty
+        , css: Nothing
         , attributes: flatten $ Batch attributes
         , children:
             foldr
@@ -271,6 +274,7 @@ element tag attributes children =
     $ VElement
         { tag
         , styles: Nil
+        , css: Nothing
         , attributes: flatten $ Batch attributes
         , children: flatten $ Batch children
         , node: Nothing
@@ -278,14 +282,27 @@ element tag attributes children =
 
 elementS :: ∀ msg. String -> Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 elementS tag styles attributes children =
-  Single
-    $ VElement
-        { tag
-        , styles: flatten $ Batch styles
+  let
+    styles' = flatten $ Batch styles
+
+    mstyles = VC.process styles'
+  in
+    Single
+      $ VElement
+      $ { tag
+        , styles: styles'
+        , css: Nothing
         , attributes: flatten $ Batch attributes
         , children: flatten $ Batch children
         , node: Nothing
         }
+      # \r -> case mstyles of
+          Just css ->
+            r
+              { attributes = AddClass css.class : r.attributes
+              , css = Just $ Map.singleton css.class css.css
+              }
+          Nothing -> r
 
 text :: ∀ msg. String -> Html msg
 text = Single <. VD.text
