@@ -130,10 +130,10 @@ app init =
     vdomsRef <- Ref.new newVDoms
     domSubsRef <- Ref.new domSubs
     render <-
-      throttle raf \oldVDOMs -> do
-        vdoms <- Ref.read vdomsRef
-        newVDOMs /\ subs <- VDom.render doc { head, body } vdoms oldVDOMs
-        Ref.write newVDOMs vdomsRef
+      throttle raf \newVDOMs -> do
+        oldVDOMs <- Ref.read vdomsRef
+        newVDOMsWithNodes /\ subs <- VDom.render doc { head, body } oldVDOMs newVDOMs
+        Ref.write newVDOMsWithNodes vdomsRef
         Ref.write subs domSubsRef
     activeSubsRef <- Ref.new []
     let
