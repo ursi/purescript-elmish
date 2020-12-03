@@ -7,6 +7,7 @@ module Platform
   , worker
   , html
   , attemptTask
+  , batch
   ) where
 
 import MasonPrelude
@@ -34,6 +35,9 @@ import VirtualDom as VDom
 import WHATWG.HTML.All (Document, Element)
 import WHATWG.HTML.All as H
 import Control.Monad.Writer (tell) as Exports
+
+batch :: ∀ a. Array (Batched a) -> Batched a
+batch = Batch
 
 newtype Cmd msg
   = Cmd ((msg -> Effect Unit) -> Effect Unit)
