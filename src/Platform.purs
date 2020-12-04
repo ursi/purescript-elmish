@@ -8,12 +8,13 @@ module Platform
   , html
   , attemptTask
   , batch
+  , afterRender
   ) where
 
 import MasonPrelude
 import Attribute as A
 import Data.Identity
-import Control.Monad.Writer (WriterT, runWriterT)
+import Control.Monad.Writer (WriterT, runWriterT, tell)
 import Control.Monad.Trans.Class (lift)
 import Data.Batchable (Batched(..), flatten)
 import Data.Newtype (class Newtype, unwrap)
@@ -38,6 +39,9 @@ import Control.Monad.Writer (tell) as Exports
 
 batch :: ∀ a. Array (Batched a) -> Batched a
 batch = Batch
+
+afterRender :: ∀ msg. Effect Unit -> Update Unit msg
+afterRender = tell <. Cmd <. const
 
 newtype Cmd msg
   = Cmd ((msg -> Effect Unit) -> Effect Unit)
