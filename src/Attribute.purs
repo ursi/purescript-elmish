@@ -149,6 +149,7 @@ import VirtualDom (Attribute, SingleAttribute(..))
 import VirtualDom (Attribute) as Exports
 import WHATWG.HTML.All (Event, EventTarget)
 import WHATWG.HTML.All as H
+import WHATWG.Internal (unsafeGet)
 
 attribute :: ∀ msg. String -> String -> Attribute msg
 attribute = Single <.. Attr
@@ -551,7 +552,7 @@ onInput :: ∀ msg. (String -> msg) -> Attribute msg
 onInput = on' "input" onInputRefEq
 
 onInputRefEq :: Event -> Effect String
-onInputRefEq = H.unsafeTarget >=> unsafeCoerce .> H.value
+onInputRefEq = H.unsafeTarget .> unsafeGet "value"
 
 on :: ∀ msg. String -> (Event -> Effect msg) -> Attribute msg
 on = on' ~~$ identity
