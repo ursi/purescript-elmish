@@ -2,6 +2,7 @@ module Sub
   ( ActiveSub
   , Callback
   , Canceler
+  , ForeignSub
   , Presub
   , SingleSub
   , Sub(..)
