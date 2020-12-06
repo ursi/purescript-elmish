@@ -40,7 +40,7 @@ import Control.Monad.Writer (tell) as Exports
 batch :: ∀ a. Array (Batched a) -> Batched a
 batch = Batch
 
-afterRender :: ∀ msg. Effect Unit -> Update Unit msg
+afterRender :: ∀ msg. Effect Unit -> Update msg Unit
 afterRender = tell <. Cmd <. const
 
 newtype Cmd msg
@@ -60,10 +60,10 @@ instance monoidCmd :: Monoid (Cmd a) where
 attemptTask :: ∀ x a msg. (Either x a -> msg) -> Task x a -> Cmd msg
 attemptTask toMsg task = Cmd \sendMsg -> Task.capture (sendMsg <. toMsg) task
 
-type Program flags model msg
+type Program flags msg model
   = EffectFn1 flags Unit
 
-type Update model msg
+type Update msg model
   = WriterT (Cmd msg) Effect model
 
 {-- worker2 :: --}
@@ -84,18 +84,18 @@ type Update model msg
 {--     newModel /\ cmd <- runWriterT $ init.update model msg --}
 {--     unwrap cmd $ update newModel --}
 worker ::
-  ∀ flags model msg.
-  { init :: flags -> Update model msg
-  , update :: model -> msg -> Update model msg
+  ∀ flags msg model.
+  { init :: flags -> Update msg model
+  , update :: model -> msg -> Update msg model
   , subscriptions :: model -> Sub msg
   } ->
-  Program flags model msg
+  Program flags msg model
 worker init =
   mkEffectFn1 \flags -> do
     activeSubsRef <- Ref.new []
     go activeSubsRef $ init.init flags
   where
-  go :: Ref (Array ActiveSub) -> Update model msg -> Effect Unit
+  go :: Ref (Array ActiveSub) -> Update msg model -> Effect Unit
   go activeSubsRef w = do
     newModel /\ cmd <- runWriterT w
     let
@@ -110,9 +110,9 @@ worker init =
     unwrap cmd sendMsg
 
 app ::
-  ∀ flags model msg.
-  { init :: flags -> Update model msg
-  , update :: model -> msg -> Update model msg
+  ∀ flags msg model.
+  { init :: flags -> Update msg model
+  , update :: model -> msg -> Update msg model
   , subscriptions :: model -> Sub msg
   , view ::
       model ->
@@ -120,7 +120,7 @@ app ::
       , body :: Array (Html msg)
       }
   } ->
-  Program flags model msg
+  Program flags msg model
 app init =
   mkEffectFn1 \flags -> do
     initialModel /\ cmd <- runWriterT $ init.init flags
