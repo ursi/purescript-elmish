@@ -537,16 +537,13 @@ onClick = on_ "click"
 onMouseDown :: ∀ msg. msg -> Attribute msg
 onMouseDown = on_ "mousedown"
 
-onMouseMove :: ∀ msg. (Number /\ Number -> msg) -> Attribute msg
+onMouseMove :: ∀ msg. (Int /\ Int -> msg) -> Attribute msg
 onMouseMove = on' "mousemove" onMouseMoveRefEq
 
-onMouseMoveRefEq :: Event -> Effect (Number /\ Number)
+onMouseMoveRefEq :: Event -> Effect (Int /\ Int)
 onMouseMoveRefEq =
   unsafeCoerce
-    .> \e -> do
-        x <- H.clientX e
-        y <- H.clientY e
-        pure $ x /\ y
+    .> \e -> pure $ H.clientX e /\ H.clientY e
 
 onInput :: ∀ msg. (String -> msg) -> Attribute msg
 onInput = on' "input" onInputRefEq
