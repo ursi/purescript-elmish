@@ -8,7 +8,7 @@ import Css.Functions as CF
 import Css.Global as CG
 import Data.Array ((..))
 import Data.Array as Array
-import Data.Batchable (Batched(..))
+import Data.Batched (Batched(..))
 import Data.DateTime.Instant as Instant
 import Data.Newtype (unwrap)
 import Ds as Ds
@@ -39,10 +39,10 @@ type Model
     , time :: Number
     , people :: Array String
     , newPerson :: String
-    , mousePosition :: Number /\ Number
+    , mousePosition :: Int /\ Int
     }
 
-init :: Unit -> Update Model Msg
+init :: Unit -> Update Msg Model
 init _ = do
   currentTime <- lift $ now <#> Instant.unInstant >>> unwrap
   pure
@@ -52,7 +52,7 @@ init _ = do
     , time: currentTime
     , people: Array.sort people
     , newPerson: ""
-    , mousePosition: 0.0 /\ 0.0
+    , mousePosition: 0 /\ 0
     }
 
 -- UPDATE
@@ -65,10 +65,10 @@ data Msg
   | Delete String
   | AddPerson
   | UpdateNewPerson String
-  | MouseMoved (Number /\ Number)
+  | MouseMoved (Int /\ Int)
   | NoOp
 
-update :: Model -> Msg -> Update Model Msg
+update :: Model -> Msg -> Update Msg Model
 update model msg = do
   case msg of
     MouseMoved pos -> pure $ model { mousePosition = pos }
@@ -121,8 +121,8 @@ view model =
           [ H.divS
               [ C.fontSize "20px"
               , C.position "absolute"
-              , C.top $ C.px $ snd model.mousePosition
-              , C.left $ CF.calc $ CF.add (C.px $ fst model.mousePosition) "2px"
+              , C.top $ C.px $ toNumber $ snd model.mousePosition
+              , C.left $ CF.calc $ CF.add (C.px $ toNumber $ fst model.mousePosition) "2px"
               , C.width "20px"
               , C.height "20px"
               , C.background "black"
