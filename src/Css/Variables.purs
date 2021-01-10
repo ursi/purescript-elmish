@@ -8,7 +8,7 @@ module Css.Variables
 import MasonPrelude
 import Css (Styles, variable)
 import Css.Functions (var)
-import Data.Batchable (Batched(..))
+import Data.Batched (Batched(..))
 import Data.Symbol (class IsSymbol, SProxy, reflectSymbol)
 import Foreign.Object (fromHomogeneous, toUnfoldable)
 import Prim.Row (class Cons)

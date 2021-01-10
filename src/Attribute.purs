@@ -137,11 +137,11 @@ module Attribute
   ) where
 
 import MasonPrelude
-import Data.Batchable (Batched(..))
+import Data.Batched (Batched(..))
 import Data.Int as Int
 import Data.JSValue (JSValue, toJSValue)
 import Effect.Timer (setTimeout)
-import Sub (Callback, Presub, (<@@>))
+import Sub (Callback, Presub, SingleSub(..), (<@@>))
 import Sub as Sub
 import Throttle (throttle)
 import Unsafe.Coerce (unsafeCoerce)
@@ -558,7 +558,7 @@ on_ :: ∀ msg. String -> msg -> Attribute msg
 on_ eventName msg =
   Single
     $ Listener \targ ->
-        Sub.new $ Sub.newBuilder on_RefEq
+        Sub.new $ SingleSub $ Sub.newBuilder on_RefEq
           <@@> msg
           <@@> targ
           <@@> eventName
@@ -578,7 +578,7 @@ on' eventName toA toMsg =
   Single
     $ Listener \targ ->
         toMsg
-          <$> ( Sub.new $ Sub.newBuilder on'RefEq
+          <$> ( Sub.new $ SingleSub $ Sub.newBuilder on'RefEq
                 <@@> toA
                 <@@> targ
                 <@@> eventName
@@ -595,7 +595,7 @@ throttledOn_ :: ∀ msg. Number -> String -> msg -> Attribute msg
 throttledOn_ ms eventName msg =
   Single
     $ Listener \targ ->
-        Sub.new $ Sub.newBuilder throttledOn_RefEq
+        Sub.new $ SingleSub $ Sub.newBuilder throttledOn_RefEq
           <@@> ms
           <@@> msg
           <@@> targ
@@ -624,7 +624,7 @@ throttledOn' ms eventName toA toMsg =
   Single
     $ Listener \targ ->
         toMsg
-          <$> ( Sub.new $ Sub.newBuilder throttledOn'RefEq
+          <$> ( Sub.new $ SingleSub $ Sub.newBuilder throttledOn'RefEq
                 <@@> ms
                 <@@> toA
                 <@@> targ

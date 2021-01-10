@@ -237,10 +237,11 @@ import MasonPrelude
 import Attribute as A
 import Css (Styles)
 import Css.Global (style)
-import Data.Batchable (Batched(..), flatten)
-import Data.Batchable as Batchable
+import Data.Batched (Batched(..), flatten, flattenMap)
+import Data.Batched as Batched
 import Data.List ((:))
 import Data.Map as Map
+import Data.Newtype (unwrap)
 import VirtualDom (Attribute, SingleAttribute(..), SingleVNode(..), VNode)
 import VirtualDom as VD
 import VirtualDom.Css as VC
@@ -260,7 +261,7 @@ keyed tag attributes children =
             foldr
               ( \(key /\ child) acc ->
                   fromMaybe acc do
-                    first <- Batchable.first child
+                    first <- Batched.first child
                     pure $ (key /\ first) : acc
               )
               Nil
@@ -283,7 +284,7 @@ element tag attributes children =
 elementS :: ∀ msg. String -> Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 elementS tag styles attributes children =
   let
-    styles' = flatten $ Batch styles
+    styles' = flattenMap unwrap $ Batch styles
 
     mstyles = VC.process styles'
   in

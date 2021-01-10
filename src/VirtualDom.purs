@@ -5,7 +5,7 @@ import Control.Monad.Reader (ReaderT, ask, local, runReaderT)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Writer (WriterT, runWriterT, tell)
 import Data.Array as Array
-import Data.Batchable (Batched(..))
+import Data.Batched (Batched(..))
 import Data.Diff (Diff, diff)
 import Data.Diff as Diff
 import Data.Foldable (foldM)
@@ -104,7 +104,7 @@ type MyMonadCommon a
   = MyMonad a (SingleVNode a)
 
 type VNode msg
-  = Batched (SingleVNode msg)
+  = Batched SingleVNode msg
 
 type VDOM msg
   = List (SingleVNode msg)
@@ -123,7 +123,7 @@ instance eqSingleAttribute :: Eq (SingleAttribute a) where
   eq _ _ = false
 
 type Attribute msg
-  = Batched (SingleAttribute msg)
+  = Batched SingleAttribute msg
 
 type PatchContext
   = { doc :: Document, parent :: Element }

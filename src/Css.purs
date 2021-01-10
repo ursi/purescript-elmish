@@ -855,8 +855,8 @@ module Css
 
 import MasonPrelude hiding (append)
 import Css.Functions as CF
-import Data.Array as Array
-import Data.Batchable (Batched(..), flattenMap)
+import Data.Batched (Batched(..))
+import Data.Identity (Identity(..))
 import VirtualDom.Css (Style(..), Styles, StringOp(..))
 
 append :: String -> StringOp
@@ -869,17 +869,12 @@ duplicate :: String -> StringOp
 duplicate str = Id <> Const str <> Id
 
 declaration :: String -> String -> Styles
-declaration = Single <.. Declaration Id
+declaration = pure <.. Declaration Id
 
 mapSelector :: StringOp -> Array Styles -> Styles
 mapSelector op styles =
   Batch styles
-    # flattenMap
-        ( \(Declaration op' p v) ->
-            Single $ Declaration (Compose op op') p v
-        )
-    # Array.fromFoldable
-    # Batch
+    <#> (\(Declaration op' p v) -> Declaration (Compose op op') p v)
 
 variable :: String -> String -> Styles
 variable = declaration <. (<>) "--"
@@ -998,7 +993,11 @@ not = mapSelector <. append <. CF.function ":not"
 --
 important :: Styles -> Styles
 important styles = case styles of
-  Single (Declaration strOp p v) -> Single $ Declaration strOp p $ v <> " !important"
+  Single (Identity (Declaration strOp p v)) ->
+    pure
+      $ Declaration strOp p
+      $ v
+      <> " !important"
   Batch styles' -> Batch $ important <$> styles'
 
 alignContent :: String -> Styles

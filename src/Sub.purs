@@ -4,7 +4,7 @@ module Sub
   , Canceler
   , ForeignSub
   , Presub
-  , SingleSub
+  , SingleSub(..)
   , Sub(..)
   , SubBuilder
   , (<@@>)
@@ -19,8 +19,7 @@ module Sub
 
 import MasonPrelude
 import Data.Array as Array
-import Data.Batchable (Batched(..))
-import Data.Batchable as Batchable
+import Data.Batched (Batched(..), flatten)
 import Data.JSValue (JSValue, toJSValue)
 import Data.Newtype (class Newtype, unwrap, wrap)
 import Debug as Debug
@@ -45,7 +44,7 @@ mapPresub f p callback = p $ callback <. f
 
 fromForeign :: ∀ a. SubBuilder (ForeignSub a) -> SingleSub a
 fromForeign (SubBuilder s@{ sub }) =
-  SubBuilder
+  SingleSub $ SubBuilder
     $ s { sub = runEffectFn1 sub <. mkEffectFn1 }
 
 type SubProperties
@@ -54,7 +53,7 @@ type SubProperties
     , maps :: Array JSValue
     )
 
-data SubBuilder a
+newtype SubBuilder a
   = SubBuilder { sub :: a | SubProperties }
 
 newBuilder :: ∀ a. a -> SubBuilder a
@@ -76,43 +75,38 @@ flap (SubBuilder s@{ args, sub }) a =
 
 infixl 4 flap as <@@>
 
-type SingleSub a
-  = SubBuilder (Presub a)
+newtype SingleSub a
+  = SingleSub (SubBuilder (Presub a))
 
-newtype Sub a
-  = Sub (Batched (SingleSub a))
-
-instance functorSub :: Functor Sub where
-  map f (Sub s) =
-    Sub
-      $ map
-          ( \(SubBuilder s'@{ maps, sub }) ->
-              SubBuilder
-                $ s'
-                    { maps = Array.snoc maps $ toJSValue f
-                    , sub = mapPresub f sub
-                    }
-          )
+instance functorSingleSub :: Functor SingleSub where
+  map f (SingleSub s) =
+    SingleSub
+      $ ( \(SubBuilder s'@{ maps, sub }) ->
+            SubBuilder
+              $ s'
+                  { maps = Array.snoc maps $ toJSValue f
+                  , sub = mapPresub f sub
+                  }
+        )
           s
 
-derive newtype instance semigroupSub :: Semigroup (Sub a)
+type Sub a
+  = Batched SingleSub a
 
-derive newtype instance monoidSub :: Monoid (Sub a)
-
-new :: ∀ a. SubBuilder (Presub a) -> Sub a
-new = Sub <. Single
+new :: ∀ a. SingleSub a -> Sub a
+new = Single
 
 newForeign :: ∀ a. SubBuilder (ForeignSub a) -> Sub a
-newForeign = Sub <. Single <. fromForeign
+newForeign = Single <. fromForeign
 
 data ActiveSub
   = ActiveSub { canceler :: Effect Unit | SubProperties }
 
 something :: ∀ a. Array ActiveSub -> Sub a -> Callback a -> Effect (Array ActiveSub)
-something activeSubs (Sub newSub) callback =
+something activeSubs newSub callback =
   go
     activeSubs
-    (Array.fromFoldable $ Batchable.flatten newSub)
+    (Array.fromFoldable $ flatten newSub)
     { keep: [], cancel: mempty }
   where
   go ::
@@ -145,7 +139,7 @@ something activeSubs (Sub newSub) callback =
       pure $ (acc.keep <> newAcitveSubs)
 
 sameAsActive :: ∀ a. ActiveSub -> SingleSub a -> Boolean
-sameAsActive (ActiveSub a) (SubBuilder s) = a.impl == s.impl && a.args == s.args && a.maps == s.maps
+sameAsActive (ActiveSub a) (SingleSub (SubBuilder s)) = a.impl == s.impl && a.args == s.args && a.maps == s.maps
 
 unsafeDeleteAt :: Partial => ∀ a. Int -> Array a -> Array a
 unsafeDeleteAt index array = case Array.deleteAt index array of
@@ -155,7 +149,7 @@ getCanceler :: ActiveSub -> Canceler
 getCanceler (ActiveSub { canceler }) = canceler
 
 launch :: ∀ a. Callback a -> SingleSub a -> Effect ActiveSub
-launch callback (SubBuilder { impl, args, maps, sub }) = do
+launch callback (SingleSub (SubBuilder { impl, args, maps, sub })) = do
   canceler <- sub callback
   pure $ ActiveSub { impl, args, maps, canceler }
 

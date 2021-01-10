@@ -16,7 +16,7 @@ import Attribute as A
 import Data.Identity
 import Control.Monad.Writer (WriterT, runWriterT, tell)
 import Control.Monad.Trans.Class (lift)
-import Data.Batchable (Batched(..), flatten)
+import Data.Batched (Batched(..), flatten)
 import Data.Newtype (class Newtype, unwrap)
 import Debug as Debug
 import Effect.Console (log)
@@ -37,7 +37,7 @@ import WHATWG.HTML.All (Document, Element)
 import WHATWG.HTML.All as H
 import Control.Monad.Writer (tell) as Exports
 
-batch :: ∀ a. Array (Batched a) -> Batched a
+batch :: ∀ a b. Array (Batched a b) -> Batched a b
 batch = Batch
 
 afterRender :: ∀ msg. Effect Unit -> Update msg Unit

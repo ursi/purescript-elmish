@@ -2,7 +2,8 @@ module VirtualDom.Css where
 
 import MasonPrelude
 import Data.Array as Array
-import Data.Batchable (Batched(..), flatten, flattenMap)
+import Data.Batched (Batched, flatten, flattenMap)
+import Data.Identity (Identity)
 import Data.List ((:))
 import Data.List as List
 import Data.Map (Map)
@@ -14,7 +15,7 @@ data Style
   = Declaration StringOp String String
 
 type Styles
-  = Batched Style
+  = Batched Identity Style
 
 data StringOp
   = Id

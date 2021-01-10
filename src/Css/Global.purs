@@ -2,12 +2,14 @@ module Css.Global where
 
 import MasonPrelude
 import Css as C
+import Data.Batched (Batched(..), flattenMap)
 import Data.Foldable (surroundMap)
 import Data.List ((:))
 import Data.List as List
-import Data.Batchable (Batched(..), flatten)
+import Data.Identity (Identity)
 import Data.Map (Map)
 import Data.Map as Map
+import Data.Newtype (unwrap)
 import Murmur3 (hash)
 import VirtualDom.Css (Styles, Style)
 import VirtualDom.Css as VC
@@ -20,7 +22,7 @@ data Statement
 
 --  | Keyframes Keyframes_
 type Statements
-  = Batched Statement
+  = Batched Identity Statement
 
 type Rule_
   = { selector :: String
@@ -41,7 +43,7 @@ type Stylesheet
 style :: ∀ msg. Array (Statements) -> VNode msg
 style =
   Batch
-    .> flatten
+    .> flattenMap unwrap
     .> toChildNodes
     .> VD.keyedElement "style" Nil
     .> Single
@@ -101,14 +103,14 @@ rulesToStyleNodes =
 
 rule :: String -> Array Styles -> Statements
 rule selector styles =
-  Single
+  pure
     $ Rule
         { selector
-        , declarations: flatten $ C.mapSelector (C.Const selector) styles
+        , declarations: flattenMap unwrap $ C.mapSelector (C.Const selector) styles
         }
 
 imports :: Array String -> Statements
-imports = Single <. Import
+imports = pure <. Import
 
 a :: Array Styles -> Statements
 a = rule "a"
