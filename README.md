@@ -10,7 +10,7 @@ import Html as H
 import Platform (Program, Update)
 import Platform as Platform
 
-main :: Program Unit Model Msg
+main :: Program Unit Msg Model
 main =
   Platform.app
     { init
@@ -22,14 +22,14 @@ main =
 type Model
   = Int
 
-init :: Unit -> Update Model Msg
+init :: Unit -> Update Msg Model
 init _ = pure 0
 
 data Msg
   = Increment
   | Decrement
 
-update :: Model -> Msg -> Update Model Msg
+update :: Model -> Msg -> Update Msg Model
 update model = pure <<< case _ of
   Increment -> model + 1
   Decrement -> model - 1
