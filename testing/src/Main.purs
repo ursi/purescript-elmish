@@ -11,7 +11,7 @@ import Data.Array as Array
 import Data.Batched (Batched(..))
 import Data.DateTime.Instant as Instant
 import Data.Newtype (unwrap)
-import Ds as Ds
+import Design as Ds
 import Effect.Now (now)
 import Html (Html)
 import Html as H
@@ -102,14 +102,14 @@ view model =
       , default
       , H.style
           [ CG.body
-              [ Ds.vars
-              , C.background Ds.background
+              [ Ds.varStyles
+              , C.background Ds.vars.background
               ]
           ]
       ]
   , body:
       [ H.divS
-          [ C.background Ds.accent
+          [ C.background Ds.vars.accent
           , C.border "1px solid black"
           , C.mapSelector (C.append " > div")
               [ C.fontWeight "bold"
