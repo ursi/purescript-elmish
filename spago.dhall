@@ -3,6 +3,7 @@
   [ "console"
   , "foreign-object"
   , "generics-rep"
+  , "heterogeneous"
   , "js-timers"
   , "mason-prelude"
   , "parallel"
