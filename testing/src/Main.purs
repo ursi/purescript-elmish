@@ -166,6 +166,13 @@ view model =
           , H.button [ A.onClick Decrement ] [ H.text "-" ]
           , Batch $ 0 .. model.counter <#> \i -> H.div [] [ H.text $ show i ]
           ]
+      , H.buttonS
+          [ C.fontSize "3em"
+          , C.hover [ C.background "pink" ]
+          , C.active [ C.background "cyan" ]
+          ]
+          []
+          [ H.text "button" ]
       ]
   }
 
