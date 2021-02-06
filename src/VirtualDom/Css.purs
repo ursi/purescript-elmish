@@ -6,8 +6,9 @@ import Data.Batched (Batched, flatten, flattenMap)
 import Data.Identity (Identity)
 import Data.List ((:))
 import Data.List as List
-import Data.Map (Map)
-import Data.Map as Map
+import Data.List.NonEmpty (NonEmptyList(..))
+import Data.List.NonEmpty as Nel
+import Data.NonEmpty (NonEmpty(..))
 import Debug as Debug
 import Murmur3 as Murmur3
 
@@ -42,23 +43,25 @@ process styles =
   if List.null styles then
     Nothing
   else
-    toMap styles
-      # foldlWithIndex
-          ( \k acc v ->
+    toLists styles
+      # foldr
+          ( \styleList acc ->
               let
+                (Declaration op _ _) = Nel.head styleList
+
                 declarations =
                   " {\n"
-                    <> joinMap
+                    <> reverseJoinMap
                         ( \(Declaration _ prop value) ->
                             "\t" <> prop <> ": " <> value <> ";"
                         )
                         "\n"
-                        v
+                        styleList
                     <> "\n}"
               in
                 case acc of
-                  Id -> k <> Const declarations
-                  _ -> acc <> Const "\n\n" <> k <> Const declarations
+                  Id -> op <> Const declarations
+                  _ -> acc <> Const "\n\n" <> op <> Const declarations
           )
           Id
       # Just
@@ -79,19 +82,21 @@ makeHash toCssOp =
           , css: toCss $ "." <> c
           }
 
-toMap :: List Style -> Map StringOp (List Style)
-toMap =
-  foldr
-    ( \style@(Declaration op _ _) acc ->
-        Map.alter
-          ( case _ of
-              Just list -> Just $ style : list
-              Nothing -> Just $ pure $ style
-          )
-          op
-          acc
+toLists :: List Style -> Array (NonEmptyList Style)
+toLists =
+  foldl
+    ( \acc style@(Declaration op _ _) -> case acc of
+        Right (styleList@(NonEmptyList (NonEmpty (Declaration lastOp _ _) _)) /\ array) ->
+          if op == lastOp then
+            Right $ (Nel.cons style styleList) /\ array
+          else
+            Right $ pure style /\ Array.cons styleList array
+        Left array -> Right $ pure style /\ array
     )
-    mempty
+    (Left [])
+    .> case _ of
+        Right (styleNel /\ stylesArr) -> Array.cons styleNel stylesArr
+        Left arr -> arr
 
 hash :: String -> Int
 hash = Murmur3.hash 0
@@ -101,3 +106,8 @@ joinMap f sep list = case list of
   only : Nil -> f only
   first : rest -> f first <> sep <> joinMap f sep rest
   Nil -> ""
+
+reverseJoinMap :: ∀ a. (a -> String) -> String -> NonEmptyList a -> String
+reverseJoinMap f sep (NonEmptyList (NonEmpty first rest)) = case Nel.fromList rest of
+  Just nel -> reverseJoinMap f sep nel <> sep <> f first
+  Nothing -> f first
