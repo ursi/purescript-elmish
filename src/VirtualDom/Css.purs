@@ -69,6 +69,7 @@ makeHash toCssOp =
   let
     toCss = apply toCssOp
   in
+    -- there's nothing special about this "o", it could be any string
     toCss "o"
       # hash
       # show
