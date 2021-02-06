@@ -95,7 +95,7 @@ toLists =
     )
     (Left [])
     .> case _ of
-        Right (styleNel /\ stylesArr) -> Array.cons styleNel stylesArr
+        Right (styleList /\ stylesArr) -> Array.cons styleList stylesArr
         Left arr -> arr
 
 hash :: String -> Int
