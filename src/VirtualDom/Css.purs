@@ -1,6 +1,6 @@
 module VirtualDom.Css where
 
-import MasonPrelude
+import MasonPrelude hiding (apply)
 import Data.Array as Array
 import Data.Batched (Batched, flatten, flattenMap)
 import Data.Identity (Identity)
