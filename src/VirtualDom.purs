@@ -48,6 +48,7 @@ data SingleVNode msg
     , attributes :: List (SingleAttribute msg)
     , children :: VDOM msg
     , node :: Maybe Element
+    , noDiff :: Boolean
     }
   | KeyedElement
     { tag :: String
@@ -79,6 +80,7 @@ element tag attributes children =
     , attributes: attributes
     , children: children
     , node: Nothing
+    , noDiff: false
     }
 
 keyedElement ::
@@ -206,6 +208,7 @@ makeStyleNode styleMap =
                         , attributes: Nil
                         , children: pure $ VText { text: v, node: Nothing }
                         , node: Nothing
+                        , noDiff: false
                         } ::
                         SingleVNode msg
                     )
@@ -337,18 +340,21 @@ diffSingle svn1 svn2 = do
   case svn1, svn2 of
     VElement r1, VElement r2 ->
       if r1.tag == r2.tag then
-        fromMaybe replace do
-          elem <- r1.node
-          Just do
-            addCss r2.css
-            attributes <- lift $ diffAttributes elem r1.attributes r2.attributes
-            children <- local (changeParent elem) $ vDomDiff r1.children r2.children
-            pure
-              $ VElement
-                  r1
-                    { attributes = attributes
-                    , children = children
-                    }
+        if r1.noDiff then
+          replace
+        else
+          fromMaybe replace do
+            elem <- r1.node
+            Just do
+              addCss r2.css
+              attributes <- lift $ diffAttributes elem r1.attributes r2.attributes
+              children <- local (changeParent elem) $ vDomDiff r1.children r2.children
+              pure
+                $ VElement
+                    r1
+                      { attributes = attributes
+                      , children = children
+                      }
       else
         replace
     KeyedElement r1, KeyedElement r2 ->

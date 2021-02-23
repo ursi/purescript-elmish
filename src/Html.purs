@@ -4,6 +4,7 @@ module Html
   , keyed
   , element
   , elementS
+  , noDiff
   , text
   , a
   , aS
@@ -279,6 +280,7 @@ element tag attributes children =
         , attributes: flatten $ Batch attributes
         , children: flatten $ Batch children
         , node: Nothing
+        , noDiff: false
         }
 
 elementS :: ∀ msg. String -> Array Styles -> Array (Attribute msg) -> Array (Html msg) -> Html msg
@@ -296,6 +298,7 @@ elementS tag styles attributes children =
         , attributes: flatten $ Batch attributes
         , children: flatten $ Batch children
         , node: Nothing
+        , noDiff: false
         }
       # \r -> case mstyles of
           Just css ->
@@ -304,6 +307,19 @@ elementS tag styles attributes children =
               , css = Just $ Map.singleton css.class css.css
               }
           Nothing -> r
+
+noDiff :: ∀ msg. String -> Array (Attribute msg) -> Array (Html msg) -> Html msg
+noDiff tag attributes children =
+  Single
+    $ VElement
+        { tag
+        , styles: Nil
+        , css: Nothing
+        , attributes: flatten $ Batch attributes
+        , children: flatten $ Batch children
+        , node: Nothing
+        , noDiff: true
+        }
 
 text :: ∀ msg. String -> Html msg
 text = Single <. VD.text
