@@ -252,7 +252,7 @@ keyedDiff = case _, _ of
         head1' : tail1', head2' : tail2' ->
           if key1 == fst head2' then
             if key2 == fst head1' then do
-              newKey1VNode <- diffSingle vnode2 (snd head1')
+              newKey1VNode <- diffSingle (snd head1') vnode2
               newKey2VNode <- diffSingle vnode1 (snd head2')
               _ <-
                 fromMaybe noNodeError do
