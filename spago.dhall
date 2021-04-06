@@ -1,8 +1,8 @@
 { name = "my-project"
 , dependencies =
   [ "console"
+  , "debuggest"
   , "foreign-object"
-  , "generics-rep"
   , "heterogeneous"
   , "js-timers"
   , "mason-prelude"

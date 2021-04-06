@@ -53,7 +53,7 @@ toChildNodes =
   go
     { imports: []
     , keyframes: Nil
-    , rules: mempty
+    , rules: Map.empty
     }
   where
   go :: Stylesheet -> List Statement -> List (String /\ SingleVNode msg)

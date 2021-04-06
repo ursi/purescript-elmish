@@ -12,7 +12,7 @@ import Data.Foldable (foldM)
 import Data.JSValue (JSValue, toJSValue)
 import Data.List ((:))
 import Data.List as List
-import Data.Map (Map)
+import Data.Map (Map, SemigroupMap)
 import Data.Map as Map
 import Data.Newtype (class Newtype, unwrap, wrap)
 import Data.Newtype as Newtype
@@ -25,6 +25,7 @@ import Effect.Ref as Ref
 import Effect.Uncurried
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign.Object (Object)
+import Safe.Coerce (coerce)
 import Sub (Callback, Sub, SubBuilder)
 import Sub as Sub
 import Unsafe.Coerce (unsafeCoerce)
@@ -39,6 +40,8 @@ import WHATWG.HTML.All
   , Text
   )
 import WHATWG.HTML.All as H
+
+type SMap = SemigroupMap
 
 data SingleVNode msg
   = VElement
@@ -100,7 +103,7 @@ keyedElement tag attributes children =
     }
 
 type MyMonad a b
-  = ReaderT PatchContext (WriterT (Sub a /\ Map String String) Effect) b
+  = ReaderT PatchContext (WriterT (Sub a /\ SMap String String) Effect) b
 
 type MyMonadCommon a
   = MyMonad a (SingleVNode a)
@@ -181,7 +184,7 @@ render doc parents oldVNodes newVNodes = do
     fst
       <$> runWriterT
           ( runReaderT
-              (vDomDiff oldVNodes.head $ makeStyleNode styleMap : newVNodes.head)
+              (vDomDiff oldVNodes.head $ makeStyleNode (coerce styleMap) : newVNodes.head)
               { doc, parent: parents.head }
           )
   pure
@@ -385,7 +388,7 @@ diffAttributes ::
   Element ->
   List (SingleAttribute msg) ->
   List (SingleAttribute msg) ->
-  WriterT (Sub msg /\ Map String String) Effect (List (SingleAttribute msg))
+  WriterT (Sub msg /\ SMap String String) Effect (List (SingleAttribute msg))
 diffAttributes elem =
   diff
     ( case _ of
@@ -437,7 +440,7 @@ removeAttribute attr elem = case attr of
   AddClass c -> H.classList elem >>= H.remove [ c ]
   Listener _ -> pure unit
 
-addAttribute :: ∀ msg. SingleAttribute msg -> Element -> WriterT (Sub msg /\ Map String String) Effect Unit
+addAttribute :: ∀ msg. SingleAttribute msg -> Element -> WriterT (Sub msg /\ SMap String String) Effect Unit
 addAttribute attr elem = case attr of
   Attr prop value -> lift $ H.setAttribute prop value elem
   Prop prop value -> lift $ setProperty prop value elem
@@ -519,7 +522,7 @@ placeNodeHelper placer { tag, styles, attributes, children } traverser = do
 
 addCss :: ∀ msg. Maybe (Map String String) -> MyMonad msg Unit
 addCss = case _ of
-  Just map -> tell $ mempty /\ map
+  Just map -> tell $ mempty /\ coerce map
   Nothing -> pure unit
 
 removeVNode :: ∀ msg. SingleVNode msg -> MyMonad msg Unit

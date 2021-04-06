@@ -48,7 +48,7 @@ instance diffableMap :: Ord k => Diffable (Map k) where
   diff = diffMap
 
 diffMap :: ∀ a b c k m. Ord k => Monad m => (Diff a b -> m (Maybe c)) -> Map k a -> Map k b -> m (Map k c)
-diffMap f = go mempty
+diffMap f = go Map.empty
   where
   go :: Map k c -> Map k a -> Map k b -> m (Map k c)
   go acc map1 map2 = case Map.findMin map1, Map.findMin map2 of
