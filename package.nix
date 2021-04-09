@@ -1,8 +1,6 @@
-{ ps-pkgs, ps-pkgs-ns }:
+{ ps-pkgs, ps-pkgs-ns, ... }:
   with ps-pkgs;
-  { repo = "https://github.com/ursi/purescript-elmish.git";
-    rev = "afbdab43f53b1259a880a234d74ac6945f7ad7b7";
-    dependencies =
+  { dependencies =
       let inherit (ps-pkgs-ns) ursi; in
       [ console
         foreign-object

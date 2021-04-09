@@ -12,8 +12,7 @@
                  src = ./src;
                }
              )
-             bundle
-             compile;
+             shell;
          in
          { apps =
              { bundle = bundle {};
@@ -28,6 +27,7 @@
                      nodePackages.pulp
                      nodePackages.uglify-js
                      purescript
+                     (shell {})
                    ];
                };
          }
