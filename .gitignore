@@ -7,7 +7,6 @@
 /.psc*
 /.purs*
 /.psa*
-/.spago
 /index.js
 /minify.js
 /elm
