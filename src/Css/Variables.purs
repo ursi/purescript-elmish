@@ -5,8 +5,8 @@
 -- | ```
 -- | module Design (vars, varStyles) where
 -- |
--- | import Data.Symbol (SProxy(..))
 -- | import Css.Variables (mkVarStyles, mkVarValues)
+-- | import Type.Proxy (Proxy(..))
 -- |
 -- | varRec =
 -- |   { blue1: "blue"
@@ -50,7 +50,7 @@ mkVarStyles vars =
 --   IsSymbol l =>
 --   R.Cons l a r' r =>
 --   Record r ->
---   SProxy l ->
+--   Proxy l ->
 --   String
 -- makeVarValue _ sym = var $ reflectSymbol sym
 -- | Use the variable values in your declarations
@@ -58,8 +58,8 @@ mkVarStyles vars =
 -- | ```
 -- | vars =
 -- |   mkVarValues
--- |     { background: SProxy :: _ "white1"
--- |     , accent: SProxy :: _ "red2"
+-- |     { background: Proxy :: _ "white1"
+-- |     , accent: Proxy :: _ "red2"
 -- |     }
 -- |     varRec
 -- |
