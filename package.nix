@@ -10,6 +10,7 @@
         task
         ursi.debug
         ursi.html
+        ursi.murmur3
         ursi.prelude
         web-dom
         web-events
