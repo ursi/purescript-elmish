@@ -4,6 +4,7 @@ module Platform
   , Program
   , Update
   , app
+  , headBodyApp
   , worker
   , html
   , attemptTask
@@ -109,7 +110,7 @@ worker init =
     Ref.write newActiveSubs activeSubsRef
     unwrap cmd sendMsg
 
-app ::
+headBodyApp ::
   ∀ flags msg model.
   { init :: flags -> Update msg model
   , update :: model -> msg -> Update msg model
@@ -119,9 +120,11 @@ app ::
       { head :: Array (Html msg)
       , body :: Array (Html msg)
       }
+  , head :: Element
+  , body :: Element
   } ->
   Program flags msg model
-app init =
+headBodyApp init =
   mkEffectFn1 \flags -> do
     initialModel /\ cmd <- runWriterT $ init.init flags
     modelRef <- Ref.new initialModel
@@ -197,6 +200,35 @@ app init =
     unwrap cmd $ sendMsg render refs
 
 foreign import raf :: ∀ a. Effect a -> Effect Unit
+
+app ::
+  ∀ flags msg model.
+  { init :: flags -> Update msg model
+  , update :: model -> msg -> Update msg model
+  , subscriptions :: model -> Sub msg
+  , view ::
+      model ->
+      { head :: Array (Html msg)
+      , body :: Array (Html msg)
+      }
+  } ->
+  Program flags msg model
+app init =
+  mkEffectFn1 \flags -> do
+    doc <- H.window >>= H.document
+    head <- H.toElement <$> H.unsafeHead doc
+    body <- H.toElement <$> H.unsafeBody doc
+    runEffectFn1
+      (headBodyApp
+         { init: init.init
+         , update: init.update
+         , subscriptions: init.subscriptions
+         , view: init.view
+         , head
+         , body
+         }
+      )
+      flags
 
 html ::
   { head :: Array (Html Unit)
