@@ -124,13 +124,11 @@ headBodyApp ::
   , body :: Element
   } ->
   Program flags msg model
-headBodyApp init =
+headBodyApp init@{ head, body } =
   mkEffectFn1 \flags -> do
     initialModel /\ cmd <- runWriterT $ init.init flags
     modelRef <- Ref.new initialModel
     doc <- H.window >>= H.document
-    head <- H.toElement <$> H.unsafeHead doc
-    body <- H.toElement <$> H.unsafeBody doc
     let
       initialView = init.view initialModel
     newVDoms /\ domSubs <-
