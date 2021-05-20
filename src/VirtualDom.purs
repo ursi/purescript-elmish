@@ -26,7 +26,7 @@ import Effect.Uncurried
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign.Object (Object)
 import Safe.Coerce (coerce)
-import Sub (Callback, Sub, SubBuilder)
+import Sub (Callback, Sub)
 import Sub as Sub
 import Unsafe.Coerce (unsafeCoerce)
 import VirtualDom.Css (Style)

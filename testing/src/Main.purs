@@ -68,6 +68,8 @@ data Msg
   | MouseMoved (Int /\ Int)
   | NoOp
 
+derive instance eqMsg :: Eq Msg
+
 update :: Model -> Msg -> Update Msg Model
 update model msg = do
   case msg of

@@ -2,16 +2,10 @@ module Sub
   ( ActiveSub
   , Callback
   , Canceler
-  , ForeignSub
-  , Presub
+  , CC
+  , fromForeign
   , SingleSub(..)
   , Sub(..)
-  , SubBuilder
-  , (<@@>)
-  , flap
-  , new
-  , newBuilder
-  , newForeign
   , something
   , every
   , every_
@@ -20,89 +14,39 @@ module Sub
 import MasonPrelude
 import Data.Array as Array
 import Data.Batched (Batched(..), flatten)
-import Data.JSValue (JSValue, toJSValue)
-import Data.Newtype (class Newtype, unwrap, wrap)
 import Debug as Debug
-import Effect.Uncurried (EffectFn1, mkEffectFn1, runEffectFn1)
 import Partial.Unsafe (unsafePartial)
-import Unsafe.Coerce (unsafeCoerce)
+import Producer (Producer, producer, produce)
+import RefEq (RefEq(..))
 
-type Callback a
-  = a -> Effect Unit
 
-type Canceler
-  = Effect Unit
+type Callback a = a -> Effect Unit
+type Canceler = Effect Unit
+type CC a = Callback a -> Effect Canceler
+type ForeignCC a = EffectFn1 (EffectFn1 a Unit) Canceler
 
-type ForeignSub a
-  = (EffectFn1 (EffectFn1 a Unit) Canceler)
+fromForeign :: ∀ a. ForeignCC a -> CC a
+fromForeign fcc = runEffectFn1 fcc <. mkEffectFn1
 
-type Presub a
-  = Callback a -> Effect Canceler
+newtype SingleSub a = SingleSub (Producer (CC a))
 
-mapPresub :: ∀ a b. (a -> b) -> Presub a -> Presub b
-mapPresub f p callback = p $ callback <. f
-
-fromForeign :: ∀ a. SubBuilder (ForeignSub a) -> SingleSub a
-fromForeign (SubBuilder s@{ sub }) =
-  SingleSub $ SubBuilder
-    $ s { sub = runEffectFn1 sub <. mkEffectFn1 }
-
-type SubProperties
-  = ( impl :: JSValue
-    , args :: Array JSValue
-    , maps :: Array JSValue
-    )
-
-newtype SubBuilder a
-  = SubBuilder { sub :: a | SubProperties }
-
-newBuilder :: ∀ a. a -> SubBuilder a
-newBuilder impl =
-  SubBuilder
-    { impl: toJSValue impl
-    , args: []
-    , maps: []
-    , sub: impl
-    }
-
-flap :: ∀ a b. SubBuilder (a -> b) -> a -> SubBuilder b
-flap (SubBuilder s@{ args, sub }) a =
-  SubBuilder
-    $ s
-        { args = Array.snoc args $ toJSValue a
-        , sub = sub a
-        }
-
-infixl 4 flap as <@@>
-
-newtype SingleSub a
-  = SingleSub (SubBuilder (Presub a))
+derive newtype instance eqSingleSub :: Eq (SingleSub a)
 
 instance functorSingleSub :: Functor SingleSub where
-  map f (SingleSub s) =
-    SingleSub
-      $ ( \(SubBuilder s'@{ maps, sub }) ->
-            SubBuilder
-              $ s'
-                  { maps = Array.snoc maps $ toJSValue f
-                  , sub = mapPresub f sub
-                  }
-        )
-          s
+  map f (SingleSub p) = SingleSub $ producer mapHelper $ RefEq f /\ p
 
-type Sub a
-  = Batched SingleSub a
+mapHelper :: ∀ a b. RefEq (a -> b) /\ Producer (CC a) -> CC b
+mapHelper (RefEq f /\ ccP) = \callback -> produce ccP $ callback <. f
 
-new :: ∀ a. SingleSub a -> Sub a
-new = Single
+type Sub a = Batched SingleSub a
 
-newForeign :: ∀ a. SubBuilder (ForeignSub a) -> Sub a
-newForeign = Single <. fromForeign
+data ActiveSub a =
+  ActiveSub
+    { canceler :: Canceler
+    , sub :: SingleSub a
+    }
 
-data ActiveSub
-  = ActiveSub { canceler :: Effect Unit | SubProperties }
-
-something :: ∀ a. Array ActiveSub -> Sub a -> Callback a -> Effect (Array ActiveSub)
+something :: ∀ a. Array (ActiveSub a) -> Sub a -> Callback a -> Effect (Array (ActiveSub a))
 something activeSubs newSub callback =
   go
     activeSubs
@@ -110,12 +54,12 @@ something activeSubs newSub callback =
     { keep: [], cancel: mempty }
   where
   go ::
-    Array ActiveSub ->
-    Array (SingleSub a) ->
-    { keep :: Array ActiveSub
-    , cancel :: Effect Unit
-    } ->
-    Effect (Array ActiveSub)
+    Array (ActiveSub a)
+    -> Array (SingleSub a)
+    -> { keep :: Array (ActiveSub a)
+       , cancel :: Effect Unit
+       }
+    -> Effect (Array (ActiveSub a))
   go current newSubs acc = case Array.uncons current of
     Just { head, tail } -> case Array.findIndex (sameAsActive head) newSubs of
       Just i ->
@@ -138,27 +82,34 @@ something activeSubs newSub callback =
       --   _ = Debug.taggedLog "kept" acc.keep
       pure $ (acc.keep <> newAcitveSubs)
 
-sameAsActive :: ∀ a. ActiveSub -> SingleSub a -> Boolean
-sameAsActive (ActiveSub a) (SingleSub (SubBuilder s)) = a.impl == s.impl && a.args == s.args && a.maps == s.maps
+sameAsActive :: ∀ a. ActiveSub a -> SingleSub a -> Boolean
+sameAsActive (ActiveSub a) ss = a.sub == ss
+
+getCanceler :: ∀ a. ActiveSub a -> Canceler
+getCanceler (ActiveSub { canceler }) = canceler
+
+launch :: ∀ a. Callback a -> SingleSub a -> Effect (ActiveSub a)
+launch callback sub@(SingleSub p) = do
+  canceler <- produce p callback
+  pure $ ActiveSub { canceler, sub }
 
 unsafeDeleteAt :: Partial => ∀ a. Int -> Array a -> Array a
 unsafeDeleteAt index array = case Array.deleteAt index array of
   Just a -> a
 
-getCanceler :: ActiveSub -> Canceler
-getCanceler (ActiveSub { canceler }) = canceler
+foreign import everyImpl :: ∀ a. Number -> (Number -> a) -> ForeignCC a
 
-launch :: ∀ a. Callback a -> SingleSub a -> Effect ActiveSub
-launch callback (SingleSub (SubBuilder { impl, args, maps, sub })) = do
-  canceler <- sub callback
-  pure $ ActiveSub { impl, args, maps, canceler }
-
-foreign import everyImpl :: Number -> ForeignSub Number
+everyImpl' :: ∀ a. Number /\ RefEq (Number -> a) -> CC a
+everyImpl' (n /\ RefEq toA) = fromForeign $ everyImpl n toA
 
 every :: ∀ a. Number -> (Number -> a) -> Sub a
-every ms toA = toA <$> (newForeign $ newBuilder everyImpl <@@> ms)
+every ms toA = Single $ SingleSub $ producer everyImpl' $ ms /\ RefEq toA
 
-foreign import every_Impl :: ∀ a. Number -> a -> ForeignSub a
+foreign import every_Impl :: ∀ a. Number -> a -> ForeignCC a
 
-every_ :: ∀ a. Number -> a -> Sub a
-every_ ms a = newForeign $ newBuilder every_Impl <@@> ms <@@> a
+every_Impl' :: ∀ a. Number /\ a -> CC a
+every_Impl' (n /\ a) = fromForeign $ every_Impl n a
+
+every_ :: ∀ a. Eq a => Number -> a -> Sub a
+every_ ms a = Single $ SingleSub $ producer every_Impl' $ ms /\ a
+
