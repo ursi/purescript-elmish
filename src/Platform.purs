@@ -27,7 +27,7 @@ import Effect.Ref as Ref
 import Effect.Uncurried (EffectFn1, mkEffectFn1)
 import Html (Html)
 import Html as H
-import Sub (Sub, ActiveSub, SubBuilder)
+import Sub (Sub, ActiveSub)
 import Sub as Sub
 import Task (Task)
 import Task as Task
@@ -96,7 +96,7 @@ worker init =
     activeSubsRef <- Ref.new []
     go activeSubsRef $ init.init flags
   where
-  go :: Ref (Array ActiveSub) -> Update msg model -> Effect Unit
+  go :: Ref (Array (ActiveSub msg)) -> Update msg model -> Effect Unit
   go activeSubsRef w = do
     newModel /\ cmd <- runWriterT w
     let
@@ -175,7 +175,7 @@ headBodyApp init =
           , body :: VDOM msg
           }
     , domSubs :: Ref (Sub msg)
-    , activeSubs :: Ref (Array ActiveSub)
+    , activeSubs :: Ref (Array (ActiveSub msg))
     } ->
     msg ->
     Effect Unit

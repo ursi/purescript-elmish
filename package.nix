@@ -12,6 +12,8 @@
         ursi.html
         ursi.murmur3
         ursi.prelude
+        ursi.producer
+        ursi.refeq
         web-dom
         web-events
         web-html

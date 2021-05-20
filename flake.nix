@@ -26,6 +26,7 @@
                    [ nodejs
                      nodePackages.bower
                      nodePackages.pulp
+                     nodePackages.purescript-language-server
                      purs-nix.purescript
                      (command {})
                    ];
