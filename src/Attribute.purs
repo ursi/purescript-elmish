@@ -141,7 +141,7 @@ import Data.Batched (Batched(..))
 import Data.Int as Int
 import Data.JSValue (JSValue, toJSValue)
 import Effect.Timer (setTimeout)
-import Producer (Producer, liftRefEq, producer, produce)
+import Producer (class Producible, Producer, liftRefEq, produce, producer)
 import RefEq (RefEq(..))
 import Sub (Callback, CC)
 import Sub as Sub
@@ -533,10 +533,10 @@ width = Single <. Attr "width"
 wrap :: ∀ msg. String -> Attribute msg
 wrap = Single <. Attr "wrap"
 
-onClick :: ∀ msg. Eq msg => msg -> Attribute msg
+onClick :: ∀ msg p. Eq p => Producible p msg => p -> Attribute msg
 onClick = on_ "click"
 
-onMouseDown :: ∀ msg. Eq msg => msg -> Attribute msg
+onMouseDown :: ∀ msg p. Eq p => Producible p msg => p -> Attribute msg
 onMouseDown = on_ "mousedown"
 
 onMouseMove :: ∀ msg. (Int /\ Int -> msg) -> Attribute msg
@@ -556,7 +556,7 @@ onInputRefEq = H.unsafeTarget .> unsafeGet "value"
 on :: ∀ msg. String -> Producer (Event -> Effect msg) -> Attribute msg
 on = on' ~~$ identity
 
-on_ :: ∀ msg. Eq msg => String -> msg -> Attribute msg
+on_ :: ∀ msg p. Eq p => Producible p msg => String -> p -> Attribute msg
 on_ eventName msg =
   Single
   $ Listener \targ ->
@@ -572,8 +572,8 @@ makeListener toEventCallback targ event = \send -> do
   H.addEventListener event callback {} targ
   pure $ H.removeEventListener event callback {} targ
 
-on_RefEq :: ∀ msg. msg /\ RefEq EventTarget /\ String -> CC msg
-on_RefEq (msg /\ RefEq targ /\ event) = makeListener (\send -> \_ -> send msg) targ event
+on_RefEq :: ∀ msg p. Producible p msg => p /\ RefEq EventTarget /\ String -> CC msg
+on_RefEq (msg /\ RefEq targ /\ event) = makeListener (\send -> \_ -> send $ produce msg) targ event
 
 on' :: ∀ a msg. String -> Producer (Event -> Effect a) -> (a -> msg) -> Attribute msg
 on' eventName toA toMsg =
