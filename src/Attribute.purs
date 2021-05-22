@@ -141,7 +141,13 @@ import Data.Batched (Batched(..))
 import Data.Int as Int
 import Data.JSValue (JSValue, toJSValue)
 import Effect.Timer (setTimeout)
-import Producer (class Producible, Producer, liftRefEq, produce, producer)
+import Producer
+  ( class Producible
+  , Producer
+  , liftRefEq
+  , produce
+  , producer3
+  )
 import RefEq (RefEq(..))
 import Sub (Callback, CC)
 import Sub as Sub
@@ -562,8 +568,7 @@ on_ eventName msg =
   $ Listener \targ ->
       Single
       $ Sub.SingleSub
-      $ producer on_RefEq
-      $ msg /\ RefEq targ /\ eventName
+      $ producer3 on_RefEq msg (RefEq targ) eventName
 
 makeListener :: ∀ msg. (Callback msg -> Callback Event) -> EventTarget -> String -> CC msg
 makeListener toEventCallback targ event = \send -> do
@@ -572,22 +577,19 @@ makeListener toEventCallback targ event = \send -> do
   H.addEventListener event callback {} targ
   pure $ H.removeEventListener event callback {} targ
 
-on_RefEq :: ∀ msg p. Producible p msg => p /\ RefEq EventTarget /\ String -> CC msg
-on_RefEq (msg /\ RefEq targ /\ event) = makeListener (\send -> \_ -> send $ produce msg) targ event
+on_RefEq :: ∀ msg p. Producible p msg => p -> RefEq EventTarget -> String -> CC msg
+on_RefEq msg (RefEq targ) = makeListener (\send -> \_ -> send $ produce msg) targ
 
 on' :: ∀ a msg. String -> Producer (Event -> Effect a) -> (a -> msg) -> Attribute msg
 on' eventName toA toMsg =
   Single
   $ Listener \targ ->
       toMsg
-      <$> (Single $ Sub.SingleSub $ producer on'RefEq $ toA /\ RefEq targ /\ eventName)
+      <$> (Single $ Sub.SingleSub $ producer3 on'RefEq toA (RefEq targ) eventName)
 
-on'RefEq :: ∀ a. Producer (Event -> Effect a) /\ RefEq EventTarget /\ String -> CC a
-on'RefEq (handlerP /\ RefEq targ /\ event) =
-  makeListener
-    (flip $ bind <. produce handlerP)
-    targ
-    event
+on'RefEq :: ∀ a. Producer (Event -> Effect a) -> RefEq EventTarget -> String -> CC a
+on'RefEq handlerP (RefEq targ) =
+  makeListener (flip $ bind <. produce handlerP) targ
 
 -- must use a referance-equal function
 -- throttledOn :: ∀ msg. Number -> String -> (Event -> Effect msg) -> Attribute msg
