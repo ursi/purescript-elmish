@@ -178,14 +178,15 @@
       "inputs": {
         "easy-ps": "easy-ps",
         "nixpkgs": "nixpkgs_2",
+        "spago2nix-repo": "spago2nix-repo",
         "utils": "utils_2"
       },
       "locked": {
-        "lastModified": 1621739908,
-        "narHash": "sha256-ZBJCD/ONp99Twqpc7YgsEStPQMbGWzuM/BxqcFQ3wZE=",
+        "lastModified": 1622143000,
+        "narHash": "sha256-KPPW07cDyxXO1rRSqtkFYSZEwbBxEa0qQQQsQcsigmI=",
         "owner": "ursi",
         "repo": "purescript-language-server",
-        "rev": "9d208d05ea816bfdb909fa8191e006177ed9b177",
+        "rev": "4cb58dba274c63221b3b9a0fd2f9bb8959b312fb",
         "type": "github"
       },
       "original": {
@@ -221,6 +222,22 @@
         "purescript-language-server": "purescript-language-server",
         "purs-nix": "purs-nix",
         "utils": "utils_4"
+      }
+    },
+    "spago2nix-repo": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1620480713,
+        "narHash": "sha256-gvewQhhrK9FODgFWVMxZ//gsXB/O7/D7mY7D1PG/9ew=",
+        "owner": "justinwoo",
+        "repo": "spago2nix",
+        "rev": "a4622c3b27fca47e3276131a8ec4097a1d3c78a7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "justinwoo",
+        "repo": "spago2nix",
+        "type": "github"
       }
     },
     "utils": {
