@@ -142,10 +142,11 @@ import Data.Int as Int
 import Data.JSValue (JSValue, toJSValue)
 import Effect.Timer (setTimeout)
 import Producer
-  ( class Producible
+  ( class Produce
   , Producer
-  , liftRefEq
+  , lift
   , produce
+  , producer
   , producer3
   )
 import RefEq (RefEq(..))
@@ -539,36 +540,40 @@ width = Single <. Attr "width"
 wrap :: ∀ msg. String -> Attribute msg
 wrap = Single <. Attr "wrap"
 
-onClick :: ∀ msg p. Eq p => Producible p msg => p -> Attribute msg
+onClick :: ∀ a msg. Produce a msg => a -> Attribute msg
 onClick = on_ "click"
 
-onMouseDown :: ∀ msg p. Eq p => Producible p msg => p -> Attribute msg
+onMouseDown :: ∀ a msg. Produce a msg => a -> Attribute msg
 onMouseDown = on_ "mousedown"
 
-onMouseMove :: ∀ msg. (Int /\ Int -> msg) -> Attribute msg
-onMouseMove = on' "mousemove" $ liftRefEq onMouseMoveRefEq
+onMouseMove :: ∀ a msg. Produce a (Int /\ Int -> msg) => a -> Attribute msg
+onMouseMove = on "mousemove" <. producer onMouseMoveRefEq <. lift
 
-onMouseMoveRefEq :: Event -> Effect (Int /\ Int)
-onMouseMoveRefEq =
-  unsafeCoerce
-    .> \e -> pure $ H.clientX e /\ H.clientY e
+onMouseMoveRefEq :: ∀ msg. Producer (Int /\ Int -> msg) -> Event -> Effect msg
+onMouseMoveRefEq toMsg event =
+  unsafeCoerce event
+  # (\e -> pure $ H.clientX e /\ H.clientY e)
+  <#> produce toMsg
 
-onInput :: ∀ msg. (String -> msg) -> Attribute msg
-onInput = on' "input" $ liftRefEq onInputRefEq
+onInput :: ∀ a msg. Produce a (String -> msg) => a -> Attribute msg
+onInput = on "input" <. producer onInputRefEq <. lift
 
-onInputRefEq :: Event -> Effect String
-onInputRefEq = H.unsafeTarget .> unsafeGet "value"
+onInputRefEq :: ∀ msg. Producer (String -> msg) -> Event -> Effect msg
+onInputRefEq toMsg event =
+  H.unsafeTarget event
+  # unsafeGet "value"
+  <#> produce toMsg
 
-on :: ∀ msg. String -> Producer (Event -> Effect msg) -> Attribute msg
-on = on' ~~$ identity
-
-on_ :: ∀ msg p. Eq p => Producible p msg => String -> p -> Attribute msg
+on_ :: ∀ a msg. Produce a msg => String -> a -> Attribute msg
 on_ eventName msg =
   Single
   $ Listener \targ ->
       Single
       $ Sub.SingleSub
-      $ producer3 on_RefEq msg (RefEq targ) eventName
+      $ producer3 on_RefEq (lift msg) (RefEq targ) eventName
+
+on_RefEq :: ∀ msg. Producer msg -> RefEq EventTarget -> String -> CC msg
+on_RefEq msg (RefEq targ) = makeListener (\send -> \_ -> send $ produce msg) targ
 
 makeListener :: ∀ msg. (Callback msg -> Callback Event) -> EventTarget -> String -> CC msg
 makeListener toEventCallback targ event = \send -> do
@@ -577,18 +582,14 @@ makeListener toEventCallback targ event = \send -> do
   H.addEventListener event callback {} targ
   pure $ H.removeEventListener event callback {} targ
 
-on_RefEq :: ∀ msg p. Producible p msg => p -> RefEq EventTarget -> String -> CC msg
-on_RefEq msg (RefEq targ) = makeListener (\send -> \_ -> send $ produce msg) targ
-
-on' :: ∀ a msg. String -> Producer (Event -> Effect a) -> (a -> msg) -> Attribute msg
-on' eventName toA toMsg =
+on :: ∀ a msg. Produce a (Event -> Effect msg) => String -> a -> Attribute msg
+on eventName toMsg =
   Single
   $ Listener \targ ->
-      toMsg
-      <$> (Single $ Sub.SingleSub $ producer3 on'RefEq toA (RefEq targ) eventName)
+      Single $ Sub.SingleSub $ producer3 onRefEq (lift toMsg) (RefEq targ) eventName
 
-on'RefEq :: ∀ a. Producer (Event -> Effect a) -> RefEq EventTarget -> String -> CC a
-on'RefEq handlerP (RefEq targ) =
+onRefEq :: ∀ a. Producer (Event -> Effect a) -> RefEq EventTarget -> String -> CC a
+onRefEq handlerP (RefEq targ) =
   makeListener (flip $ bind <. produce handlerP) targ
 
 -- must use a referance-equal function
