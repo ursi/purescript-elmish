@@ -25,8 +25,6 @@
                { packages =
                    with pkgs;
                    [ nodejs
-                     nodePackages.bower
-                     nodePackages.pulp
                      purescript-language-server
                      purs-nix.purescript
                      (command { srcs = [ "src" "../src" ]; })
