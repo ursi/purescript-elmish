@@ -120,7 +120,7 @@ data SingleAttribute msg
   | AddClass String
   | Listener (EventTarget -> Sub msg)
 
-instance eqSingleAttribute :: Eq (SingleAttribute a) where
+instance Eq (SingleAttribute a) where
   eq (Attr p1 v1) (Attr p2 v2) = p1 == p2 && v1 == v2
   eq (Prop p1 v1) (Prop p2 v2) = p1 == p2 && v1 == v2
   eq (AddClass c1) (AddClass c2) = c1 == c2

@@ -12,11 +12,11 @@ import Type.Proxy (Proxy(..))
 data MapIndex
   = MapIndex (String -> String)
 
-instance mappingWithIndexMapIndex :: IsSymbol i => MappingWithIndex (MapIndex) (Proxy i) String String where
+instance IsSymbol i => MappingWithIndex (MapIndex) (Proxy i) String String where
   mappingWithIndex (MapIndex f) _ _ = f (reflectSymbol (Proxy :: _ i))
 
 data Retrieve r
   = Retrieve { | r } (String -> String)
 
-instance mappingRetrieve :: (IsSymbol field, Cons field a x r) => Mapping (Retrieve r) (Proxy field) String where
+instance (IsSymbol field, Cons field a x r) => Mapping (Retrieve r) (Proxy field) String where
   mapping (Retrieve r f) _ = f $ reflectSymbol (Proxy :: _ field)

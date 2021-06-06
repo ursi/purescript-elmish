@@ -20,7 +20,7 @@ data Diff a b
 class Diffable f where
   diff :: ∀ a b c m. Monad m => (Diff a b -> m (Maybe c)) -> f a -> f b -> m (f c)
 
-instance diffableList :: Diffable List where
+instance Diffable List where
   diff = diffList
 
 diffList :: ∀ a b c m. Monad m => (Diff a b -> m (Maybe c)) -> List a -> List b -> m (List c)
@@ -44,7 +44,7 @@ maybeCons ma list = case ma of
   Just a -> a : list
   Nothing -> list
 
-instance diffableMap :: Ord k => Diffable (Map k) where
+instance Ord k => Diffable (Map k) where
   diff = diffMap
 
 diffMap :: ∀ a b c k m. Ord k => Monad m => (Diff a b -> m (Maybe c)) -> Map k a -> Map k b -> m (Map k c)

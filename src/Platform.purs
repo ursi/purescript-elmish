@@ -46,15 +46,15 @@ afterRender = tell <. Cmd <. const
 newtype Cmd msg
   = Cmd ((msg -> Effect Unit) -> Effect Unit)
 
-derive instance newtypeCmd :: Newtype (Cmd a) _
+derive instance Newtype (Cmd a) _
 
-instance semigroupCmd :: Semigroup (Cmd a) where
+instance Semigroup (Cmd a) where
   append (Cmd c1) (Cmd c2) =
     Cmd \sendMsg -> do
       c1 sendMsg
       c2 sendMsg
 
-instance monoidCmd :: Monoid (Cmd a) where
+instance Monoid (Cmd a) where
   mempty = Cmd $ const mempty
 
 attemptTask :: ∀ x a msg. (Either x a -> msg) -> Task x a -> Cmd msg

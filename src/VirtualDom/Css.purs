@@ -24,11 +24,11 @@ data StringOp
   | Combine StringOp StringOp
   | Compose StringOp StringOp
 
-derive instance eqStringOp :: Eq StringOp
+derive instance Eq StringOp
 
-derive instance ordStringOp :: Ord StringOp
+derive instance Ord StringOp
 
-instance semigroupStringOp :: Semigroup StringOp where
+instance Semigroup StringOp where
   append = Combine
 
 apply :: StringOp -> String -> String

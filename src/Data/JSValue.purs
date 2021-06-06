@@ -6,7 +6,7 @@ data JSValue
 
 foreign import jseq :: ∀ a b. a -> b -> Boolean
 
-instance eqJSValue :: Eq JSValue where
+instance Eq JSValue where
   eq = jseq
 
 infix 4 jseq as ===

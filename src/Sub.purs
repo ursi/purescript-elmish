@@ -30,9 +30,9 @@ fromForeign fcc = runEffectFn1 fcc <. mkEffectFn1
 
 newtype SingleSub a = SingleSub (Producer (CC a))
 
-derive newtype instance eqSingleSub :: Eq (SingleSub a)
+derive newtype instance Eq (SingleSub a)
 
-instance functorSingleSub :: Functor SingleSub where
+instance Functor SingleSub where
   map f (SingleSub p) = SingleSub $ producer mapHelper $ RefEq f /\ p
 
 mapHelper :: ∀ a b. RefEq (a -> b) /\ Producer (CC a) -> CC b
