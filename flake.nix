@@ -22,7 +22,21 @@
                      purs-nix.purescript
                      purs-nix.purescript-language-server
                      (command {})
+                     (command
+                       { name = "purs-nix-test";
+                         bundle = { module = "Test.Main"; };
+                         srcs = [ "src" "test" ];
+                       }
+                     )
                    ];
+
+                 aliases.bundle-test = "purs-nix-test bundle";
+
+                 functions.open =
+                   ''
+                   echo "<script defer src='index.js'></script>" > index.html
+                   brave index.html
+                   '';
                };
          }
       )
