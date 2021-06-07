@@ -28,6 +28,12 @@
                          srcs = [ "src" "test" ];
                        }
                      )
+                     (command
+                       { name = "codegen";
+                         bundle = { module = "GenCss"; };
+                         srcs = [ "src" "codegen" ];
+                       }
+                     )
                    ];
 
                  aliases.bundle-test = "purs-nix-test bundle";
