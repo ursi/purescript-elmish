@@ -110,92 +110,106 @@ worker init =
     Ref.write newActiveSubs activeSubsRef
     unwrap cmd sendMsg
 
-app ::
-  ∀ flags msg model.
+app :: ∀ flags msg model.
   { init :: flags -> Update msg model
   , update :: model -> msg -> Update msg model
   , subscriptions :: model -> Sub msg
   , view ::
-      model ->
-      { head :: Array (Html msg)
-      , body :: Array (Html msg)
-      }
-  } ->
-  Program flags msg model
+      model
+      -> { head :: Array (Html msg)
+         , body :: Array (Html msg)
+         }
+  }
+  -> Program flags msg model
 app init =
-  mkEffectFn1 \flags -> do
-    initialModel /\ cmd <- runWriterT $ init.init flags
-    modelRef <- Ref.new initialModel
-    doc <- H.window >>= H.document
-    head <- H.toElement <$> H.unsafeHead doc
-    body <- H.toElement <$> H.unsafeBody doc
-    let
-      initialView = init.view initialModel
-    newVDoms /\ domSubs <-
-      VDom.render doc { head, body } mempty
-        { head: flatten $ Batch $ initialView.head
-        , body: flatten $ Batch $ initialView.body
-        }
-    vdomsRef <- Ref.new newVDoms
-    domSubsRef <- Ref.new domSubs
-    render <-
-      throttle raf \newVDOMs -> do
-        oldVDOMs <- Ref.read vdomsRef
-        newVDOMsWithNodes /\ subs <- VDom.render doc { head, body } oldVDOMs newVDOMs
-        Ref.write newVDOMsWithNodes vdomsRef
-        Ref.write subs domSubsRef
-    activeSubsRef <- Ref.new []
-    let
-      refs =
-        { model: modelRef
-        , vdoms: vdomsRef
-        , domSubs: domSubsRef
-        , activeSubs: activeSubsRef
-        }
-    newActiveSubs <-
-      Sub.something
-        []
-        (domSubs <> init.subscriptions initialModel)
-        (sendMsg render refs)
-    Ref.write newActiveSubs activeSubsRef
-    unwrap cmd $ sendMsg render refs
-  where
-  sendMsg ::
-    ( { head :: VDOM msg
-      , body :: VDOM msg
-      } ->
-      Effect Unit
-    ) ->
-    { model :: Ref model
-    , vdoms ::
-        Ref
-          { head :: VDOM msg
-          , body :: VDOM msg
+  mkEffectFn1
+    \flags -> do
+      initialModel /\ cmd <- runWriterT $ init.init flags
+      modelRef <- Ref.new initialModel
+      doc <- H.window >>= H.document
+      head <- H.toElement <$> H.unsafeHead doc
+      body <- H.toElement <$> H.unsafeBody doc
+      let initialView = init.view initialModel
+
+      newVDoms /\ domSubs <-
+        VDom.render doc { head, body } mempty
+          { head: flatten $ Batch $ initialView.head
+          , body: flatten $ Batch $ initialView.body
           }
-    , domSubs :: Ref (Sub msg)
-    , activeSubs :: Ref (Array (ActiveSub msg))
-    } ->
-    msg ->
-    Effect Unit
-  sendMsg render refs msg = do
-    currentModel <- Ref.read refs.model
-    newModel /\ cmd <- runWriterT $ init.update currentModel msg
-    Ref.write newModel refs.model
-    let
-      { head, body } = init.view newModel
-    render
-      { head: flatten $ Batch $ head
-      , body: flatten $ Batch $ body
-      }
-    domSubs <- Ref.read refs.domSubs
-    activeSubs <- Ref.read refs.activeSubs
-    newActiveSubs <-
-      Sub.something
-        activeSubs
-        (domSubs <> init.subscriptions newModel)
-        (sendMsg render refs)
-    Ref.write newActiveSubs refs.activeSubs
-    unwrap cmd $ sendMsg render refs
+
+      vdomsRef <- Ref.new newVDoms
+      domSubsRef <- Ref.new domSubs
+
+      render <-
+        throttle raf
+          \newVDOMs -> do
+            oldVDOMs <- Ref.read vdomsRef
+
+            newVDOMsWithNodes /\ subs <-
+              VDom.render doc { head, body } oldVDOMs newVDOMs
+
+            Ref.write newVDOMsWithNodes vdomsRef
+            Ref.write subs domSubsRef
+
+      activeSubsRef <- Ref.new []
+
+      let
+        refs =
+          { model: modelRef
+          , vdoms: vdomsRef
+          , domSubs: domSubsRef
+          , activeSubs: activeSubsRef
+          }
+
+      newActiveSubs <-
+        Sub.something
+          []
+          (domSubs <> init.subscriptions initialModel)
+          (sendMsg render refs)
+
+      Ref.write newActiveSubs activeSubsRef
+      unwrap cmd $ sendMsg render refs
+
+  where
+    sendMsg ::
+      ({ head :: VDOM msg
+       , body :: VDOM msg
+       }
+       -> Effect Unit
+      )
+      -> { model :: Ref model
+         , vdoms ::
+             Ref
+               { head :: VDOM msg
+               , body :: VDOM msg
+               }
+         , domSubs :: Ref (Sub msg)
+         , activeSubs :: Ref (Array (ActiveSub msg))
+         }
+      -> msg
+      -> Effect Unit
+    sendMsg render refs msg = do
+      currentModel <- Ref.read refs.model
+      newModel /\ cmd <- runWriterT $ init.update currentModel msg
+      Ref.write newModel refs.model
+      let { head, body } = init.view newModel
+
+      render
+        { head: flatten $ Batch $ head
+        , body: flatten $ Batch $ body
+        }
+
+      domSubs <- Ref.read refs.domSubs
+      activeSubs <- Ref.read refs.activeSubs
+
+      newActiveSubs <-
+        Sub.something
+          activeSubs
+          (domSubs <> init.subscriptions newModel)
+          (sendMsg render refs)
+
+      Ref.write newActiveSubs refs.activeSubs
+      unwrap cmd $ sendMsg render refs
 
 foreign import raf :: ∀ a. Effect a -> Effect Unit
 
