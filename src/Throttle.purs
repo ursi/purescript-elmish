@@ -18,10 +18,10 @@ throttle switch callback = do
             savedValue <- Ref.read savedValueRef
             case savedValue of
               Just a -> do
-                go
-                callback a
                 Ref.write Nothing savedValueRef
                 Ref.write true throttlingRef
+                go
+                callback a
               Nothing -> Ref.write false throttlingRef
         )
   pure \a -> do
@@ -29,9 +29,9 @@ throttle switch callback = do
     if throttling then
       Ref.write (Just a) savedValueRef
     else do
+      Ref.write true throttlingRef
       go
       callback a
-      Ref.write true throttlingRef
 
 -- dontSavehrottle :: ∀ a. (Effect Unit -> Effect Unit) -> Callback a -> Effect (Callback a)
 -- dontSavehrottle switch effect = do
