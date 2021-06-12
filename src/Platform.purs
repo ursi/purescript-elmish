@@ -60,6 +60,7 @@ instance Monoid (Cmd a) where
 attemptTask :: ∀ x a msg. (Either x a -> msg) -> Task x a -> Cmd msg
 attemptTask toMsg task = Cmd \sendMsg -> Task.capture (sendMsg <. toMsg) task
 
+type Program :: Type -> Type -> Type -> Type
 type Program flags msg model
   = EffectFn1 flags Unit
 
