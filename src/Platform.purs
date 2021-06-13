@@ -12,28 +12,18 @@ module Platform
   ) where
 
 import MasonPrelude
-import Attribute as A
-import Data.Identity
 import Control.Monad.Writer (WriterT, runWriterT, tell)
-import Control.Monad.Trans.Class (lift)
 import Data.Batched (Batched(..), flatten)
 import Data.Newtype (class Newtype, unwrap)
-import Debug as Debug
-import Effect.Console (log)
-import Effect.Exception (throw)
 import Effect.Ref (Ref)
 import Effect.Ref as Ref
-import Effect.Uncurried (EffectFn1, mkEffectFn1)
 import Html (Html)
-import Html as H
 import Sub (Callback, Sub, ActiveSub)
 import Sub as Sub
 import Task (Task)
 import Task as Task
-import Throttle (Skipped, throttle)
-import VirtualDom (VDOM)
+import Throttle (throttle)
 import VirtualDom as VDom
-import WHATWG.HTML.All (Document, Element)
 import WHATWG.HTML.All as H
 import Control.Monad.Writer (tell) as Exports
 
