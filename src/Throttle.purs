@@ -1,12 +1,16 @@
 module Throttle
-  ( throttle
-  ) where
+  ( Skipped
+  , throttle
+  )
+  where
 
 import MasonPrelude
 import Callback (Callback)
 import Effect.Ref as Ref
 
-throttle :: ∀ a. (Effect Unit -> Effect Unit) -> Callback a -> Effect (Callback a)
+type Skipped = Boolean
+
+throttle :: ∀ a. (Effect Unit -> Effect Unit) -> Callback a -> Effect (a -> Effect Skipped)
 throttle switch callback = do
   throttlingRef <- Ref.new false
   savedValueRef <- Ref.new (Nothing :: Maybe a)
@@ -28,12 +32,14 @@ throttle switch callback = do
   pure \a -> do
     throttling <- Ref.read throttlingRef
 
-    if throttling then
+    if throttling then do
       Ref.write (Just a) savedValueRef
+      pure true
     else do
       Ref.write true throttlingRef
       go
       callback a
+      pure false
 
 -- dontSavehrottle :: ∀ a. (Effect Unit -> Effect Unit) -> Callback a -> Effect (Callback a)
 -- dontSavehrottle switch effect = do
