@@ -94,7 +94,7 @@ toChildNodes =
 rulesToStyleNodes :: ∀ msg. Map String (List Style) -> List (String /\ SingleVNode msg)
 rulesToStyleNodes =
   Map.toUnfoldable
-    .> List.mapMaybe \(selector /\ declarations) ->
+    .> List.mapMaybe \(_ /\ declarations) ->
         (VC.process declarations)
           <#> _.css
           <#> \ruleText ->

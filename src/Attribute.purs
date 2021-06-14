@@ -138,9 +138,7 @@ module Attribute
 
 import MasonPrelude
 import Data.Batched (Batched(..))
-import Data.Int as Int
 import Data.JSValue (JSValue, toJSValue)
-import Effect.Timer (setTimeout)
 import Producer
   ( class Produce
   , Producer

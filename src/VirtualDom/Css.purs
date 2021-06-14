@@ -1,15 +1,15 @@
 module VirtualDom.Css where
 
 import MasonPrelude hiding (apply)
+
 import Data.Array as Array
-import Data.Batched (Batched, flatten, flattenMap)
+import Data.Batched (Batched)
 import Data.Identity (Identity)
 import Data.List ((:))
 import Data.List as List
 import Data.List.NonEmpty (NonEmptyList(..))
 import Data.List.NonEmpty as Nel
 import Data.NonEmpty (NonEmpty(..))
-import Debug as Debug
 import Murmur3 as Murmur3
 
 data Style

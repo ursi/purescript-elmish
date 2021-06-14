@@ -1,38 +1,23 @@
 module VirtualDom where
 
 import MasonPrelude
+
 import Control.Monad.Reader (ReaderT, ask, local, runReaderT)
 import Control.Monad.Trans.Class (lift)
 import Control.Monad.Writer (WriterT, runWriterT, tell)
-import Data.Array as Array
-import Data.Batched (Batched(..))
-import Data.Diff (Diff, diff)
+import Data.Batched (Batched)
+import Data.Diff (diff)
 import Data.Diff as Diff
 import Data.Foldable (foldM)
 import Data.JSValue (JSValue, toJSValue)
 import Data.List ((:))
-import Data.List as List
-import Data.Newtype (class Newtype, unwrap, wrap)
-import Data.Newtype as Newtype
 import Data.Nullable (null)
-import Debug as Debug
-import Effect.Console (log, logShow)
-import Effect.Exception (throw)
-import Effect.Ref (Ref)
-import Effect.Ref as Ref
-import Effect.Uncurried
-import Effect.Unsafe (unsafePerformEffect)
-import Foreign.Object (Object)
 import MyMap as Map
 import Safe.Coerce (coerce)
-import Sub (Callback, Sub)
-import Sub as Sub
-import Unsafe.Coerce (unsafeCoerce)
+import Sub (Sub)
 import VirtualDom.Css (Style)
-import VirtualDom.Css as VC
 import WHATWG.HTML.All
-  ( class IsNode
-  , Document
+  ( Document
   , Element
   , EventTarget
   , Node
@@ -510,7 +495,7 @@ placeNodeHelper ::
   } ->
   (children -> MyMonad msg children) ->
   MyMonad msg (List children /\ Element)
-placeNodeHelper placer { tag, styles, attributes, children } traverser = do
+placeNodeHelper placer { tag, attributes, children } traverser = do
   { doc, parent } <- ask
   elem <- liftEffect $ H.createElement tag {} doc
   subs <- liftEffect $ setAttributes attributes elem

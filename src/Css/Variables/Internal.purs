@@ -19,4 +19,4 @@ data Retrieve r
   = Retrieve { | r } (String -> String)
 
 instance (IsSymbol field, Cons field a x r) => Mapping (Retrieve r) (Proxy field) String where
-  mapping (Retrieve r f) _ = f $ reflectSymbol (Proxy :: _ field)
+  mapping (Retrieve _ f) _ = f $ reflectSymbol (Proxy :: _ field)

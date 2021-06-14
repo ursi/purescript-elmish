@@ -8,6 +8,7 @@ import Data.Monoid.Dual (Dual(..))
 import Data.Monoid.Endo (Endo(..))
 import Data.Newtype (unwrap)
 
+data Batched :: (Type -> Type) -> Type -> Type
 data Batched a b
   = Single (a b)
   | Batch (Array (Batched a b))
@@ -38,6 +39,7 @@ instance Semigroup (Batched a b) where
 instance Monoid (Batched a b) where
   mempty = Batch []
 
+class NestedFoldable :: ((Type -> Type) -> Type -> Type) -> Constraint
 class NestedFoldable f where
   foldr :: ∀ a b c. (a b -> c -> c) -> c -> f a b -> c
   foldl :: ∀ a b c. (c -> a b -> c) -> c -> f a b -> c

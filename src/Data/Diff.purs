@@ -4,13 +4,12 @@ module Data.Diff
   , diff
   ) where
 
-import MasonPrelude
-import Data.Array as Array
+import MasonPrelude hiding (Either(..))
+
 import Data.List ((:))
 import Data.List as List
 import Data.Map (Map)
 import Data.Map as Map
-import Debug as Debug
 
 data Diff a b
   = Left a
