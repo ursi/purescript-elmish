@@ -6,6 +6,7 @@
         foreign-object
         heterogeneous
         js-timers
+        ordered-collections
         parallel
         task
         ursi.debug
@@ -14,8 +15,5 @@
         ursi.prelude
         ursi.producer
         ursi.refeq
-        web-dom
-        web-events
-        web-html
       ];
   }
