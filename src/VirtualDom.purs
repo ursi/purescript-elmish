@@ -12,8 +12,6 @@ import Data.Foldable (foldM)
 import Data.JSValue (JSValue, toJSValue)
 import Data.List ((:))
 import Data.List as List
-import Data.Map (Map, SemigroupMap)
-import Data.Map as Map
 import Data.Newtype (class Newtype, unwrap, wrap)
 import Data.Newtype as Newtype
 import Data.Nullable (null)
@@ -25,6 +23,7 @@ import Effect.Ref as Ref
 import Effect.Uncurried
 import Effect.Unsafe (unsafePerformEffect)
 import Foreign.Object (Object)
+import MyMap as Map
 import Safe.Coerce (coerce)
 import Sub (Callback, Sub)
 import Sub as Sub
@@ -41,7 +40,7 @@ import WHATWG.HTML.All
   )
 import WHATWG.HTML.All as H
 
-type SMap = SemigroupMap
+type Map = Map.MyMap
 
 data SingleVNode msg
   = VElement
@@ -103,7 +102,7 @@ keyedElement tag attributes children =
     }
 
 type MyMonad a b
-  = ReaderT PatchContext (WriterT (Sub a /\ SMap String String) Effect) b
+  = ReaderT PatchContext (WriterT (Sub a /\ Map String String) Effect) b
 
 type MyMonadCommon a
   = MyMonad a (SingleVNode a)
@@ -388,7 +387,7 @@ diffAttributes ::
   Element ->
   List (SingleAttribute msg) ->
   List (SingleAttribute msg) ->
-  WriterT (Sub msg /\ SMap String String) Effect (List (SingleAttribute msg))
+  WriterT (Sub msg /\ Map String String) Effect (List (SingleAttribute msg))
 diffAttributes elem =
   diff
     ( case _ of
@@ -440,7 +439,7 @@ removeAttribute attr elem = case attr of
   AddClass c -> H.classList elem >>= H.remove [ c ]
   Listener _ -> pure unit
 
-addAttribute :: ∀ msg. SingleAttribute msg -> Element -> WriterT (Sub msg /\ SMap String String) Effect Unit
+addAttribute :: ∀ msg. SingleAttribute msg -> Element -> WriterT (Sub msg /\ Map String String) Effect Unit
 addAttribute attr elem = case attr of
   Attr prop value -> lift $ H.setAttribute prop value elem
   Prop prop value -> lift $ setProperty prop value elem

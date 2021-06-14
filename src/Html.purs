@@ -241,8 +241,8 @@ import Css.Global (style)
 import Data.Batched (Batched(..), flatten, flattenMap)
 import Data.Batched as Batched
 import Data.List ((:))
-import Data.Map as Map
 import Data.Newtype (unwrap)
+import MyMap as Map
 import VirtualDom (Attribute, SingleAttribute(..), SingleVNode(..), VNode)
 import VirtualDom as VD
 import VirtualDom.Css as VC
