@@ -72,6 +72,12 @@ hls = function3 "hls"
 hlsa :: String -> String -> String -> String -> String
 hlsa = function4 "hlsa"
 
+linearGradient :: Array String -> String
+linearGradient = functionJ "linear-gradient"
+
+radialGradient :: Array String -> String
+radialGradient = functionJ "radial-gradient"
+
 -- filter
 blur :: String -> String
 blur = function "blur"
