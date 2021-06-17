@@ -3,17 +3,21 @@ module Css.Functions where
 import MasonPrelude
 import Data.Foldable (surroundMap)
 
+functionJ :: String -> Array String -> String
+functionJ name args =
+  name <> "(" <> intercalate ", " args <> ")"
+
 function :: String -> String -> String
-function name a = name <> "(" <> a <> ")"
+function name a = functionJ name [ a ]
 
 function2 :: String -> String -> String -> String
-function2 name a b = name <> "(" <> a <> ", " <> b <> ")"
+function2 name a b = functionJ name [ a, b ]
 
 function3 :: String -> String -> String -> String -> String
-function3 name a b c = name <> "(" <> a <> ", " <> b <> ", " <> c <> ")"
+function3 name a b c = functionJ name [ a, b, c ]
 
 function4 :: String -> String -> String -> String -> String -> String
-function4 name a b c d = name <> "(" <> a <> ", " <> b <> ", " <> c <> ", " <> d <> ")"
+function4 name a b c d = functionJ name [ a, b, c, d ]
 
 -- transform
 matrix :: Array Number -> String
