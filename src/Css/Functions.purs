@@ -1,6 +1,7 @@
 module Css.Functions where
 
 import MasonPrelude
+
 import Data.Foldable (surroundMap)
 
 functionJ :: String -> Array String -> String
@@ -23,8 +24,8 @@ function4 name a b c d = functionJ name [ a, b, c, d ]
 matrix :: Array Number -> String
 matrix m =
   m
-    # surroundMap ", " show
-    # function "matrix"
+  # surroundMap ", " show
+  # function "matrix"
 
 translate :: String -> String
 translate = function "translate"
