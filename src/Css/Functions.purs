@@ -67,11 +67,11 @@ rgb = function3 "rgb"
 rgba :: String -> String -> String -> String -> String
 rgba = function4 "rgba"
 
-hls :: String -> String -> String -> String
-hls = function3 "hls"
+hsl :: String -> String -> String -> String
+hsl = function3 "hsl"
 
-hlsa :: String -> String -> String -> String -> String
-hlsa = function4 "hlsa"
+hsla :: String -> String -> String -> String -> String
+hsla = function4 "hsla"
 
 linearGradient :: Array String -> String
 linearGradient = functionJ "linear-gradient"
