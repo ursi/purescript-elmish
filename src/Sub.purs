@@ -16,7 +16,8 @@ import Data.Array as Array
 import Data.Batched (Batched(..), flatten)
 import Debug as Debug
 import Partial.Unsafe (unsafePartial)
-import Producer (Producer, producer, produce)
+import Producer (Producer)
+import Producer as P
 import RefEq (RefEq(..))
 
 
@@ -33,10 +34,10 @@ newtype SingleSub a = SingleSub (Producer (CC a))
 derive newtype instance Eq (SingleSub a)
 
 instance Functor SingleSub where
-  map f (SingleSub p) = SingleSub $ producer mapHelper $ RefEq f /\ p
+  map f (SingleSub p) = SingleSub $ P.producer mapHelper $ RefEq f /\ p
 
 mapHelper :: ∀ a b. RefEq (a -> b) /\ Producer (CC a) -> CC b
-mapHelper (RefEq f /\ ccP) = \callback -> produce ccP $ callback <. f
+mapHelper (RefEq f /\ ccP) = \callback -> P.produce ccP $ callback <. f
 
 type Sub a = Batched SingleSub a
 
@@ -90,7 +91,7 @@ getCanceler (ActiveSub { canceler }) = canceler
 
 launch :: ∀ a. Callback a -> SingleSub a -> Effect (ActiveSub a)
 launch callback sub@(SingleSub p) = do
-  canceler <- produce p callback
+  canceler <- P.produce p callback
   pure $ ActiveSub { canceler, sub }
 
 unsafeDeleteAt :: Partial => ∀ a. Int -> Array a -> Array a
@@ -103,7 +104,7 @@ everyImpl' :: ∀ a. Number /\ RefEq (Number -> a) -> CC a
 everyImpl' (n /\ RefEq toA) = fromForeign $ everyImpl n toA
 
 every :: ∀ a. Number -> (Number -> a) -> Sub a
-every ms toA = Single $ SingleSub $ producer everyImpl' $ ms /\ RefEq toA
+every ms toA = Single $ SingleSub $ P.producer everyImpl' $ ms /\ RefEq toA
 
 foreign import every_Impl :: ∀ a. Number -> a -> ForeignCC a
 
@@ -111,5 +112,4 @@ every_Impl' :: ∀ a. Number /\ a -> CC a
 every_Impl' (n /\ a) = fromForeign $ every_Impl n a
 
 every_ :: ∀ a. Eq a => Number -> a -> Sub a
-every_ ms a = Single $ SingleSub $ producer every_Impl' $ ms /\ a
-
+every_ ms a = Single $ SingleSub $ P.producer every_Impl' $ ms /\ a
