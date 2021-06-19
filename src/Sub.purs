@@ -9,6 +9,7 @@ module Sub
   , something
   , every
   , every_
+  , on
   ) where
 
 import MasonPrelude
@@ -16,9 +17,11 @@ import Data.Array as Array
 import Data.Batched (Batched(..), flatten)
 import Debug as Debug
 import Partial.Unsafe (unsafePartial)
-import Producer (Producer)
+import Producer (class Produce, Producer)
 import Producer as P
 import RefEq (RefEq(..))
+import WHATWG.HTML.All (Event)
+import WHATWG.HTML.All as H
 
 
 type Callback a = a -> Effect Unit
@@ -113,3 +116,30 @@ every_Impl' (n /\ a) = fromForeign $ every_Impl n a
 
 every_ :: ∀ a. Eq a => Number -> a -> Sub a
 every_ ms a = Single $ SingleSub $ P.producer every_Impl' $ ms /\ a
+
+makeListener :: ∀ msg.
+  (Callback msg -> Callback Event)
+  -> String
+  -> CC msg
+makeListener toEventCallback event =
+  \send -> do
+    window <- H.window
+    let callback = mkEffectFn1 $ toEventCallback send
+    H.addEventListener event callback {} window
+    pure $ H.removeEventListener event callback {} window
+
+-- | If the Effect produces Nothing, update is not called
+on :: ∀ a msg. Produce a (Event -> Effect (Maybe msg)) => String -> a -> Sub msg
+on eventName toMsg =
+  Single $ SingleSub $ P.producer2 onRefEq (P.lift toMsg) eventName
+
+onRefEq :: ∀ a. Producer (Event -> Effect (Maybe a)) -> String -> CC a
+onRefEq handlerP =
+  -- makeListener (flip $ bind <. P.produce handlerP)
+  makeListener
+    \msgCallback ->
+      \event -> do
+        mmsg <- P.produce handlerP event
+        case mmsg of
+          Just msg -> msgCallback msg
+          Nothing -> pure unit

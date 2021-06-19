@@ -18,6 +18,9 @@ import Html as H
 import Platform (Program, Update)
 import Platform as Platform
 import Sub (Sub)
+import Sub as Sub
+import WHATWG.HTML.All (KeyboardEvent)
+import WHATWG.HTML.All as HTML
 
 people :: Array String
 people = [ "Mason", "Belle", "Luke", "Nic" ]
@@ -40,6 +43,7 @@ type Model
     , people :: Array String
     , newPerson :: String
     , mousePosition :: Int /\ Int
+    , lastKey :: String
     }
 
 init :: Unit -> Update Msg Model
@@ -53,6 +57,7 @@ init _ = do
     , people: Array.sort people
     , newPerson: ""
     , mousePosition: 0 /\ 0
+    , lastKey: ""
     }
 
 -- UPDATE
@@ -66,13 +71,28 @@ data Msg
   | AddPerson
   | UpdateNewPerson String
   | MouseMoved (Int /\ Int)
+  | KeyPressed KeyboardEvent
   | NoOp
 
-derive instance eqMsg :: Eq Msg
+instance Eq Msg where
+  eq =
+    case _, _ of
+      Increment, Increment -> true
+      Decrement, Decrement -> true
+      InputChanged s1, InputChanged s2 -> s1 == s2
+      ToggleShowingInput, ToggleShowingInput -> true
+      UpdateTime t1, UpdateTime t2 -> t1 == t2
+      Delete s1, Delete s2 -> s1 == s2
+      AddPerson, AddPerson -> true
+      UpdateNewPerson s1, UpdateNewPerson s2 -> s1 == s2
+      MouseMoved c1, MouseMoved c2 -> c1 == c2
+      NoOp, NoOp -> true
+      _, _ -> false
 
 update :: Model -> Msg -> Update Msg Model
 update model msg = do
   case msg of
+    KeyPressed kbe -> pure $ model { lastKey = HTML.key kbe }
     MouseMoved pos -> pure $ model { mousePosition = pos }
     UpdateNewPerson str -> pure $ model { newPerson = str }
     AddPerson ->
@@ -90,7 +110,12 @@ update model msg = do
 
 -- SUBSCRIPTIONS
 subscriptions :: Model -> Sub Msg
-subscriptions model = mempty --Sub.every (if model.showingInput then 1000.0 else 2000.0) UpdateTime
+subscriptions _ = Sub.on "keydown" hitKey
+
+hitKey :: HTML.Event -> Effect (Maybe Msg)
+hitKey =
+  HTML.toMaybeKeyboardEvent
+  .> maybe (pure Nothing) (pure <. Just <. KeyPressed)
 
 -- VIEW
 view ::
@@ -153,6 +178,7 @@ view model =
                         , H.button [ A.onClick $ Delete person ] [ H.text "x" ]
                         ]
           , H.div [] [ H.text $ show model.time ]
+          , H.div [] [ H.text $ model.lastKey ]
           , H.div []
               [ H.button [ A.onClick ToggleShowingInput ] [ H.text "Toggle Input" ]
               , if model.showingInput then
