@@ -8,9 +8,10 @@
     utils.default-systems
       ({ make-shell, purs-nix, pkgs, ... }:
          let
-           inherit (purs-nix) purs;
+           inherit (purs-nix) purs ps-pkgs;
            package = import ./package.nix purs-nix;
            inherit (purs { inherit (package) dependencies; }) command;
+           testing = purs { dependencies = package.dependencies ++ [ ps-pkgs.now ]; };
          in
          { devShell =
              make-shell
@@ -22,7 +23,7 @@
                      purs-nix.purescript
                      purs-nix.purescript-language-server
                      (command {})
-                     (command
+                     (testing.command
                        { name = "purs-nix-test";
                          bundle = { module = "Test.Main"; };
                          srcs = [ "src" "test" ];
