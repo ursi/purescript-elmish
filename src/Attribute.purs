@@ -130,6 +130,7 @@ module Attribute
   , onMouseDown
   , onMouseMove
   , onInput
+  , onInput'
   , on
   , on_
   -- , throttledOn
@@ -561,6 +562,18 @@ onInputRefEq toMsg event =
   H.unsafeTarget event
   # unsafeGet "value"
   <#> Just <. produce toMsg
+
+onInput' :: ∀ a msg. Produce a (String -> Effect (Maybe msg)) => a -> Attribute msg
+onInput' = on "input" <. producer onInput'RefEq <. lift
+
+onInput'RefEq :: ∀ msg.
+  Producer (String -> Effect (Maybe msg))
+  -> Event -> Effect (Maybe msg)
+onInput'RefEq handlerP =
+  \event ->
+    H.unsafeTarget event
+    # unsafeGet "value"
+    >>= produce handlerP
 
 on_ :: ∀ a msg. Produce a msg => String -> a -> Attribute msg
 on_ eventName msg =

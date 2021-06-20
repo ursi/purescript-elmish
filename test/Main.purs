@@ -1,6 +1,7 @@
 module Test.Main (main) where
 
 import MasonPrelude
+import Attribute (Attribute)
 import Attribute as A
 import Control.Monad.Trans.Class (lift)
 import Css as C
@@ -17,6 +18,7 @@ import Html (Html)
 import Html as H
 import Platform (Program, Update)
 import Platform as Platform
+import Producer (producer)
 import Sub (Sub)
 import Sub as Sub
 import WHATWG.HTML.All (KeyboardEvent)
@@ -44,6 +46,7 @@ type Model
     , newPerson :: String
     , mousePosition :: Int /\ Int
     , lastKey :: String
+    , emptyNonemptyText :: EmptyState
     }
 
 init :: Unit -> Update Msg Model
@@ -58,7 +61,14 @@ init _ = do
     , newPerson: ""
     , mousePosition: 0 /\ 0
     , lastKey: ""
+    , emptyNonemptyText: Empty
     }
+
+data EmptyState
+  = Empty
+  | NonEmpty
+
+derive instance Eq EmptyState
 
 -- UPDATE
 data Msg
@@ -72,6 +82,7 @@ data Msg
   | UpdateNewPerson String
   | MouseMoved (Int /\ Int)
   | KeyPressed KeyboardEvent
+  | SwitchEmptyState
   | NoOp
 
 instance Eq Msg where
@@ -86,12 +97,24 @@ instance Eq Msg where
       AddPerson, AddPerson -> true
       UpdateNewPerson s1, UpdateNewPerson s2 -> s1 == s2
       MouseMoved c1, MouseMoved c2 -> c1 == c2
+      SwitchEmptyState, SwitchEmptyState -> true
       NoOp, NoOp -> true
       _, _ -> false
 
 update :: Model -> Msg -> Update Msg Model
 update model msg = do
   case msg of
+    SwitchEmptyState ->
+      pure
+        (model
+           { emptyNonemptyText =
+               if model.emptyNonemptyText == Empty then
+                 NonEmpty
+               else
+                 Empty
+           }
+        )
+
     KeyPressed kbe -> pure $ model { lastKey = HTML.key kbe }
     MouseMoved pos -> pure $ model { mousePosition = pos }
     UpdateNewPerson str -> pure $ model { newPerson = str }
@@ -188,6 +211,10 @@ view model =
                     ]
                 else
                   mempty
+              , H.div []
+                  [ H.text "Only send to model if it switches from empty to nonemepty"
+                  , H.input [ reportEmptyStateChange model.emptyNonemptyText ]
+                  ]
               , H.div [] [ H.text model.input ]
               ]
           , (if model.showingInput then H.button else H.div) [ A.onClick Increment ] [ H.text "+" ]
@@ -203,6 +230,25 @@ view model =
           [ H.text "button" ]
       ]
   }
+
+reportEmptyStateChange :: EmptyState -> Attribute Msg
+reportEmptyStateChange =
+  A.onInput' <. producer reportEmptyStateChangeRE
+
+reportEmptyStateChangeRE :: EmptyState -> String -> Effect (Maybe Msg)
+reportEmptyStateChangeRE currentEmptyState =
+  \value ->
+    pure
+      if value == "" then
+        if currentEmptyState == Empty then
+          Nothing
+        else
+          Just SwitchEmptyState
+      else
+        if currentEmptyState == Empty then
+          Just SwitchEmptyState
+        else
+          Nothing
 
 default :: ∀ msg. Html msg
 default =
