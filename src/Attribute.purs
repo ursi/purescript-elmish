@@ -547,20 +547,20 @@ onMouseDown = on_ "mousedown"
 onMouseMove :: ∀ a msg. Produce a (Int /\ Int -> msg) => a -> Attribute msg
 onMouseMove = on "mousemove" <. producer onMouseMoveRefEq <. lift
 
-onMouseMoveRefEq :: ∀ msg. Producer (Int /\ Int -> msg) -> Event -> Effect msg
+onMouseMoveRefEq :: ∀ msg. Producer (Int /\ Int -> msg) -> Event -> Effect (Maybe msg)
 onMouseMoveRefEq toMsg event =
   unsafeCoerce event
   # (\e -> pure $ H.clientX e /\ H.clientY e)
-  <#> produce toMsg
+  <#> Just <. produce toMsg
 
 onInput :: ∀ a msg. Produce a (String -> msg) => a -> Attribute msg
 onInput = on "input" <. producer onInputRefEq <. lift
 
-onInputRefEq :: ∀ msg. Producer (String -> msg) -> Event -> Effect msg
+onInputRefEq :: ∀ msg. Producer (String -> msg) -> Event -> Effect (Maybe msg)
 onInputRefEq toMsg event =
   H.unsafeTarget event
   # unsafeGet "value"
-  <#> produce toMsg
+  <#> Just <. produce toMsg
 
 on_ :: ∀ a msg. Produce a msg => String -> a -> Attribute msg
 on_ eventName msg =
@@ -580,15 +580,24 @@ makeListener toEventCallback targ event = \send -> do
   H.addEventListener event callback {} targ
   pure $ H.removeEventListener event callback {} targ
 
-on :: ∀ a msg. Produce a (Event -> Effect msg) => String -> a -> Attribute msg
+-- | If the Effect produces Nothing, update is not called
+on :: ∀ a msg. Produce a (Event -> Effect (Maybe msg)) => String -> a -> Attribute msg
 on eventName toMsg =
   Single
   $ Listener \targ ->
       Single $ Sub.SingleSub $ producer3 onRefEq (lift toMsg) (RefEq targ) eventName
 
-onRefEq :: ∀ a. Producer (Event -> Effect a) -> RefEq EventTarget -> String -> CC a
+onRefEq :: ∀ a. Producer (Event -> Effect (Maybe a)) -> RefEq EventTarget -> String -> CC a
 onRefEq handlerP (RefEq targ) =
-  makeListener (flip $ bind <. produce handlerP) targ
+  makeListener
+    (\msgCallback ->
+       \event -> do
+         mmsg <- produce handlerP event
+         case mmsg of
+           Just msg -> msgCallback msg
+           Nothing -> pure unit
+    )
+    targ
 
 -- must use a referance-equal function
 -- throttledOn :: ∀ msg. Number -> String -> (Event -> Effect msg) -> Attribute msg
