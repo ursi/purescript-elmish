@@ -118,11 +118,13 @@ update model msg = do
     KeyPressed kbe -> pure $ model { lastKey = HTML.key kbe }
     MouseMoved pos -> pure $ model { mousePosition = pos }
     UpdateNewPerson str -> pure $ model { newPerson = str }
+
     AddPerson ->
       if model.newPerson == "" then
         pure model
       else do
         pure $ model { people = Array.insert model.newPerson model.people }
+
     Delete person -> pure $ model { people = Array.delete person model.people }
     UpdateTime time -> pure $ model { time = time }
     ToggleShowingInput -> pure $ model { showingInput = not model.showingInput }

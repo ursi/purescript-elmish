@@ -597,8 +597,9 @@ makeListener toEventCallback targ event = \send -> do
 on :: ∀ a msg. Produce a (Event -> Effect (Maybe msg)) => String -> a -> Attribute msg
 on eventName toMsg =
   Single
-  $ Listener \targ ->
-      Single $ Sub.SingleSub $ producer3 onRefEq (lift toMsg) (RefEq targ) eventName
+  $ Listener
+      \targ ->
+        Single $ Sub.SingleSub $ producer3 onRefEq (lift toMsg) (RefEq targ) eventName
 
 onRefEq :: ∀ a. Producer (Event -> Effect (Maybe a)) -> RefEq EventTarget -> String -> CC a
 onRefEq handlerP (RefEq targ) =

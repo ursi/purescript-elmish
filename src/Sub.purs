@@ -135,7 +135,6 @@ on eventName toMsg =
 
 onRefEq :: ∀ a. Producer (Event -> Effect (Maybe a)) -> String -> CC a
 onRefEq handlerP =
-  -- makeListener (flip $ bind <. P.produce handlerP)
   makeListener
     \msgCallback ->
       \event -> do
