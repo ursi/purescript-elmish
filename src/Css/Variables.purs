@@ -1,87 +1,81 @@
--- | The type signatures for these functions are much more complicated than actually using them. We use type level programming to catch typos and minimize boilerplate.
--- |
--- | For the following examples, lets say this is the top of our `Design` module.
--- |
--- | ```
--- | module Design (vars, varStyles) where
--- |
--- | import Css.Variables (mkVarStyles, mkVarValues)
--- | import Type.Proxy (Proxy(..))
--- |
--- | varRec =
--- |   { blue1: "blue"
--- |   , red1: "red"
--- |   , red2: "#ee0000"
--- |   , white1: "white"
--- |   }
--- |
--- | ```
 module Css.Variables
   ( module Exports
-  , mkVarStyles
-  , mkVarValues
-  ) where
+  , makeVariables
+  )
+  where
 
 import MasonPrelude
 import Css (Styles, variable)
 import Css.Functions (var)
-import Css.Variables.Internal (MapIndex(..), Retrieve(..))
+import Css.Variables.Internal (MapIndex(..))
 import Data.Batched (Batched(..))
 import Foreign.Object (fromHomogeneous, toUnfoldable)
-import Heterogeneous.Mapping (class HMap, class HMapWithIndex, hmap, hmapWithIndex)
+import Heterogeneous.Mapping (class HMapWithIndex, hmapWithIndex)
 import Prim.Row (class Nub, class Union)
-import Record as Record
+import Record (disjointUnion)
 import Type.Row.Homogeneous (class Homogeneous)
 import Css (variable) as Exports
 
--- | Create the variable declaration styles to add to `Css.Global.body`/`Css.Global.html`, or whatever the root of your app is.
+-- | The type signatures for this function is much more complicated than actually using it. We use type level programming to catch typos and minimize boilerplate.
 -- |
+-- | The following records are equivalent;
 -- | ```
--- | varStyles :: Styles
--- | varStyles = mkVarStyles varRec
--- | ```
-mkVarStyles :: ∀ r. Homogeneous r String => { | r } -> Styles
-mkVarStyles vars =
-  Batch $ toUnfoldable (fromHomogeneous vars)
-    <#> uncurry variable
-
--- makeVarValue ::
---   ∀ a l r r'.
---   IsSymbol l =>
---   R.Cons l a r' r =>
---   Record r ->
---   Proxy l ->
---   String
--- makeVarValue _ sym = var $ reflectSymbol sym
--- | Use the variable values in your declarations
--- |
--- | ```
--- | vars =
--- |   mkVarValues
--- |     { background: Proxy :: _ "white1"
--- |     , accent: Proxy :: _ "red2"
+-- | sv1 =
+-- |   something
+-- |     { blue1: "blue"
+-- |     , red1: "red"
+-- |     , red2: "#ee0000"
+-- |     , white1: "white"
 -- |     }
--- |     varRec
+-- |     \r ->
+-- |       { accent: r.red2
+-- |       , background: r.white1
+-- |       }
 -- |
--- | sameAsVars =
--- |   { background: "var(--white1)"
--- |   , accent: "var(--red2)"
--- |   , white1: "var(--white1)"
--- |   , red1: "var(--red1)"
--- |   , red2: "var(--red2)"
--- |   , blue1: "var(--blue1)"
+-- | sv2 =
+-- |   { styles:
+-- |       -- this will create the following CSS values
+-- |       {-
+-- |       --blue1: "blue";
+-- |       --red1: "red";
+-- |       --red2: "#ee0000";
+-- |       --white1: "white";
+-- |       --accent: "var(--red1)";
+-- |       --background: "var(--white1)";
+-- |       -}
+-- |   , values:
+-- |       { blue1: "var(--blue1)"
+-- |       , red1: "var(--red1)"
+-- |       , red2: "var(--red2)"
+-- |       , white1: "var(--white2)"
+-- |       , accent: "var(--accent)"
+-- |       , background: "var(--background)"
+-- |       }
 -- |   }
 -- | ```
-mkVarValues ::
-  ∀ aliases vars values a b c.
-  HMap (Retrieve vars) aliases { | a } =>
-  HMapWithIndex MapIndex { | vars } { | b } =>
-  Union a b c =>
-  Nub c values =>
-  aliases ->
-  { | vars } ->
-  { | values }
-mkVarValues aliases vars =
-  Record.merge
-    (hmap (Retrieve vars var) aliases)
-    (hmapWithIndex (MapIndex var) vars)
+makeVariables :: ∀ a1 a2 b1 c1 c2.
+  Union a1 b1 c1 =>
+  HMapWithIndex MapIndex (Record a1) (Record a2) =>
+  HMapWithIndex MapIndex (Record c1) (Record c2) =>
+  Homogeneous c1 String =>
+  Nub c1 c1
+  => Record a1
+  -> (Record a2 -> Record b1)
+  -> { values :: Record c2
+     , styles :: Styles
+     }
+makeVariables values fromVars =
+  let
+    valVars = hmapWithIndex (MapIndex var) values
+
+    raw :: Record c1
+    raw =
+      disjointUnion
+        values
+        (fromVars valVars)
+  in
+  { styles:
+      Batch $ toUnfoldable (fromHomogeneous raw)
+      <#> uncurry variable
+  , values: hmapWithIndex (MapIndex var) raw
+  }

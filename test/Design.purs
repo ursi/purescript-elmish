@@ -1,20 +1,20 @@
 module Design where
 
 import Css (Styles)
-import Css.Variables (mkVarStyles, mkVarValues)
-import Type.Proxy (Proxy(..))
+import Css.Variables (makeVariables)
 
-varRec =
-  { green1: "green"
-  , red1: "red"
-  }
+sv =
+  makeVariables
+    { green1: "green"
+    , red1: "red"
+    }
+    \r ->
+      { accent: r.green1
+      , background: r.red1
+      }
+
 
 varStyles :: Styles
-varStyles = mkVarStyles varRec
+varStyles = sv.styles
 
-vars =
-  mkVarValues
-    { background: Proxy :: _ "red1"
-    , accent: Proxy :: _ "green1"
-    }
-    varRec
+vars = sv.values
