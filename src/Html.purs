@@ -2,6 +2,7 @@ module Html
   ( module Css.Global
   , Html
   , keyed
+  , keyedS
   , element
   , elementS
   , noDiff
@@ -269,6 +270,44 @@ keyed tag attributes children =
               children
         , node: Nothing
         }
+
+keyedS :: ∀ msg.
+  String ->
+  Array Styles ->
+  Array (Attribute msg) ->
+  Array (String /\ Html msg) ->
+  Html msg
+keyedS tag styles attributes children =
+  let
+    styles' = flattenMap unwrap $ Batch styles
+
+    mstyles = VC.process styles'
+  in
+  Single
+  $ KeyedElement
+  $ { tag
+    , styles: styles'
+    , css: Nothing
+    , attributes: flatten $ Batch attributes
+    , children:
+        foldr
+          (\(key /\ child) acc ->
+             fromMaybe acc do
+               first <- Batched.first child
+               pure $ (key /\ first) : acc
+          )
+          Nil
+          children
+    , node: Nothing
+    }
+    # \r ->
+        case mstyles of
+          Just css ->
+            r { attributes = AddClass css.class : r.attributes
+              , css = Just $ Map.singleton css.class css.css
+              }
+
+          Nothing -> r
 
 element :: ∀ msg. String -> Array (Attribute msg) -> Array (Html msg) -> Html msg
 element tag attributes children =
