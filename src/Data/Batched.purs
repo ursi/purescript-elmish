@@ -68,3 +68,9 @@ first :: ∀ a b. Batched a b -> Maybe (a b)
 first = case _ of
   Single ab -> Just ab
   Batch bs -> bs !! 0 >>= first
+
+mapBoth :: ∀ a b c d. (a b -> c d) -> Batched a b -> Batched c d
+mapBoth f =
+  case _ of
+    Single ab -> Single $ f ab
+    Batch abs -> Batch $ mapBoth f <$> abs

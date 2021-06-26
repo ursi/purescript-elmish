@@ -2,6 +2,7 @@ module Attribute
   ( module Exports
   , attribute
   , property
+  , noDiff
   , addClass
   , value
   , abbr
@@ -139,6 +140,7 @@ module Attribute
 
 import MasonPrelude
 import Data.Batched (Batched(..))
+import Data.Batched as B
 import Data.JSValue (JSValue, toJSValue)
 import Producer
   ( class Produce
@@ -164,6 +166,9 @@ attribute = Single <.. Attr
 
 property :: ∀ msg. String -> JSValue -> Attribute msg
 property = Single <.. Prop
+
+noDiff :: ∀ msg. Attribute msg -> Attribute msg
+noDiff = B.mapBoth NoDiff
 
 -- SPECIAL
 addClass :: ∀ msg. String -> Attribute msg

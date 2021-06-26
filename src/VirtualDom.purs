@@ -103,12 +103,14 @@ data SingleAttribute msg
   | Prop String JSValue
   | AddClass String
   | Listener (EventTarget -> Sub msg)
+  | NoDiff (SingleAttribute msg)
 
 instance Eq (SingleAttribute a) where
   eq (Attr p1 v1) (Attr p2 v2) = p1 == p2 && v1 == v2
   eq (Prop p1 v1) (Prop p2 v2) = p1 == p2 && v1 == v2
   eq (AddClass c1) (AddClass c2) = c1 == c2
   eq (Listener _) (Listener _) = true
+  eq (NoDiff _) (NoDiff _) = false -- so it's always updated
   eq _ _ = false
 
 type Attribute msg
@@ -418,18 +420,22 @@ diffAttributes elem =
     )
 
 removeAttribute :: ∀ msg. SingleAttribute msg -> Element -> Effect Unit
-removeAttribute attr elem = case attr of
-  Attr prop _ -> H.removeAttribute prop elem
-  Prop prop _ -> setProperty prop (toJSValue null) elem
-  AddClass c -> H.classList elem >>= H.remove [ c ]
-  Listener _ -> pure unit
+removeAttribute attr elem =
+  case attr of
+    Attr prop _ -> H.removeAttribute prop elem
+    Prop prop _ -> setProperty prop (toJSValue null) elem
+    AddClass c -> H.classList elem >>= H.remove [ c ]
+    Listener _ -> pure unit
+    NoDiff a -> removeAttribute a elem
 
 addAttribute :: ∀ msg. SingleAttribute msg -> Element -> WriterT (Sub msg /\ Map String String) Effect Unit
-addAttribute attr elem = case attr of
-  Attr prop value -> lift $ H.setAttribute prop value elem
-  Prop prop value -> lift $ setProperty prop value elem
-  AddClass c -> lift $ H.classList elem >>= H.add [ c ]
-  Listener toSub -> tell $ toSub (H.toEventTarget elem) /\ mempty
+addAttribute attr elem =
+  case attr of
+    Attr prop value -> lift $ H.setAttribute prop value elem
+    Prop prop value -> lift $ setProperty prop value elem
+    AddClass c -> lift $ H.classList elem >>= H.add [ c ]
+    Listener toSub -> tell $ toSub (H.toEventTarget elem) /\ mempty
+    NoDiff a -> addAttribute a elem
 
 getNode :: ∀ msg. SingleVNode msg -> Maybe Node
 getNode = case _ of
@@ -526,14 +532,19 @@ setAttributes :: ∀ msg. List (SingleAttribute msg) -> Element -> Effect (Sub m
 setAttributes attribute elem = foldM go mempty attribute
   where
   go :: Sub msg -> SingleAttribute msg -> Effect (Sub msg)
-  go acc = case _ of
-    Attr prop value -> do
-      H.setAttribute prop value elem
-      pure acc
-    Prop prop value -> do
-      setProperty prop value elem
-      pure acc
-    AddClass c -> do
-      H.classList elem >>= H.add [ c ]
-      pure acc
-    Listener toSub -> pure $ acc <> toSub (H.toEventTarget elem)
+  go acc =
+    case _ of
+      Attr prop value -> do
+        H.setAttribute prop value elem
+        pure acc
+
+      Prop prop value -> do
+        setProperty prop value elem
+        pure acc
+
+      AddClass c -> do
+        H.classList elem >>= H.add [ c ]
+        pure acc
+
+      Listener toSub -> pure $ acc <> toSub (H.toEventTarget elem)
+      NoDiff a -> go acc a
