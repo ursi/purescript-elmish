@@ -385,47 +385,68 @@ diffAttributes ::
   WriterT (Sub msg /\ Map String String) Effect (List (SingleAttribute msg))
 diffAttributes elem =
   diff
-    ( case _ of
-        Diff.Left sa -> do
-          lift $ removeAttribute sa elem
-          pure Nothing
-        Diff.Right sa -> do
-          addAttribute sa elem
-          pure $ Just sa
-        Diff.Both sa1 sa2 ->
-          let
-            switch = do
-              lift $ removeAttribute sa1 elem
+    (case _ of
+       Diff.Left sa -> do
+         lift $ removeAttribute sa elem
+         pure Nothing
+
+       Diff.Right sa -> do
+         addAttribute sa elem
+         pure $ Just sa
+
+       Diff.Both sa1 sa2 -> diffBoth false sa1 sa2
+    )
+
+  where
+    diffBoth ::
+      Boolean ->
+      SingleAttribute msg ->
+      SingleAttribute msg ->
+      WriterT (Sub msg /\ Map String String) Effect (Maybe (SingleAttribute msg))
+    diffBoth force sa1 sa2 =
+      let
+        switch _ = do
+          lift $ removeAttribute sa1 elem
+          addAttribute sa2 elem
+          pure $ Just sa2
+
+        forceUpdate _ =
+          if force then
+            addAttribute sa2 elem
+          else
+            pure unit
+      in
+      case sa1, sa2 of
+        Attr prop1 value1, Attr prop2 value2 ->
+          if prop1 == prop2 then
+            if value1 == value2 then do
+              forceUpdate unit
+              pure $ Just sa1
+            else do
               addAttribute sa2 elem
               pure $ Just sa2
-          in
-            case sa1, sa2 of
-              Attr prop1 value1, Attr prop2 value2 ->
-                if prop1 == prop2 then
-                  if value1 == value2 then
-                    pure $ Just sa1
-                  else do
-                    addAttribute sa2 elem
-                    pure $ Just sa2
-                else do
-                  switch
-              AddClass c1, AddClass c2 ->
-                if c1 == c2 then
-                  pure $ Just sa1
-                else
-                  switch
-              Prop prop1 value1, Prop prop2 value2 ->
-                if prop1 == prop2 then
-                  if value1 == value2 then
-                    pure $ Just sa1
-                  else do
-                    addAttribute sa2 elem
-                    pure $ Just sa2
-                else do
-                  switch
-              _, _ -> do
-                switch
-    )
+          else do
+            switch unit
+
+        AddClass c1, AddClass c2 ->
+          if c1 == c2 then
+            pure $ Just sa1
+          else
+            switch unit
+
+        Prop prop1 value1, Prop prop2 value2 ->
+          if prop1 == prop2 then
+            if value1 == value2 then do
+              forceUpdate unit
+              pure $ Just sa1
+            else do
+              addAttribute sa2 elem
+              pure $ Just sa2
+          else do
+            switch unit
+
+        NoDiff a1, NoDiff a2 -> NoDiff <$$> diffBoth true a1 a2
+        _, _ -> switch unit
 
 removeAttribute :: ∀ msg. SingleAttribute msg -> Element -> Effect Unit
 removeAttribute attr elem =
