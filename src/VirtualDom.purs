@@ -312,54 +312,70 @@ noNodeError = liftEffect $ throw "there is no node"
 diffSingle :: ∀ msg. SingleVNode msg -> SingleVNode msg -> MyMonadCommon msg
 diffSingle svn1 svn2 = do
   let
-    replace :: MyMonadCommon msg
-    replace = case getNode svn1 of
-      Just svn1Node -> do
-        svn <- replaceNode svn1Node svn2
-        pure svn
-      Nothing -> pure svn2
+    replace :: Unit -> MyMonadCommon msg
+    replace _ =
+      case getNode svn1 of
+        Just svn1Node -> do
+          svn <- replaceNode svn1Node svn2
+          pure svn
+
+        Nothing -> pure svn2
+
   case svn1, svn2 of
     VElement r1, VElement r2 ->
       if r1.tag == r2.tag then
         if r1.noDiff then
-          replace
+          replace unit
         else
-          fromMaybe replace do
+          let
+            result = do
+              elem <- r1.node
+              Just do
+                addCss r2.css
+                attributes <- lift $ diffAttributes elem r1.attributes r2.attributes
+                children <- local (changeParent elem) $ vDomDiff r1.children r2.children
+                pure
+                  $ VElement
+                      r1
+                        { attributes = attributes
+                        , children = children
+                        }
+          in
+          case result of
+            Just a -> a
+            Nothing -> replace unit
+      else
+        replace unit
+
+    KeyedElement r1, KeyedElement r2 ->
+      if r1.tag == r2.tag then
+        let
+          result = do
             elem <- r1.node
             Just do
               addCss r2.css
               attributes <- lift $ diffAttributes elem r1.attributes r2.attributes
-              children <- local (changeParent elem) $ vDomDiff r1.children r2.children
+              children <- local (changeParent elem) $ keyedDiff r1.children r2.children
               pure
-                $ VElement
+                $ KeyedElement
                     r1
                       { attributes = attributes
                       , children = children
                       }
+        in
+        case result of
+          Just a -> a
+          Nothing -> replace unit
       else
-        replace
-    KeyedElement r1, KeyedElement r2 ->
-      if r1.tag == r2.tag then
-        fromMaybe replace do
-          elem <- r1.node
-          Just do
-            addCss r2.css
-            attributes <- lift $ diffAttributes elem r1.attributes r2.attributes
-            children <- local (changeParent elem) $ keyedDiff r1.children r2.children
-            pure
-              $ KeyedElement
-                  r1
-                    { attributes = attributes
-                    , children = children
-                    }
-      else
-        replace
+        replace unit
+
     VText r1, VText r2 ->
       if r1.text == r2.text then
         pure svn1
       else
-        replace
-    _, _ -> replace
+        replace unit
+
+    _, _ -> replace unit
 
 diffAttributes ::
   ∀ msg.
