@@ -105,14 +105,6 @@ data SingleAttribute msg
   | Listener (EventTarget -> Sub msg)
   | NoDiff (SingleAttribute msg)
 
-instance Eq (SingleAttribute a) where
-  eq (Attr p1 v1) (Attr p2 v2) = p1 == p2 && v1 == v2
-  eq (Prop p1 v1) (Prop p2 v2) = p1 == p2 && v1 == v2
-  eq (AddClass c1) (AddClass c2) = c1 == c2
-  eq (Listener _) (Listener _) = true
-  eq (NoDiff _) (NoDiff _) = false -- so it's always updated
-  eq _ _ = false
-
 type Attribute msg
   = Batched SingleAttribute msg
 
