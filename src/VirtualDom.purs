@@ -103,7 +103,7 @@ data SingleAttribute msg
   | Prop String JSValue
   | AddClass String
   | Listener (EventTarget -> Sub msg)
-  | NoDiff (SingleAttribute msg)
+  | AlwaysSet (SingleAttribute msg)
 
 type Attribute msg
   = Batched SingleAttribute msg
@@ -445,7 +445,7 @@ diffAttributes elem =
           else do
             switch unit
 
-        NoDiff a1, NoDiff a2 -> NoDiff <$$> diffBoth true a1 a2
+        AlwaysSet a1, AlwaysSet a2 -> AlwaysSet <$$> diffBoth true a1 a2
         _, _ -> switch unit
 
 removeAttribute :: ∀ msg. SingleAttribute msg -> Element -> Effect Unit
@@ -455,7 +455,7 @@ removeAttribute attr elem =
     Prop prop _ -> setProperty prop (toJSValue null) elem
     AddClass c -> H.classList elem >>= H.remove [ c ]
     Listener _ -> pure unit
-    NoDiff a -> removeAttribute a elem
+    AlwaysSet a -> removeAttribute a elem
 
 addAttribute :: ∀ msg. SingleAttribute msg -> Element -> WriterT (Sub msg /\ Map String String) Effect Unit
 addAttribute attr elem =
@@ -464,7 +464,7 @@ addAttribute attr elem =
     Prop prop value -> lift $ setProperty prop value elem
     AddClass c -> lift $ H.classList elem >>= H.add [ c ]
     Listener toSub -> tell $ toSub (H.toEventTarget elem) /\ mempty
-    NoDiff a -> addAttribute a elem
+    AlwaysSet a -> addAttribute a elem
 
 getNode :: ∀ msg. SingleVNode msg -> Maybe Node
 getNode = case _ of
@@ -576,4 +576,4 @@ setAttributes attribute elem = foldM go mempty attribute
         pure acc
 
       Listener toSub -> pure $ acc <> toSub (H.toEventTarget elem)
-      NoDiff a -> go acc a
+      AlwaysSet a -> go acc a

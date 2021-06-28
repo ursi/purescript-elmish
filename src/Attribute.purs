@@ -2,7 +2,7 @@ module Attribute
   ( module Exports
   , attribute
   , property
-  , noDiff
+  , alwaysSet
   , addClass
   , value
   , abbr
@@ -167,8 +167,8 @@ attribute = Single <.. Attr
 property :: ∀ msg. String -> JSValue -> Attribute msg
 property = Single <.. Prop
 
-noDiff :: ∀ msg. Attribute msg -> Attribute msg
-noDiff = B.mapBoth NoDiff
+alwaysSet :: ∀ msg. Attribute msg -> Attribute msg
+alwaysSet = B.mapBoth AlwaysSet
 
 -- SPECIAL
 addClass :: ∀ msg. String -> Attribute msg
