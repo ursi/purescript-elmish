@@ -29,6 +29,8 @@ data Msg
   = Increment
   | Decrement
 
+derive instance Eq Msg
+
 update :: Model -> Msg -> Update Msg Model
 update model = pure <<< case _ of
   Increment -> model + 1
