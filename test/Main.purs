@@ -218,6 +218,7 @@ view model =
                   , H.input [ reportEmptyStateChange model.emptyNonemptyText ]
                   ]
               , H.div [] [ H.text model.input ]
+              , H.div [] [ H.rawHtml model.input ]
               ]
           , (if model.showingInput then H.button else H.div) [ A.onClick Increment ] [ H.text "+" ]
           , H.button [ A.onClick Decrement ] [ H.text "-" ]
