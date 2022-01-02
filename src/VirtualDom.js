@@ -1,1 +1,1 @@
-exports.setProperty = prop => value => element => () => element[prop] = value;
+exports.setNodeProperty = prop => value => element => () => element[prop] = value;

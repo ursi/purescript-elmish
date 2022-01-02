@@ -1,6 +1,7 @@
 module Html
   ( module Css.Global
   , Html
+  , rawHtml
   , keyed
   , keyedS
   , element
@@ -250,6 +251,13 @@ import VirtualDom.Css as VC
 
 type Html msg
   = VNode msg
+
+rawHtml :: ∀ msg. String -> Html msg
+rawHtml theHtml = Single
+  $ VRaw
+      { html: theHtml
+      , node: Nothing
+      }
 
 keyed :: ∀ msg. String -> Array (Attribute msg) -> Array (String /\ Html msg) -> Html msg
 keyed tag attributes children =

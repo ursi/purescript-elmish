@@ -49,6 +49,10 @@ data SingleVNode msg
     { text :: String
     , node :: Maybe Text
     }
+  | VRaw
+    { html :: String
+    , node :: Maybe Node
+    }
 
 text :: ∀ msg. String -> SingleVNode msg
 text = VText <. { text: _, node: Nothing }
@@ -452,7 +456,7 @@ removeAttribute :: ∀ msg. SingleAttribute msg -> Element -> Effect Unit
 removeAttribute attr elem =
   case attr of
     Attr prop _ -> H.removeAttribute prop elem
-    Prop prop _ -> setProperty prop (toJSValue null) elem
+    Prop prop _ -> setElementProperty prop (toJSValue null) elem
     AddClass c -> H.classList elem >>= H.remove [ c ]
     Listener _ -> pure unit
     AlwaysSet a -> removeAttribute a elem
@@ -461,7 +465,7 @@ addAttribute :: ∀ msg. SingleAttribute msg -> Element -> WriterT (Sub msg /\ M
 addAttribute attr elem =
   case attr of
     Attr prop value -> lift $ H.setAttribute prop value elem
-    Prop prop value -> lift $ setProperty prop value elem
+    Prop prop value -> lift $ setElementProperty prop value elem
     AddClass c -> lift $ H.classList elem >>= H.add [ c ]
     Listener toSub -> tell $ toSub (H.toEventTarget elem) /\ mempty
     AlwaysSet a -> addAttribute a elem
@@ -471,6 +475,7 @@ getNode = case _ of
   VElement r -> H.toNode <$> r.node
   KeyedElement r -> H.toNode <$> r.node
   VText r -> H.toNode <$> r.node
+  VRaw r -> H.toNode <$> r.node
 
 addNode :: ∀ msg. SingleVNode msg -> MyMonadCommon msg
 addNode svn = svn # placeNode (\{ node, parent } -> H.appendChild node parent)
@@ -514,6 +519,12 @@ placeNode placer svn = do
       node <- liftEffect $ H.createTextNode r.text doc
       _ <- liftEffect $ placer { node: H.toNode node, parent }
       pure (VText { text: r.text, node: Just node })
+    VRaw r -> liftEffect do
+      node <- H.toNode <$> H.createElement "div" {} doc
+      setNodeProperty "innerHTML" (toJSValue r.html) node
+      _ <- placer { node, parent }
+      pure $ VRaw (r { node = Just node })
+      
 
 placeNodeHelper ::
   ∀ a msg r children.
@@ -555,7 +566,10 @@ removeVNode svn = do
 ifJust :: ∀ a b. (a -> Effect b) -> Maybe a -> Effect Unit
 ifJust f = maybe (pure unit) (f .> (_ *> pure unit))
 
-foreign import setProperty :: String -> JSValue -> Element -> Effect Unit
+foreign import setNodeProperty :: String -> JSValue -> Node -> Effect Unit
+
+setElementProperty :: String -> JSValue -> Element -> Effect Unit
+setElementProperty k v n = setNodeProperty k v (H.toNode n)
 
 setAttributes :: ∀ msg. List (SingleAttribute msg) -> Element -> Effect (Sub msg)
 setAttributes attribute elem = foldM go mempty attribute
@@ -568,7 +582,7 @@ setAttributes attribute elem = foldM go mempty attribute
         pure acc
 
       Prop prop value -> do
-        setProperty prop value elem
+        setElementProperty prop value elem
         pure acc
 
       AddClass c -> do
