@@ -2,4 +2,4 @@
 
 const path = require(`path`);
 
-exports.join = components => path.join(...components);
+export const join = components => path.join(...components);

@@ -1,1 +1,1 @@
-exports.jseq = a => b => a === b;
+export const jseq = a => b => a === b;

@@ -1,1 +1,1 @@
-exports.raf = effect => () => window.requestAnimationFrame(effect);
+export const raf = effect => () => window.requestAnimationFrame(effect);

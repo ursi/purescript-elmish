@@ -4,20 +4,20 @@ const fs = require(`fs`);
 
 const fsp = fs.promises;
 
-exports.exists = pth => fulfill => {
+export const exists = pth => fulfill => {
 	fulfill(fs.existsSync(pth));
 };
 
-exports.mkdirPromise = name => () => fsp.mkdir(name);
+export const mkdirPromise = name => () => fsp.mkdir(name);
 
-exports.readdirPromise = dir => () => fsp.readdir(dir);
+export const readdirPromise = dir => () => fsp.readdir(dir);
 
-exports.unlinkPromise = path => () => fsp.unlink(path);
+export const unlinkPromise = path => () => fsp.unlink(path);
 
-exports.writeFilePromise = pth => contents => () => {
+export const writeFilePromise = pth => contents => () => {
 	return fsp.writeFile(pth, contents);
 };
 
-exports.readFilePromise = pth => () => {
+export const readFilePromise = pth => () => {
 	return fsp.readFile(pth, `utf8`);
 };

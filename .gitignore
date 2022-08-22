@@ -7,7 +7,7 @@
 /.psc*
 /.purs*
 /.psa*
-/index.js
+/main.js
 /minify.js
 /elm
 /index.html
